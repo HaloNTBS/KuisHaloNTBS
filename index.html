@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halo NTBS - Enterprise Training & Assessment</title>
+    
+    <!-- Font Plus Jakarta Sans untuk gaya modern ala Canva -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc; 
+            background-image: radial-gradient(circle at 10% 20%, #e0e7ff, transparent 30%), 
+                              radial-gradient(circle at 90% 80%, #dcfce3, transparent 30%); 
+            background-attachment: fixed; 
+        }
+        /* Soft Glassmorphism ala Canva */
+        .glass { 
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.8); 
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+        }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .sticky-timer { position: sticky; top: 1rem; z-index: 40; }
+        .submenu-transition { transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out; overflow: hidden; max-height: 0; opacity: 0; }
+        .submenu-open { max-height: 500px; opacity: 1; }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .badge-card { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased h-screen w-screen overflow-hidden flex flex-col">
+
+    <!-- Global Loader -->
+    <div id="global-loader" class="hidden fixed inset-0 z-[999] bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity">
+        <i class="fa-solid fa-circle-notch fa-spin text-5xl text-indigo-600 mb-4"></i>
+        <p id="loader-text" class="text-slate-600 font-bold animate-pulse">Memuat Data...</p>
+    </div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center p-4 bg-[#f8fafc] bg-[radial-gradient(circle_at_10%_20%,#e0e7ff,transparent_30%),radial-gradient(circle_at_90%_80%,#dcfce3,transparent_30%)] overflow-y-auto">
+        <div class="max-w-md w-full glass rounded-[2rem] p-8 shadow-2xl">
+            <div class="text-center mb-8">
+                <div class="flex justify-center mb-6">
+                    <div class="h-16 w-16 bg-gradient-to-br from-indigo-600 to-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                        <i class="fa-solid fa-building-columns text-3xl"></i>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-black text-slate-900 mt-2 tracking-tight">Enterprise Assessment</h2>
+                <p class="text-slate-500 mt-1 text-sm font-semibold">Halo NTBS Training Platform</p>
+            </div>
+            
+            <form id="login-form" onsubmit="window.handleLogin(event)" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-user text-slate-400"></i>
+                        </div>
+                        <input type="text" id="login-username" required class="block w-full pl-11 pr-4 py-3.5 rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-white/70 transition-all font-semibold">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-lock text-slate-400"></i>
+                        </div>
+                        <input type="password" id="login-password" required class="block w-full pl-11 pr-4 py-3.5 rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-white/70 transition-all font-semibold">
+                    </div>
+                </div>
+                <!-- Chunky 3D Button -->
+                <button type="submit" id="login-btn" class="w-full flex justify-center items-center py-3.5 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-1 transition-all shadow-lg hover:shadow-xl mt-6">
+                    Masuk Sistem <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+                <div id="login-error" class="hidden bg-rose-50 border-l-4 border-rose-500 p-3 rounded-lg text-sm text-rose-700 font-bold text-center">
+                    Username atau Password salah.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- APP LAYOUT -->
+    <div id="app-layout" class="hidden h-full w-full flex flex-col overflow-hidden relative">
+        
+        <!-- Top Navbar -->
+        <header class="h-16 flex-shrink-0 bg-white/95 backdrop-blur-md shadow-sm z-50 border-b border-slate-200 px-4 md:px-6 flex justify-between items-center w-full">
+            <div class="flex items-center space-x-3">
+                <button onclick="window.toggleMobileSidebar()" class="text-slate-600 hover:text-indigo-600 md:hidden p-2 rounded-lg hover:bg-slate-100">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                
+                <div class="flex items-center">
+                    <div class="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-indigo-600 to-emerald-500 rounded-xl flex items-center justify-center text-white shadow-sm">
+                        <i class="fa-solid fa-building-columns text-sm sm:text-lg"></i>
+                    </div>
+                    <div class="hidden sm:flex items-center pl-3 border-l-2 border-slate-100 ml-3">
+                        <span class="text-lg font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 to-emerald-600 tracking-tight">Halo NTBS</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <span id="nav-username-display" class="text-sm font-bold text-slate-700 hidden sm:block border-slate-200 pl-4">User</span>
+                <button onclick="window.logout()" class="px-4 py-2 rounded-xl text-sm font-bold text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white transition-colors duration-200 flex items-center">
+                    <i class="fa-solid fa-right-from-bracket sm:mr-2"></i> 
+                    <span class="hidden sm:inline">Keluar</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="flex-1 flex overflow-hidden relative">
+            <div id="sidebar-overlay" onclick="window.toggleMobileSidebar()" class="hidden fixed inset-0 bg-slate-900/40 z-30 backdrop-blur-sm md:hidden"></div>
+
+            <!-- Sidebar -->
+            <aside id="app-sidebar" class="absolute md:static inset-y-0 left-0 w-64 h-full bg-white/95 backdrop-blur-md border-r border-slate-200 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col shadow-2xl md:shadow-none">
+                <div class="p-4 flex justify-between items-center md:hidden border-b border-slate-200">
+                    <span class="font-bold text-slate-800">Menu Navigasi</span>
+                    <button onclick="window.toggleMobileSidebar()" class="text-slate-500 hover:text-rose-500 bg-slate-100 p-2 rounded-lg">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="p-6 border-b border-slate-100 hidden md:block">
+                    <h1 class="text-2xl font-black text-slate-800 tracking-tight" id="sidebar-title">Dashboard</h1>
+                    <p class="text-[10px] font-bold text-slate-400 mt-1 tracking-widest uppercase" id="sidebar-subtitle">System Control</p>
+                </div>
+
+                <!-- Admin Menu -->
+                <nav id="admin-menu" class="hidden flex-1 p-4 space-y-1 overflow-y-auto pb-20 custom-scrollbar">
+                    <button onclick="window.switchAdminTab('overview')" id="tab-btn-admin-overview" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-house w-5 text-center"></i> <span>Dashboard</span>
+                    </button>
+                    <button onclick="window.switchAdminTab('users')" id="tab-btn-admin-users" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-users-gear w-5 text-center"></i> <span>Manajemen Agen</span>
+                    </button>
+                    
+                    <div class="pt-1">
+                        <button onclick="window.toggleSubmenu('sub-assessment', 'chev-assessment')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50">
+                            <div class="flex items-center space-x-3"><i class="fa-solid fa-file-signature w-5 text-center text-emerald-500"></i> <span>Assessment</span></div>
+                            <i id="chev-assessment" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                        </button>
+                        <div id="sub-assessment" class="submenu-transition pl-9 pr-2 space-y-1 mt-1">
+                            <button onclick="window.switchAdminTab('quizzes')" id="tab-btn-admin-quizzes" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Manajemen Kuis</button>
+                            <button onclick="window.switchAdminTab('import-quiz')" id="tab-btn-admin-import-quiz" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Import Kuis (CSV)</button>
+                            <button onclick="window.switchAdminTab('assessment-remedial')" id="tab-btn-admin-assessment-remedial" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Data Remedial</button>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-1">
+                        <button onclick="window.toggleSubmenu('sub-gamification', 'chev-gamification')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50">
+                            <div class="flex items-center space-x-3"><i class="fa-solid fa-trophy w-5 text-center text-rose-500"></i> <span>Gamification</span></div>
+                            <i id="chev-gamification" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                        </button>
+                        <div id="sub-gamification" class="submenu-transition pl-9 pr-2 space-y-1 mt-1">
+                            <button onclick="window.switchAdminTab('leaderboard')" id="tab-btn-admin-leaderboard" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Leaderboard</button>
+                            <button onclick="window.switchAdminTab('gamification-achievement')" id="tab-btn-admin-gamification-achievement" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Achievements & Badges</button>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-1">
+                        <button onclick="window.toggleSubmenu('sub-reports', 'chev-reports')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50">
+                            <div class="flex items-center space-x-3"><i class="fa-solid fa-folder-open w-5 text-center text-indigo-500"></i> <span>Reports</span></div>
+                            <i id="chev-reports" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                        </button>
+                        <div id="sub-reports" class="submenu-transition pl-9 pr-2 space-y-1 mt-1">
+                            <button onclick="window.switchAdminTab('reports-export')" id="tab-btn-admin-reports-export" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Export Center</button>
+                            <button onclick="window.switchAdminTab('reports-performance')" id="tab-btn-admin-reports-performance" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Performance Report</button>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-1 border-t border-slate-100 mt-2">
+                        <button onclick="window.toggleSubmenu('sub-system', 'chev-system')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50">
+                            <div class="flex items-center space-x-3"><i class="fa-solid fa-shield-halved w-5 text-center text-slate-500"></i> <span>System</span></div>
+                            <i id="chev-system" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                        </button>
+                        <div id="sub-system" class="submenu-transition pl-9 pr-2 space-y-1 mt-1">
+                            <button onclick="window.switchAdminTab('system-audit')" id="tab-btn-admin-system-audit" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Audit Trail Logs</button>
+                            <button onclick="window.switchAdminTab('system-settings')" id="tab-btn-admin-system-settings" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">System Settings</button>
+                        </div>
+                    </div>
+                    
+                    <button onclick="window.switchAdminTab('profile')" id="tab-btn-admin-profile" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50 mt-2">
+                        <i class="fa-solid fa-user-gear w-5 text-center text-slate-500"></i> <span>Profil & Akun</span>
+                    </button>
+                </nav>
+
+                <!-- Agent Menu -->
+                <nav id="agent-menu" class="hidden flex-1 p-4 space-y-1 overflow-y-auto pb-20 custom-scrollbar">
+                    <button onclick="window.switchAgentTab('dashboard')" id="tab-btn-agent-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-house w-5 text-center"></i> <span>Dashboard Agen</span>
+                    </button>
+                    
+                    <div class="pt-1">
+                        <button onclick="window.toggleSubmenu('sub-agent-assessment', 'chev-agent-assessment')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50">
+                            <div class="flex items-center space-x-3"><i class="fa-solid fa-file-signature w-5 text-center text-emerald-500"></i> <span>Assessment</span></div>
+                            <i id="chev-agent-assessment" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                        </button>
+                        <div id="sub-agent-assessment" class="submenu-transition pl-9 pr-2 space-y-1 mt-1">
+                            <button onclick="window.switchAgentTab('quizzes')" id="tab-btn-agent-quizzes" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Kuis Tersedia</button>
+                            <button onclick="window.switchAgentTab('assessment-remedial')" id="tab-btn-agent-assessment-remedial" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Remedial Saya</button>
+                            <button onclick="window.switchAgentTab('history')" id="tab-btn-agent-history" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Riwayat Assessment</button>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-1">
+                        <button onclick="window.toggleSubmenu('sub-agent-gamification', 'chev-agent-gamification')" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50">
+                            <div class="flex items-center space-x-3"><i class="fa-solid fa-trophy w-5 text-center text-rose-500"></i> <span>Gamification</span></div>
+                            <i id="chev-agent-gamification" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                        </button>
+                        <div id="sub-agent-gamification" class="submenu-transition pl-9 pr-2 space-y-1 mt-1">
+                            <button onclick="window.switchAgentTab('leaderboard')" id="tab-btn-agent-leaderboard" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Leaderboard Umum</button>
+                            <button onclick="window.switchAgentTab('badges')" id="tab-btn-agent-badges" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Lencana & Achivement</button>
+                        </div>
+                    </div>
+                    
+                    <button onclick="window.switchAgentTab('profile')" id="tab-btn-agent-profile" class="mt-2 border-t border-slate-100 pt-3 w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-user-circle w-5 text-center text-slate-500"></i> <span>Profil Saya</span>
+                    </button>
+                </nav>
+
+                <div class="p-4 border-t border-slate-200/50 bg-slate-50/50 relative z-20">
+                    <div class="flex items-center space-x-3 px-2">
+                        <div id="sidebar-icon-bg" class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 border-2 border-white shadow-sm shrink-0 overflow-hidden">
+                            <i id="sidebar-icon" class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-sm font-bold text-slate-800 truncate" id="sidebar-name-display">User</p>
+                            <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wide">
+                                <i class="fa-solid fa-circle text-[8px] animate-pulse mr-1"></i>Online
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main id="main-content" class="flex-1 h-full overflow-y-auto p-4 md:p-6 lg:p-8 relative bg-transparent scroll-smooth">
+                
+                <!-- ============================ ADMIN VIEWS ============================ -->
+                <div id="admin-views" class="hidden">
+                    
+                    <div id="admin-tab-overview" class="admin-tab-content space-y-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Dashboard Utama</h2>
+                            <button onclick="window.refreshAdminData()" class="text-indigo-600 bg-indigo-50 px-4 py-2 rounded-xl text-sm font-bold shadow-sm border border-indigo-100 hover:bg-indigo-100 transition">
+                                <i class="fa-solid fa-rotate-right mr-2"></i>Refresh Data
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                            <div class="glass p-5 rounded-3xl shadow-sm border-l-[6px] border-indigo-500 flex flex-col justify-between hover:scale-[1.02] transition-transform">
+                                <div class="flex justify-between items-start"><p class="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wide">Total Agen</p><i class="fa-solid fa-users text-indigo-200 text-2xl"></i></div>
+                                <h3 class="text-3xl sm:text-4xl font-black text-slate-800 mt-4" id="stat-total-agents">0</h3>
+                            </div>
+                            <div class="glass p-5 rounded-3xl shadow-sm border-l-[6px] border-emerald-500 flex flex-col justify-between hover:scale-[1.02] transition-transform">
+                                <div class="flex justify-between items-start"><p class="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wide">Kuis Aktif</p><i class="fa-solid fa-file-circle-check text-emerald-200 text-2xl"></i></div>
+                                <h3 class="text-3xl sm:text-4xl font-black text-slate-800 mt-4" id="stat-total-quizzes">0</h3>
+                            </div>
+                            <div class="glass p-5 rounded-3xl shadow-sm border-l-[6px] border-amber-500 flex flex-col justify-between hover:scale-[1.02] transition-transform">
+                                <div class="flex justify-between items-start"><p class="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wide">Avg Score Tim</p><i class="fa-solid fa-chart-line text-amber-200 text-2xl"></i></div>
+                                <h3 class="text-3xl sm:text-4xl font-black text-slate-800 mt-4" id="stat-avg-score">0%</h3>
+                            </div>
+                            <div class="glass p-5 rounded-3xl shadow-sm border-l-[6px] border-rose-500 flex flex-col justify-between hover:scale-[1.02] transition-transform">
+                                <div class="flex justify-between items-start"><p class="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wide">Total Remedial</p><i class="fa-solid fa-triangle-exclamation text-rose-200 text-2xl"></i></div>
+                                <h3 class="text-3xl sm:text-4xl font-black text-slate-800 mt-4" id="stat-total-remedial">0</h3>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                            <div class="glass p-4 sm:p-6 rounded-3xl shadow-sm">
+                                <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3 flex justify-between items-center">
+                                    <span><i class="fa-solid fa-chart-area text-indigo-500 mr-2"></i>Tren Performa</span>
+                                    <select id="admin-trend-filter" onchange="window.renderAdminChart()" class="text-xs font-bold text-slate-600 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                                        <option value="all">Semua Agen</option>
+                                    </select>
+                                </h3>
+                                <div class="w-full h-64 relative"><canvas id="adminTrendChart"></canvas></div>
+                            </div>
+                            <div class="glass p-4 sm:p-6 rounded-3xl shadow-sm">
+                                <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-chart-column text-emerald-500 mr-2"></i>Perbandingan Agen</h3>
+                                <div class="w-full h-64 relative"><canvas id="agentComparisonChart"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-users" class="admin-tab-content hidden space-y-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Manajemen Agen</h2>
+                        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                            <div class="xl:col-span-1 glass p-5 sm:p-8 rounded-[2rem] shadow-sm h-fit">
+                                <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-user-plus mr-2 text-indigo-500"></i>Registrasi Agen</h3>
+                                <form onsubmit="window.createAgent(event)" class="space-y-4">
+                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Lengkap</label><input type="text" id="agent-fullname" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200"></div>
+                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Username Akun</label><input type="text" id="agent-username" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200"></div>
+                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label><input type="text" id="agent-password" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200"></div>
+                                    <button type="submit" class="w-full flex justify-center items-center py-3.5 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-1 transition-all shadow-md mt-2">
+                                        <i class="fa-solid fa-save mr-2"></i> Simpan Data
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="xl:col-span-2 glass p-5 sm:p-8 rounded-[2rem] shadow-sm">
+                                <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-address-book mr-2 text-indigo-500"></i>Daftar Agen Aktif</h3>
+                                <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                                    <table class="min-w-full divide-y divide-slate-200">
+                                        <thead class="bg-slate-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Nama Lengkap</th>
+                                                <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Username</th>
+                                                <th class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="agents-list-body" class="divide-y divide-slate-100"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-quizzes" class="admin-tab-content hidden space-y-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                            <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Manajemen Kuis</h2>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="window.switchAdminTab('import-quiz')" class="flex-1 sm:flex-none flex justify-center items-center py-3 px-5 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 hover:border-emerald-600 active:border-b-0 active:translate-y-1 transition-all shadow-md">
+                                    <i class="fa-solid fa-file-csv mr-2"></i> Import CSV
+                                </button>
+                                <button onclick="window.prepareCreateQuiz()" class="flex-1 sm:flex-none flex justify-center items-center py-3 px-5 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-1 transition-all shadow-md">
+                                    <i class="fa-solid fa-plus mr-2"></i> Buat Kuis
+                                </button>
+                            </div>
+                        </div>
+                        <div id="quiz-list-view" class="glass p-5 rounded-[2rem] shadow-sm">
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                                <table class="min-w-full divide-y divide-slate-200">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-4 py-4 text-left text-xs font-bold text-slate-500 uppercase">Judul Kuis</th>
+                                            <th class="px-4 py-4 text-left text-xs font-bold text-slate-500 uppercase">Jadwal & Durasi</th>
+                                            <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase">Status & Bobot</th>
+                                            <th class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase">Bank Soal</th>
+                                            <th class="px-4 py-4 text-right text-xs font-bold text-slate-500 uppercase">Aksi Sistem</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-quizzes-body" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div id="quiz-report-view" class="hidden glass p-6 sm:p-8 rounded-[2rem] shadow-sm space-y-6">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 pb-4">
+                                <div>
+                                    <button onclick="window.closeQuizReport()" class="text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg mb-2 text-sm font-bold hover:bg-indigo-100">
+                                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
+                                    </button>
+                                    <h3 class="text-2xl font-black text-slate-800 tracking-tight" id="report-quiz-title">Laporan Detail Kuis</h3>
+                                </div>
+                                <button onclick="window.exportReportCSV()" class="flex justify-center items-center py-2.5 px-5 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 hover:border-emerald-600 active:border-b-0 active:translate-y-1 transition-all shadow-md">
+                                    <i class="fa-solid fa-file-csv mr-2 text-lg"></i> Export CSV Excel
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-5 rounded-2xl border border-slate-200">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2"><i class="fa-solid fa-code-compare mr-1 text-indigo-500"></i> Perbandingan (Agen A)</label>
+                                    <select id="compare-agent-1" onchange="window.renderSideBySide()" class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm bg-white font-bold shadow-sm"></select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2"><i class="fa-solid fa-code-compare mr-1 text-emerald-500"></i> Perbandingan (Agen B)</label>
+                                    <select id="compare-agent-2" onchange="window.renderSideBySide()" class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm bg-white font-bold shadow-sm"></select>
+                                </div>
+                            </div>
+                            <div id="side-by-side-container" class="overflow-x-auto rounded-xl border border-slate-200 bg-white p-4"></div>
+                            <div class="mt-6 border-t border-slate-200 pt-6">
+                                <h4 class="font-black text-lg text-slate-800 mb-3"><i class="fa-solid fa-chart-pie mr-2 text-indigo-500"></i>Analisis Distractor</h4>
+                                <div id="item-analysis-container" class="space-y-4"></div>
+                            </div>
+                            <div class="mt-6 border-t border-slate-200 pt-6">
+                                <h4 class="font-black text-lg text-slate-800 mb-3"><i class="fa-solid fa-table mr-2 text-indigo-500"></i>Matriks Jawaban Keseluruhan</h4>
+                                <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                        <thead class="bg-slate-50" id="report-table-head"></thead>
+                                        <tbody id="report-table-body" class="divide-y divide-slate-100"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="quiz-form-view" class="hidden glass p-6 sm:p-10 rounded-[2rem] shadow-xl">
+                            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200">
+                                <div>
+                                    <h3 class="text-2xl font-black text-slate-800 tracking-tight" id="quiz-form-title">Formulir Kuis</h3>
+                                    <p class="text-sm font-bold text-indigo-600 mt-1">Total Bobot Nilai Saat Ini: <span id="total-score-display" class="bg-indigo-100 px-2.5 py-1 rounded-lg">0</span> / 100 Poin</p>
+                                </div>
+                                <button onclick="window.cancelQuizForm()" class="text-slate-400 hover:text-rose-500 bg-white p-2 rounded-xl border hover:bg-slate-50 transition">
+                                    <i class="fa-solid fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            <form onsubmit="window.saveQuiz(event)" class="space-y-6">
+                                <input type="hidden" id="edit-quiz-id">
+                                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                                    <h4 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-calendar-alt mr-2 text-indigo-500"></i>Pengaturan Jadwal & Status</h4>
+                                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
+                                        <div class="lg:col-span-1">
+                                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kategori</label>
+                                            <select id="quiz-category" class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm font-bold bg-white">
+                                                <option value="Product Knowledge">Product Knowledge</option>
+                                                <option value="SOP Penanganan">SOP Penanganan</option>
+                                                <option value="Regulasi & Anti-Fraud">Regulasi & Anti-Fraud</option>
+                                                <option value="Sistem & Aplikasi">Sistem & Aplikasi</option>
+                                            </select>
+                                        </div>
+                                        <div class="lg:col-span-1">
+                                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status Kuis</label>
+                                            <select id="quiz-status" class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm font-bold bg-white">
+                                                <option value="Final">Final (Publikasikan)</option>
+                                                <option value="Draft">Draft (Simpan Saja)</option>
+                                            </select>
+                                        </div>
+                                        <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Mulai Akses</label><input type="datetime-local" id="quiz-start-time" required class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm bg-white font-semibold"></div>
+                                        <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Akhir Akses</label><input type="datetime-local" id="quiz-end-time" required class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm bg-white font-semibold"></div>
+                                        <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Durasi (Mnt)</label><input type="number" id="quiz-duration" required min="1" placeholder="30" class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm bg-white font-semibold"></div>
+                                    </div>
+                                </div>
+                                <div><label class="block text-sm font-bold text-slate-700 mb-2">Judul Kuis Utama</label><input type="text" id="quiz-title" required placeholder="Contoh: Evaluasi Layanan Q3" class="block w-full rounded-xl border-slate-200 px-5 py-4 bg-white font-black text-lg focus:ring-2 focus:ring-indigo-200 transition"></div>
+                                <div class="pt-4"><h4 class="font-black text-slate-800 text-lg border-b border-slate-200 pb-2"><i class="fa-solid fa-list-check mr-2 text-indigo-500"></i>Daftar Pertanyaan</h4></div>
+                                <div id="questions-container" class="space-y-5"></div>
+                                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-6 mt-6 border-t border-slate-200">
+                                    <button type="button" onclick="window.addQuestionField()" class="w-full sm:flex-1 bg-indigo-50 border-2 border-dashed border-indigo-300 text-indigo-700 rounded-xl px-4 py-4 font-bold hover:bg-indigo-100 transition">
+                                        <i class="fa-solid fa-plus-circle mr-2 text-lg"></i> Tambah Soal Manual
+                                    </button>
+                                    <button type="submit" class="w-full sm:flex-1 flex justify-center items-center py-4 px-4 rounded-xl text-lg font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 hover:border-emerald-600 active:border-b-0 active:translate-y-1 transition-all shadow-md">
+                                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Terbitkan Kuis
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-import-quiz" class="admin-tab-content hidden space-y-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Import Data Kuis</h2>
+                        <div class="glass p-6 sm:p-10 rounded-[2rem] shadow-sm max-w-2xl">
+                            <div class="mb-8 pb-8 border-b border-slate-200">
+                                <h3 class="font-bold text-slate-800 mb-2 text-lg">1. Download Template Kuis</h3>
+                                <p class="text-sm text-slate-500 mb-4 font-medium">Gunakan template CSV (Excel) ini untuk menyusun soal agar format sesuai dengan standar sistem.</p>
+                                <button onclick="window.downloadTemplateCSV()" class="flex justify-center items-center py-3 px-5 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 hover:border-emerald-600 active:border-b-0 active:translate-y-1 transition-all shadow-md">
+                                    <i class="fa-solid fa-download mr-2"></i> Download Template
+                                </button>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-2 text-lg">2. Upload File Kuis</h3>
+                                <p class="text-sm text-slate-500 mb-4 font-medium">Upload file CSV yang sudah diisi. Soal akan otomatis masuk ke form pembuatan kuis untuk diperiksa.</p>
+                                <input type="file" id="import-csv-file" accept=".csv" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 mb-4 cursor-pointer">
+                                <button onclick="window.processImportCSV()" class="w-full flex justify-center items-center py-3.5 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-1 transition-all shadow-md">
+                                    <i class="fa-solid fa-file-import mr-2"></i> Proses File Import
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-assessment-remedial" class="admin-tab-content hidden space-y-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Daftar Remedial Agen</h2>
+                            <p id="label-admin-remedial" class="text-sm font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-100">Batas Lulus: 70%</p>
+                        </div>
+                        <div class="glass p-5 rounded-[2rem] shadow-sm">
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-500">Nama Agen</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-500">Judul Kuis</th>
+                                            <th class="px-4 py-3 text-center font-bold text-slate-500">Nilai Awal</th>
+                                            <th class="px-4 py-3 text-center font-bold text-slate-500">Status</th>
+                                            <th class="px-4 py-3 text-right font-bold text-slate-500">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-remedial-body" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-leaderboard" class="admin-tab-content hidden space-y-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Leaderboard Umum</h2>
+                            <button onclick="window.exportLeaderboardCSV()" class="flex justify-center items-center py-2.5 px-5 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 hover:border-emerald-600 active:border-b-0 active:translate-y-1 transition-all shadow-md">
+                                <i class="fa-solid fa-download mr-2"></i> Download (CSV)
+                            </button>
+                        </div>
+                        <div class="glass p-5 rounded-[2rem] shadow-sm">
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                                <table class="min-w-full divide-y divide-slate-200">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-5 py-4 text-left text-xs font-bold text-slate-500 uppercase">Rank</th>
+                                            <th class="px-5 py-4 text-left text-xs font-bold text-slate-500 uppercase">Nama Agen</th>
+                                            <th class="px-5 py-4 text-left text-xs font-bold text-slate-500 uppercase min-w-[200px]">Topik Kuis</th>
+                                            <th class="px-5 py-4 text-left text-xs font-bold text-slate-500 uppercase">Waktu Submit</th>
+                                            <th class="px-5 py-4 text-center text-xs font-bold text-slate-500 uppercase">Skor</th>
+                                            <th class="px-5 py-4 text-right text-xs font-bold text-slate-500 uppercase">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-leaderboard-body" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-gamification-achievement" class="admin-tab-content hidden space-y-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Master Lencana Pencapaian</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-indigo-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-indigo-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-flag-checkered"></i></div><div><h4 class="font-black text-slate-800">First Blood</h4><p class="text-xs text-slate-500 font-semibold">Selesaikan kuis perdana</p></div></div>
+                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-emerald-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-star"></i></div><div><h4 class="font-black text-slate-800">Flawless (Perfect)</h4><p class="text-xs text-slate-500 font-semibold">Skor kuis 100% penuh</p></div></div>
+                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-amber-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-amber-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-bolt"></i></div><div><h4 class="font-black text-slate-800">Speed Demon</h4><p class="text-xs text-slate-500 font-semibold">Lulus dalam &lt; 2 menit</p></div></div>
+                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-rose-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-rose-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-fire"></i></div><div><h4 class="font-black text-slate-800">Streak Master</h4><p class="text-xs text-slate-500 font-semibold">3x berturut-turut lulus</p></div></div>
+                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-sky-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-sky-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-cloud-sun"></i></div><div><h4 class="font-black text-slate-800">Early Bird</h4><p class="text-xs text-slate-500 font-semibold">Selesai kuis pagi (&lt; 8 AM)</p></div></div>
+                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-purple-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-purple-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-moon"></i></div><div><h4 class="font-black text-slate-800">Night Owl</h4><p class="text-xs text-slate-500 font-semibold">Selesai kuis malam (&gt; 8 PM)</p></div></div>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-reports-export" class="admin-tab-content hidden space-y-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Export Center</h2>
+                        <div class="glass p-10 rounded-[2rem] shadow-sm text-center py-16 bg-indigo-50/30">
+                            <i class="fa-solid fa-file-export text-6xl text-indigo-300 mb-6 drop-shadow-md"></i>
+                            <h3 class="text-2xl font-black text-slate-700 mb-2">Sistem Export Laporan Kuis Terpusat</h3>
+                            <p class="text-slate-500 text-sm font-semibold max-w-md mx-auto">Export laporan format Excel (CSV) dan Soal PDF menempel di tiap modul Assessment untuk kemudahan akses.</p>
+                            <button onclick="window.switchAdminTab('quizzes')" class="mt-8 flex mx-auto justify-center items-center py-3 px-6 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-1 transition-all shadow-md">
+                                Buka Modul Assessment
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-reports-performance" class="admin-tab-content hidden space-y-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Performance Report</h2>
+                            <button onclick="window.print()" class="flex justify-center items-center py-2.5 px-5 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-1 transition-all shadow-md">
+                                <i class="fa-solid fa-print mr-2"></i>Cetak
+                            </button>
+                        </div>
+                        <div class="glass p-5 sm:p-8 rounded-[2rem] shadow-sm mb-6">
+                            <form onsubmit="window.filterPerformanceReport(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mulai Tanggal</label><input type="date" id="perf-start-date" class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm bg-white font-semibold"></div>
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Sampai Tanggal</label><input type="date" id="perf-end-date" class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm bg-white font-semibold"></div>
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Agen</label><select id="perf-agent-select" class="w-full rounded-xl border-slate-200 px-4 py-3 text-sm bg-white font-semibold"><option value="">Semua Agen</option></select></div>
+                                <button type="submit" class="w-full flex justify-center items-center py-3 px-4 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 hover:border-emerald-600 active:border-b-0 active:translate-y-1 transition-all shadow-md">
+                                    Terapkan Filter
+                                </button>
+                            </form>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="bg-indigo-50 border border-indigo-100 p-5 rounded-3xl shadow-sm hover:scale-[1.02] transition-transform"><p class="text-xs font-bold text-indigo-400 uppercase">Total Data</p><h4 class="text-3xl font-black text-indigo-700 mt-1" id="perf-total-data">0</h4></div>
+                            <div class="bg-emerald-50 border border-emerald-100 p-5 rounded-3xl shadow-sm hover:scale-[1.02] transition-transform"><p class="text-xs font-bold text-emerald-400 uppercase">Tingkat Lulus</p><h4 class="text-3xl font-black text-emerald-700 mt-1" id="perf-pass-rate">0%</h4></div>
+                            <div class="bg-amber-50 border border-amber-100 p-5 rounded-3xl shadow-sm hover:scale-[1.02] transition-transform"><p class="text-xs font-bold text-amber-400 uppercase">Skor Rata-Rata</p><h4 class="text-3xl font-black text-amber-700 mt-1" id="perf-avg-score">0%</h4></div>
+                        </div>
+                        <div class="glass p-5 rounded-[2rem] shadow-sm">
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-500">Tgl. Submit</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-500">Nama Agen</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-500">Judul Kuis</th>
+                                            <th class="px-4 py-3 text-center font-bold text-slate-500">Skor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="perf-table-body" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-system-audit" class="admin-tab-content hidden space-y-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Audit Trail Logs</h2>
+                        <div class="glass p-5 rounded-[2rem] shadow-sm">
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-500">Timestamp</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-500">User</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-500">Activity</th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-500">Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr class="hover:bg-slate-50">
+                                            <td class="px-4 py-3 text-slate-500 text-xs font-semibold">Hari ini 10:25</td>
+                                            <td class="px-4 py-3 font-bold text-slate-700">System Admin</td>
+                                            <td class="px-4 py-3"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-[10px] font-black">LOGIN</span></td>
+                                            <td class="px-4 py-3 text-slate-600 text-xs font-semibold">User logged in to Dashboard.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-system-settings" class="admin-tab-content hidden space-y-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">System Settings</h2>
+                        <div class="glass p-6 sm:p-10 rounded-[2rem] shadow-sm max-w-2xl">
+                            <form onsubmit="window.saveSystemSettings(event)" class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Global Passing Grade (%)</label>
+                                    <input type="number" id="setting-passing-grade" min="1" max="100" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200 font-black text-indigo-700 text-lg" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Batas Maksimal Remedial</label>
+                                    <input type="number" id="setting-max-remedial" min="1" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200 font-bold text-lg" required>
+                                </div>
+                                <div class="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                                    <div>
+                                        <p class="font-black text-slate-800">Random Question / Acak Soal</p>
+                                        <p class="text-xs text-slate-500 font-medium mt-1">Acak urutan soal kuis saat dikerjakan Agen.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer ml-4">
+                                        <input type="checkbox" id="setting-random-question" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                    </label>
+                                </div>
+                                <button type="submit" class="w-full flex justify-center items-center py-4 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-1 transition-all shadow-md mt-4">
+                                    <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Simpan Pengaturan Sistem
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-profile" class="admin-tab-content hidden space-y-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Profil Administrator</h2>
+                        <div class="glass p-6 sm:p-10 rounded-[2rem] shadow-sm max-w-2xl">
+                            <form onsubmit="window.updateProfile(event)" class="space-y-5">
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Administrator</label><input type="text" id="profile-fullname" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white font-bold shadow-sm focus:ring-2 focus:ring-indigo-200"></div>
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nomor Handphone</label><input type="tel" id="profile-phone" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white shadow-sm focus:ring-2 focus:ring-indigo-200 font-semibold"></div>
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Alamat Email</label><input type="email" id="profile-email" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white shadow-sm focus:ring-2 focus:ring-indigo-200 font-semibold"></div>
+                                
+                                <div class="border-t border-slate-200 pt-6 mt-6">
+                                    <h4 class="font-black text-slate-800 mb-4 text-sm">Ganti Password</h4>
+                                    <div class="space-y-4">
+                                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password Saat Ini</label><input type="password" id="profile-current-password" placeholder="Wajib diisi jika ubah password" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white shadow-sm focus:ring-2 focus:ring-indigo-200 font-semibold"></div>
+                                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password Baru</label><input type="password" id="profile-new-password" placeholder="••••••••" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white shadow-sm focus:ring-2 focus:ring-indigo-200 font-semibold"></div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full flex justify-center items-center py-4 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-1 transition-all shadow-md mt-6">
+                                    Simpan Perubahan Profil
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================ AGENT VIEWS ============================ -->
+                <div id="agent-views" class="hidden">
+                    
+                    <div id="agent-tab-dashboard" class="agent-tab-content space-y-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Selamat Datang di Halo NTBS</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="glass p-6 sm:p-8 rounded-[2rem] shadow-sm flex items-center bg-indigo-50/50 hover:scale-[1.02] transition-transform">
+                                <i class="fa-solid fa-file-signature text-5xl text-indigo-400 mr-5 drop-shadow-sm"></i>
+                                <div><p class="text-xs font-bold text-slate-500 uppercase">Status Tugas</p><p class="text-xl font-black text-indigo-800 leading-tight mt-1">Siap Ujian</p></div>
+                            </div>
+                            <div class="glass p-6 sm:p-8 rounded-[2rem] shadow-sm flex items-center bg-emerald-50/50 hover:scale-[1.02] transition-transform">
+                                <i class="fa-solid fa-award text-5xl text-emerald-400 mr-5 drop-shadow-sm"></i>
+                                <div><p class="text-xs font-bold text-slate-500 uppercase">Avg Score</p><p class="text-4xl font-black text-slate-800 mt-1" id="agent-dash-avg-score">0%</p></div>
+                            </div>
+                            <div class="glass p-6 sm:p-8 rounded-[2rem] shadow-sm flex items-center bg-amber-50/50 hover:scale-[1.02] transition-transform">
+                                <i class="fa-solid fa-medal text-5xl text-amber-400 mr-5 drop-shadow-sm"></i>
+                                <div><p class="text-xs font-bold text-slate-500 uppercase">Total Badge</p><p class="text-4xl font-black text-slate-800 mt-1" id="agent-dash-badges">0</p></div>
+                            </div>
+                        </div>
+                        <div class="mt-8 flex gap-4">
+                            <button onclick="window.switchAgentTab('quizzes'); window.toggleSubmenu('sub-agent-assessment', 'chev-agent-assessment')" class="flex justify-center items-center py-4 px-8 rounded-xl text-lg font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-1 transition-all shadow-lg">
+                                Mulai Kuis Sekarang
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="agent-tab-quizzes" class="agent-tab-content hidden space-y-6">
+                        <div class="flex justify-between items-end mb-6 border-b border-slate-200 pb-4">
+                            <div><h2 class="text-3xl font-black text-slate-800 tracking-tight">Kuis Tersedia</h2><p class="text-sm text-slate-500 mt-1 font-semibold">Pilih kuis aktif di bawah ini untuk memulai.</p></div>
+                            <button onclick="window.refreshAgentData()" class="hidden sm:flex justify-center items-center py-2.5 px-4 rounded-xl text-sm font-black text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 transition-all shadow-sm">
+                                <i class="fa-solid fa-rotate-right mr-2"></i>Refresh
+                            </button>
+                        </div>
+                        <div id="available-quizzes" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                    </div>
+
+                    <div id="agent-tab-assessment-remedial" class="agent-tab-content hidden space-y-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Tugas Remedial Saya</h2>
+                        <div class="glass p-5 rounded-[2rem] shadow-sm">
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-500">Judul Kuis</th>
+                                            <th class="px-4 py-3 text-center font-bold text-slate-500">Nilai Anda</th>
+                                            <th class="px-4 py-3 text-center font-bold text-slate-500">Status Tindakan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="agent-remedial-body" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="agent-tab-history" class="agent-tab-content hidden space-y-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Riwayat Assessment & Log Kinerja</h2>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                            <div class="lg:col-span-2 glass p-5 sm:p-8 rounded-[2rem] shadow-sm">
+                                <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-arrow-trend-up text-indigo-500 mr-2"></i>Grafik Tren Nilai Kuis</h3>
+                                <div class="w-full h-56 relative"><canvas id="agentTrendChart"></canvas></div>
+                            </div>
+                            <div class="lg:col-span-1 glass p-5 sm:p-8 rounded-[2rem] shadow-sm">
+                                <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-chart-radar text-emerald-500 mr-2"></i>Matriks Kompetensi</h3>
+                                <div class="w-full h-56 relative flex items-center justify-center"><canvas id="skillRadarChart"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="glass p-5 rounded-[2rem] shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-table-list text-indigo-500 mr-2"></i>Daftar Laporan Kuis Selesai</h3>
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                                <table class="min-w-full divide-y divide-slate-200">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-5 py-4 text-left text-xs font-bold text-slate-500 uppercase">Judul Kuis</th>
+                                            <th class="px-5 py-4 text-left text-xs font-bold text-slate-500 uppercase">Waktu Submit</th>
+                                            <th class="px-5 py-4 text-center text-xs font-bold text-slate-500 uppercase">Durasi</th>
+                                            <th class="px-5 py-4 text-center text-xs font-bold text-slate-500 uppercase">Skor Akhir</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="agent-history-body" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="agent-tab-leaderboard" class="agent-tab-content hidden space-y-6">
+                        <div class="mb-6 border-b border-slate-200 pb-4">
+                            <h2 class="text-3xl font-black text-slate-800 tracking-tight">Leaderboard Umum</h2>
+                        </div>
+                        <div class="glass p-5 rounded-[2rem] shadow-sm">
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                                <table class="min-w-full divide-y divide-slate-200">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-5 py-4 text-left text-xs font-bold text-slate-500 uppercase">Rank</th>
+                                            <th class="px-5 py-4 text-left text-xs font-bold text-slate-500 uppercase">Nama Agen</th>
+                                            <th class="px-5 py-4 text-left text-xs font-bold text-slate-500 uppercase min-w-[200px]">Topik Kuis</th>
+                                            <th class="px-5 py-4 text-center text-xs font-bold text-slate-500 uppercase">Skor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="agent-leaderboard-body" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="agent-tab-badges" class="agent-tab-content hidden space-y-6">
+                        <div class="mb-6 border-b border-slate-200 pb-4">
+                            <h2 class="text-3xl font-black text-slate-800 tracking-tight">Lencana Prestasi Saya</h2>
+                        </div>
+                        <div id="badges-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    </div>
+
+                    <div id="agent-tab-profile" class="agent-tab-content hidden space-y-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Menu Profil & Pengaturan Akun</h2>
+                        <div class="glass p-6 sm:p-10 rounded-[2rem] shadow-sm max-w-2xl">
+                            <form onsubmit="window.updateProfile(event)" class="space-y-5">
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Lengkap</label><input type="text" id="agent-profile-fullname" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white font-bold shadow-sm focus:ring-2 focus:ring-emerald-200"></div>
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nomor Handphone</label><input type="tel" id="agent-profile-phone" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white shadow-sm focus:ring-2 focus:ring-emerald-200 font-semibold"></div>
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Alamat Email</label><input type="email" id="agent-profile-email" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white shadow-sm focus:ring-2 focus:ring-emerald-200 font-semibold"></div>
+                                
+                                <div class="border-t border-slate-200 pt-6 mt-6">
+                                    <h4 class="font-black text-slate-800 mb-4 text-sm">Ganti Password</h4>
+                                    <div class="space-y-4">
+                                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password Saat Ini</label><input type="password" id="agent-profile-current-password" placeholder="Wajib diisi jika ubah password" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white shadow-sm focus:ring-2 focus:ring-emerald-200 font-semibold"></div>
+                                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password Baru</label><input type="password" id="agent-profile-new-password" placeholder="••••••••" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white shadow-sm focus:ring-2 focus:ring-emerald-200 font-semibold"></div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full flex justify-center items-center py-4 px-4 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 hover:border-emerald-600 active:border-b-0 active:translate-y-1 transition-all shadow-md mt-6">
+                                    Simpan Perubahan Profile
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- QUIZ INTERFACE (KAHOOT STYLE) -->
+                    <div id="quiz-interface" class="hidden absolute inset-0 bg-[#f0f4f8] z-50 overflow-y-auto p-4 sm:p-6 lg:p-8">
+                        <div class="max-w-5xl mx-auto w-full relative pb-16 pt-2">
+                            <div class="sticky-timer flex justify-end mb-6">
+                                <div class="bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-lg flex items-center space-x-4 border-2 border-slate-100">
+                                    <i class="fa-solid fa-stopwatch text-rose-500 text-3xl animate-pulse"></i>
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Sisa Waktu</span>
+                                        <span id="timer-display" class="text-2xl sm:text-4xl font-black text-rose-600 tabular-nums leading-none tracking-tight">00:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-10 text-center">
+                                <div class="inline-flex w-16 h-16 bg-white rounded-2xl items-center justify-center text-indigo-600 shadow-md mb-4 border border-slate-100">
+                                    <i class="fa-solid fa-gamepad text-3xl"></i>
+                                </div>
+                                <h2 id="active-quiz-title" class="text-3xl sm:text-5xl font-black text-slate-800 tracking-tight mb-2 drop-shadow-sm">Quiz Title</h2>
+                                <p class="text-sm font-bold text-slate-500 uppercase tracking-widest">Pilih jawaban yang paling tepat</p>
+                            </div>
+
+                            <div id="quiz-questions-form" class="space-y-8"></div>
+                            
+                            <button onclick="window.submitQuiz()" class="mt-12 w-full max-w-md mx-auto flex justify-center items-center py-6 px-4 rounded-3xl text-xl font-black text-white bg-indigo-500 border-b-8 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-2 transition-all shadow-xl hover:shadow-2xl">
+                                KIRIM JAWABAN <i class="fa-solid fa-paper-plane ml-3"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- RESULTS MODAL -->
+    <div id="results-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-lg z-[999] flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2.5rem] p-10 max-w-sm w-full text-center shadow-2xl relative overflow-hidden border-4 border-white">
+            <div class="absolute top-0 left-0 w-full h-3 bg-emerald-500"></div>
+            <div class="w-28 h-28 bg-emerald-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 border-4 border-emerald-100 shadow-inner">
+                <i class="fa-solid fa-check-double text-6xl text-emerald-500"></i>
+            </div>
+            <h3 class="text-3xl font-black text-slate-800 mb-2 tracking-tight">Kuis Selesai!</h3>
+            <div class="text-7xl font-black text-indigo-600 my-8 tabular-nums tracking-tighter drop-shadow-md" id="result-score">0%</div>
+            <div class="flex justify-center gap-4 text-sm font-bold mb-10">
+                <div class="bg-emerald-50 border-2 border-emerald-100 px-4 py-4 rounded-3xl flex-1 flex flex-col items-center shadow-sm">
+                    <span id="result-correct" class="text-3xl text-emerald-600 block mb-1 font-black">0</span> 
+                    <span class="text-[10px] text-emerald-700 uppercase tracking-widest">Benar</span>
+                </div>
+                <div class="bg-rose-50 border-2 border-rose-100 px-4 py-4 rounded-3xl flex-1 flex flex-col items-center shadow-sm">
+                    <span id="result-incorrect" class="text-3xl text-rose-600 block mb-1 font-black">0</span> 
+                    <span class="text-[10px] text-rose-700 uppercase tracking-widest">Salah</span>
+                </div>
+            </div>
+            <button onclick="window.closeResults()" class="w-full flex justify-center items-center py-5 px-4 rounded-2xl text-lg font-black text-white bg-slate-800 border-b-4 border-slate-900 hover:bg-slate-700 active:border-b-0 active:translate-y-1 transition-all shadow-lg">
+                Tutup Jendela <i class="fa-solid fa-house ml-3"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- FIREBASE & APP LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAixa2kFvfv8fkyDDj2LoRsNgO3bfZMNjk", 
+            authDomain: "kuis-halo-ntbs.firebaseapp.com", 
+            projectId: "kuis-halo-ntbs", 
+            storageBucket: "kuis-halo-ntbs.firebasestorage.app", 
+            messagingSenderId: "298068879707", 
+            appId: "1:298068879707:web:82315bdb7d4d695a24127e" 
+        };
+        const app = initializeApp(firebaseConfig); 
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let globalSettings = { passingGrade: 70, maxRemedial: 2, randomQuestions: false };
+        
+        let adminChartInstance = null; let adminComparisonChartInstance = null; 
+        let agentChartInstance = null; let skillRadarInstance = null;
+        let activeQuizData = null; let timerInterval = null;
+        let leaderboardDataForExport = []; let reportDataForExport = []; 
+        let agentChartDataCache = []; let adminChartDataCache = [];
+        let currentReportQuiz = null; let currentReportResults = []; let allQuizzesMap = {};
+
+        function showLoader(msg = "Memuat Data...") { 
+            document.getElementById('loader-text').innerText = msg; 
+            document.getElementById('global-loader').classList.remove('hidden'); 
+        }
+        function hideLoader() { document.getElementById('global-loader').classList.add('hidden'); }
+        
+        window.toggleMobileSidebar = () => { 
+            const sidebar = document.getElementById('app-sidebar'); 
+            const overlay = document.getElementById('sidebar-overlay'); 
+            if(sidebar) sidebar.classList.toggle('-translate-x-full'); 
+            if(overlay) overlay.classList.toggle('hidden'); 
+        };
+        
+        window.toggleSubmenu = (menuId, chevronId) => { 
+            const el = document.getElementById(menuId); 
+            const icon = document.getElementById(chevronId); 
+            if(el.classList.contains('submenu-open')) { 
+                el.classList.remove('submenu-open'); icon.classList.remove('rotate-180'); 
+            } else { 
+                el.classList.add('submenu-open'); icon.classList.add('rotate-180'); 
+            } 
+        };
+        
+        function formatDuration(totalSeconds) { 
+            if(totalSeconds === undefined || totalSeconds === null) return "-"; 
+            const m = Math.floor(totalSeconds / 60); const s = totalSeconds % 60; 
+            return `${m}m ${s}s`; 
+        }
+
+        const escapeHTML = (str) => {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        };
+
+        // ================= IMPORT & TEMPLATE CSV =================
+        window.downloadTemplateCSV = () => {
+            const csv = "Pertanyaan,Opsi A,Opsi B,Opsi C,Opsi D,Kunci (A/B/C/D),Poin\nApa ibukota Provinsi NTB?,Jakarta,Bandung,Mataram,Bima,C,10\nBerapa batas waktu SLA komplain?,1 Hari,2 Hari,5 Hari,14 Hari,D,10";
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const l = document.createElement("a"); l.href = url; l.download = "Template_Import_Kuis.csv"; l.click();
+            URL.revokeObjectURL(url);
+        };
+
+        function parseCSVRow(row) {
+            const cols = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                if (char === '"' && row[i+1] === '"') { current += '"'; i++; }
+                else if (char === '"') { inQuotes = !inQuotes; }
+                else if (char === ',' && !inQuotes) { cols.push(current.trim()); current = ''; }
+                else { current += char; }
+            }
+            cols.push(current.trim());
+            return cols;
+        }
+
+        window.processImportCSV = () => {
+            const fileInput = document.getElementById('import-csv-file');
+            if (!fileInput.files.length) return alert("Pilih file CSV terlebih dahulu!");
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target.result;
+                const rows = text.split('\n').filter(row => row.trim() !== '');
+                
+                window.switchAdminTab('quizzes');
+                window.prepareCreateQuiz();
+                document.getElementById('questions-container').innerHTML = ""; 
+                qc = 0; 
+                
+                let successCount = 0;
+                for (let i = 1; i < rows.length; i++) {
+                    const cols = parseCSVRow(rows[i]);
+                    if (cols.length >= 6) {
+                        const questionData = {
+                            text: cols[0],
+                            options: { A: cols[1], B: cols[2], C: cols[3], D: cols[4] },
+                            correct: cols[5].toUpperCase().trim(),
+                            points: cols[6] ? parseInt(cols[6]) : 10
+                        };
+                        window.addQuestionField(questionData);
+                        successCount++;
+                    }
+                }
+                
+                if (successCount > 0) {
+                    alert(`Import ${successCount} soal berhasil! Silakan lengkapi Judul, Jadwal, lalu klik Terbitkan Kuis.`);
+                } else {
+                    alert("Gagal membaca soal. Pastikan format file sesuai dengan template CSV.");
+                    window.addQuestionField(); 
+                }
+                fileInput.value = ''; 
+            };
+            reader.readAsText(file);
+        };
+        // =========================================================
+
+        async function loadGlobalSettings() {
+            try {
+                const docSnap = await getDoc(doc(db, "settings", "global"));
+                if (docSnap.exists()) {
+                    globalSettings = docSnap.data();
+                } else {
+                    await setDoc(doc(db, "settings", "global"), globalSettings);
+                }
+            } catch(e) { console.error("Error loading settings:", e); }
+        }
+
+        window.saveSystemSettings = async (e) => {
+            e.preventDefault(); 
+            showLoader("Menyimpan Pengaturan...");
+            const pg = parseInt(document.getElementById('setting-passing-grade').value);
+            const mr = parseInt(document.getElementById('setting-max-remedial').value);
+            const rq = document.getElementById('setting-random-question').checked;
+            
+            globalSettings = { passingGrade: pg, maxRemedial: mr, randomQuestions: rq };
+            try {
+                await setDoc(doc(db, "settings", "global"), globalSettings);
+                hideLoader(); alert("Pengaturan Sistem berhasil disimpan & aktif!");
+                window.refreshAdminData();
+            } catch(err) { hideLoader(); alert("Gagal menyimpan: " + err.message); }
+        };
+
+        window.onload = async () => {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) { 
+                showLoader("Mempersiapkan Lingkungan...");
+                await loadGlobalSettings(); 
+                currentUser = JSON.parse(savedUser); 
+                routeUser(); 
+            } else { document.getElementById('login-screen').classList.remove('hidden'); }
+        };
+
+        window.handleLogin = async (e) => {
+            e.preventDefault(); 
+            const u = document.getElementById('login-username').value; 
+            const p = document.getElementById('login-password').value; 
+            const err = document.getElementById('login-error'); 
+            err.classList.add('hidden'); 
+            showLoader("Autentikasi...");
+            
+            try {
+                await loadGlobalSettings();
+                const q = query(collection(db, "users"), where("username", "==", u), where("password", "==", p)); 
+                const snap = await getDocs(q);
+                
+                if (!snap.empty) { 
+                    const docRef = snap.docs[0]; 
+                    const ud = docRef.data(); 
+                    currentUser = { id: docRef.id, ...ud }; 
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser)); 
+                    hideLoader(); 
+                    routeUser(); 
+                } 
+                else if (u === 'admin' && p === 'admin123') {
+                    const adminQ = query(collection(db, "users"), where("username", "==", "admin")); 
+                    const adminSnap = await getDocs(adminQ); let adminId = '';
+                    if(adminSnap.empty) { 
+                        const newDoc = await addDoc(collection(db, "users"), { fullName: 'System Administrator', username: 'admin', password: 'admin123', role: 'admin', phone: '', email: 'admin@bankntbsyariah.co.id' }); 
+                        adminId = newDoc.id; 
+                    } else { 
+                        adminId = adminSnap.docs[0].id; 
+                    }
+                    currentUser = { id: adminId, username: 'admin', fullName: 'System Administrator', password: 'admin123', role: 'admin', phone: '', email: 'admin@bankntbsyariah.co.id' }; 
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser)); 
+                    hideLoader(); routeUser();
+                } else { 
+                    hideLoader(); 
+                    err.classList.remove('hidden'); 
+                }
+            } catch (error) { 
+                hideLoader(); 
+                err.innerText = "Gagal menghubungkan ke database."; 
+                err.classList.remove('hidden'); 
+            }
+        };
+
+        window.logout = () => { 
+            if(timerInterval) clearInterval(timerInterval); 
+            currentUser = null; 
+            localStorage.removeItem('currentUser'); 
+            document.getElementById('app-layout').classList.add('hidden'); 
+            const overlay = document.getElementById('sidebar-overlay'); 
+            if(overlay && !overlay.classList.contains('hidden')) window.toggleMobileSidebar(); 
+            document.getElementById('login-screen').classList.remove('hidden'); 
+            document.getElementById('login-form').reset(); 
+        };
+
+        async function routeUser() {
+            document.getElementById('login-screen').classList.add('hidden'); 
+            document.getElementById('app-layout').classList.remove('hidden'); 
+            document.getElementById('nav-username-display').innerText = currentUser.fullName; 
+            document.getElementById('sidebar-name-display').innerText = currentUser.fullName;
+
+            if (currentUser.role === 'admin') {
+                document.getElementById('sidebar-title').innerText = "Admin Panel"; 
+                document.getElementById('agent-menu').classList.add('hidden'); 
+                document.getElementById('agent-views').classList.add('hidden'); 
+                document.getElementById('admin-menu').classList.remove('hidden'); 
+                document.getElementById('admin-views').classList.remove('hidden');
+                
+                document.getElementById('profile-fullname').value = currentUser.fullName; 
+                document.getElementById('profile-phone').value = currentUser.phone || ''; 
+                document.getElementById('profile-email').value = currentUser.email || '';
+                
+                document.getElementById('setting-passing-grade').value = globalSettings.passingGrade;
+                document.getElementById('setting-max-remedial').value = globalSettings.maxRemedial;
+                document.getElementById('setting-random-question').checked = globalSettings.randomQuestions;
+                const rLabel = document.getElementById('label-admin-remedial'); 
+                if(rLabel) rLabel.innerText = "Batas Lulus: " + globalSettings.passingGrade + "%";
+
+                showLoader("Menyiapkan Dasbor Admin..."); 
+                try { 
+                    await Promise.all([ loadAdminOverviewAndAnalytics(), loadAdminUsers(), loadAdminQuizzes() ]); 
+                } catch(e) {} 
+                hideLoader(); window.switchAdminTab('overview');
+            } else {
+                document.getElementById('sidebar-title').innerText = "Ruang Agen"; 
+                document.getElementById('admin-menu').classList.add('hidden'); 
+                document.getElementById('admin-views').classList.add('hidden'); 
+                document.getElementById('agent-menu').classList.remove('hidden'); 
+                document.getElementById('agent-views').classList.remove('hidden');
+                
+                document.getElementById('agent-profile-fullname').value = currentUser.fullName; 
+                document.getElementById('agent-profile-phone').value = currentUser.phone || ''; 
+                document.getElementById('agent-profile-email').value = currentUser.email || '';
+
+                showLoader("Menyiapkan Ruang Agen..."); 
+                try { 
+                    await Promise.all([ loadQuizzesForAgent(), loadAgentHistoryAndTrend(), loadAgentLeaderboard() ]); 
+                } catch(e) {} 
+                hideLoader(); window.switchAgentTab('dashboard');
+            }
+        }
+
+        window.updateProfile = async (e) => { 
+            e.preventDefault(); 
+            const isAdm = currentUser.role === 'admin'; 
+            const fn = document.getElementById(isAdm ? 'profile-fullname' : 'agent-profile-fullname').value; 
+            const ph = document.getElementById(isAdm ? 'profile-phone' : 'agent-profile-phone').value; 
+            const em = document.getElementById(isAdm ? 'profile-email' : 'agent-profile-email').value; 
+            const np = document.getElementById(isAdm ? 'profile-new-password' : 'agent-profile-new-password').value; 
+            const cp = document.getElementById(isAdm ? 'profile-current-password' : 'agent-profile-current-password').value; 
+            
+            let updateData = { fullName: fn, phone: ph, email: em }; 
+            
+            if(np.trim() !== "") { 
+                if(cp.trim() === "") {
+                    return alert("Masukkan Password Saat Ini untuk memverifikasi perubahan password!");
+                }
+                if(cp !== currentUser.password) {
+                    return alert("Password Saat Ini yang dimasukkan tidak cocok!");
+                }
+                updateData.password = np.trim(); 
+            } 
+            
+            showLoader("Menyimpan..."); 
+            try { 
+                if(currentUser.id) await updateDoc(doc(db, "users", currentUser.id), updateData); 
+                
+                currentUser.fullName = fn; currentUser.phone = ph; currentUser.email = em; 
+                if(np.trim() !== "") currentUser.password = np.trim(); 
+                
+                localStorage.setItem('currentUser', JSON.stringify(currentUser)); 
+                document.getElementById('nav-username-display').innerText = fn; 
+                document.getElementById('sidebar-name-display').innerText = fn; 
+                
+                document.getElementById(isAdm ? 'profile-current-password' : 'agent-profile-current-password').value = "";
+                document.getElementById(isAdm ? 'profile-new-password' : 'agent-profile-new-password').value = "";
+                
+                hideLoader(); 
+                alert("Profil berhasil diperbarui!"); 
+            } catch(err) { 
+                hideLoader(); alert("Gagal memperbarui profil: " + err.message); 
+            } 
+        };
+
+        window.switchAdminTab = (tabName) => { 
+            document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden')); 
+            const targetEl = document.getElementById(`admin-tab-${tabName}`); 
+            if(targetEl) targetEl.classList.remove('hidden'); 
+            
+            document.querySelectorAll('[id^="tab-btn-admin-"]').forEach(btn => { 
+                if(btn.parentElement.id === 'admin-menu') btn.className = "w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50 transition-colors mt-1"; 
+                else btn.className = "w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition"; 
+            }); 
+            
+            const activeBtn = document.getElementById(`tab-btn-admin-${tabName}`); 
+            if(activeBtn) { 
+                if(activeBtn.parentElement.id === 'admin-menu') activeBtn.className = "w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-indigo-700 bg-indigo-50 transition-colors border border-indigo-100 shadow-sm mt-1"; 
+                else activeBtn.className = "w-full text-left px-3 py-2 text-sm font-bold text-indigo-700 bg-indigo-50 rounded-lg shadow-sm transition"; 
+            } 
+            
+            if(tabName === 'quizzes') { 
+                window.cancelQuizForm(); 
+                document.getElementById('quiz-report-view').classList.add('hidden'); 
+                document.getElementById('quiz-list-view').classList.remove('hidden'); 
+            } 
+            else if (tabName === 'overview') { 
+                setTimeout(() => { window.renderAdminChart(); window.renderAgentComparisonChart(); }, 50); 
+            } 
+            else if (tabName === 'reports-performance') { 
+                window.filterPerformanceReport(new Event('submit')); 
+            } 
+            
+            if(window.innerWidth < 768) { 
+                const sb = document.getElementById('app-sidebar'); 
+                if(sb && !sb.classList.contains('-translate-x-full')) window.toggleMobileSidebar(); 
+            } 
+        };
+
+        window.switchAgentTab = (tabName) => { 
+            document.querySelectorAll('.agent-tab-content').forEach(el => el.classList.add('hidden')); 
+            const targetEl = document.getElementById(`agent-tab-${tabName}`); 
+            if(targetEl) targetEl.classList.remove('hidden'); 
+            
+            document.querySelectorAll('[id^="tab-btn-agent-"]').forEach(btn => { 
+                if(btn.parentElement.id === 'agent-menu') btn.className = "w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50 transition-colors mt-1"; 
+                else btn.className = "w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition"; 
+            }); 
+            
+            const activeBtn = document.getElementById(`tab-btn-agent-${tabName}`); 
+            if(activeBtn) { 
+                if(activeBtn.parentElement.id === 'agent-menu') activeBtn.className = "w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-indigo-700 bg-indigo-50 transition-colors border border-indigo-100 shadow-sm mt-1"; 
+                else activeBtn.className = "w-full text-left px-3 py-2 text-sm font-bold text-indigo-700 bg-indigo-50 rounded-lg shadow-sm transition"; 
+            } 
+            
+            if (tabName === 'history') { 
+                setTimeout(() => { renderAgentChart(); loadAgentSkillRadarData(); }, 50); 
+            } 
+            else if(tabName === 'badges') { 
+                renderBadges(); 
+            } 
+            
+            if(window.innerWidth < 768) { 
+                const sb = document.getElementById('app-sidebar'); 
+                if(sb && !sb.classList.contains('-translate-x-full')) window.toggleMobileSidebar(); 
+            } 
+        };
+
+        window.renderAdminChart = () => { 
+            if(adminChartInstance) adminChartInstance.destroy(); 
+            const ctx = document.getElementById('adminTrendChart')?.getContext('2d'); 
+            if(!ctx) return; 
+            
+            const filterEl = document.getElementById('admin-trend-filter');
+            const filterVal = filterEl ? filterEl.value : 'all';
+            
+            let sourceData = [...adminChartDataCache].reverse();
+            if(filterVal !== 'all') {
+                sourceData = sourceData.filter(r => r.agentUsername === filterVal);
+            }
+            
+            const dateMap = {}; 
+            sourceData.forEach(r => { 
+                const d = new Date(r.createdAt).toLocaleDateString('id-ID', {day:'numeric', month:'short'}); 
+                if(!dateMap[d]) dateMap[d] = []; 
+                dateMap[d].push((r.score / r.totalPoints) * 100); 
+            }); 
+            
+            const labels = Object.keys(dateMap); 
+            const dataPoints = labels.map(date => dateMap[date].reduce((a,b)=>a+b, 0) / dateMap[date].length); 
+            
+            adminChartInstance = new Chart(ctx, { 
+                type: 'line', 
+                data: { 
+                    labels: labels.length ? labels : ['-'], 
+                    datasets: [{ 
+                        data: dataPoints.length ? dataPoints : [0], 
+                        borderColor: '#6366f1', 
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)', 
+                        borderWidth: 4, 
+                        fill: true,
+                        tension: 0.4
+                    }] 
+                }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, min: 0 } } } 
+            }); 
+        };
+
+        window.renderAgentComparisonChart = () => { 
+            if(adminComparisonChartInstance) adminComparisonChartInstance.destroy(); 
+            const ctx = document.getElementById('agentComparisonChart')?.getContext('2d'); 
+            if(!ctx) return; 
+            
+            const stats = {}; 
+            adminChartDataCache.forEach(r => { 
+                const nama = r.agentFullName || 'Unknown';
+                if(!stats[nama]) stats[nama] = { pct: 0, c: 0 }; 
+                stats[nama].pct += (r.score / r.totalPoints) * 100; 
+                stats[nama].c += 1; 
+            }); 
+            const labels = Object.keys(stats); 
+            const dataPoints = labels.map(n => stats[n].pct / stats[n].c); 
+            
+            adminComparisonChartInstance = new Chart(ctx, { 
+                type: 'bar', 
+                data: { labels: labels.length ? labels : ['-'], datasets: [{ data: dataPoints.length ? dataPoints : [0], backgroundColor: '#10b981', borderRadius: 6 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, min: 0 } } } 
+            }); 
+        };
+
+        function renderAgentChart() { 
+            if(agentChartInstance) agentChartInstance.destroy(); 
+            const ctx = document.getElementById('agentTrendChart')?.getContext('2d'); 
+            if(!ctx) return; 
+            const labels = agentChartDataCache.map(r => new Date(r.createdAt).toLocaleDateString('id-ID', {day:'numeric', month:'short'})); 
+            const dataPoints = agentChartDataCache.map(r => Math.round((r.score / r.totalPoints) * 100)); 
+            
+            agentChartInstance = new Chart(ctx, { 
+                type: 'line', 
+                data: { labels: labels.length ? labels : ['-'], datasets: [{ data: dataPoints.length ? dataPoints : [0], borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderWidth: 4, fill: true, tension: 0.4 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, min: 0 } } } 
+            }); 
+        }
+
+        function renderSkillRadar(history) { 
+            if(skillRadarInstance) skillRadarInstance.destroy(); 
+            const ctx = document.getElementById('skillRadarChart')?.getContext('2d'); 
+            if(!ctx) return; 
+            const cats = { "Product Knowledge": [], "SOP Penanganan": [], "Regulasi & Anti-Fraud": [], "Sistem & Aplikasi": [] }; 
+            history.forEach(h => { 
+                if(cats[h.category]) cats[h.category].push(Math.round((h.score / h.totalPoints) * 100)); 
+            }); 
+            const vals = Object.keys(cats).map(c => cats[c].length === 0 ? 0 : Math.round(cats[c].reduce((a,b)=>a+b,0) / cats[c].length)); 
+            
+            skillRadarInstance = new Chart(ctx, { 
+                type: 'radar', 
+                data: { labels: Object.keys(cats), datasets: [{ data: vals, backgroundColor: 'rgba(16, 185, 129, 0.2)', borderColor: '#10b981', borderWidth: 2 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { max: 100, min: 0 } } } 
+            }); 
+        }
+
+        async function loadAgentSkillRadarData() { 
+            try { 
+                const q = query(collection(db, "results"), where("agentUsername", "==", currentUser.username)); 
+                const snap = await getDocs(q); 
+                let hist = []; 
+                snap.forEach(d => hist.push(d.data())); 
+                renderSkillRadar(hist); 
+            } catch(e) {} 
+        }
+
+        async function loadAdminUsers() { 
+            try { 
+                const snap = await getDocs(query(collection(db, "users"), where("role", "==", "agent"))); 
+                const tbody = document.getElementById('agents-list-body'); tbody.innerHTML = ''; 
+                let c = 0; 
+                const sel = document.getElementById('perf-agent-select'); sel.innerHTML = '<option value="">Semua Agen</option>'; 
+                snap.forEach((d) => { 
+                    c++; const agent = d.data(); 
+                    tbody.innerHTML += `<tr class="hover:bg-slate-50 border-b border-slate-100 last:border-0"><td class="px-4 py-4 text-sm font-bold">${agent.fullName}</td><td class="px-4 py-4 text-sm text-slate-500">${agent.username}</td><td class="px-4 py-4 text-right"><button onclick="window.deleteUser('${d.id}')" class="text-rose-500 hover:text-white hover:bg-rose-500 bg-rose-50 px-3 py-2 rounded-lg text-xs shadow-sm font-bold transition">Hapus</button></td></tr>`; 
+                    sel.innerHTML += `<option value="${agent.username}">${agent.fullName}</option>`; 
+                }); 
+                document.getElementById('stat-total-agents').innerText = c; 
+            } catch(e) {} 
+        }
+        
+        window.createAgent = async (e) => { 
+            e.preventDefault(); 
+            const fn = document.getElementById('agent-fullname').value; 
+            const un = document.getElementById('agent-username').value; 
+            const pw = document.getElementById('agent-password').value; 
+            
+            showLoader("Menyimpan..."); 
+            const snap = await getDocs(query(collection(db, "users"), where("username", "==", un))); 
+            if(!snap.empty) { hideLoader(); return alert("Username digunakan!"); } 
+            await addDoc(collection(db, "users"), { fullName: fn, username: un, password: pw, role: 'agent' }); 
+            e.target.reset(); await loadAdminUsers(); hideLoader(); alert("Berhasil ditambahkan!"); 
+        };
+        
+        window.deleteUser = async (id) => { 
+            if(confirm("Yakin menghapus agen ini?")) { showLoader(); await deleteDoc(doc(db, "users", id)); await loadAdminUsers(); hideLoader(); } 
+        };
+
+        async function loadAdminQuizzes() { 
+            try { 
+                const snap = await getDocs(collection(db, "quizzes")); 
+                const tbody = document.getElementById('admin-quizzes-body'); tbody.innerHTML = ''; 
+                let c = 0; allQuizzesMap = {}; 
+                snap.forEach((d) => { 
+                    c++; const quiz = d.data(); allQuizzesMap[d.id] = quiz; 
+                    const sStr = quiz.startTime ? new Date(quiz.startTime).toLocaleDateString('id-ID', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '-'; 
+                    const eStr = quiz.endTime ? new Date(quiz.endTime).toLocaleDateString('id-ID', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '-'; 
+                    const statusBadge = quiz.status === 'Draft' ? '<span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs font-bold">Draft</span>' : '<span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-xs font-bold">Final</span>';
+                    
+                    let totalPointsCalc = 0;
+                    if(quiz.questions) quiz.questions.forEach(q => totalPointsCalc += (parseInt(q.points) || 0));
+
+                    tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 border-b border-slate-100 last:border-0">
+                        <td class="px-4 py-4 text-sm font-black text-slate-800">${quiz.title}<br><span class="text-[10px] font-bold text-indigo-700 bg-indigo-100 px-2 py-1 rounded-md mt-2 inline-block">${quiz.questions.length} Soal</span></td>
+                        <td class="px-4 py-4 text-xs font-semibold text-slate-600"><span class="text-emerald-500 font-bold">Mulai:</span> ${sStr}<br><span class="text-rose-500 font-bold">Akhir:</span> ${eStr}<br><span class="font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded mt-1 inline-block">${quiz.duration} Menit</span></td>
+                        <td class="px-4 py-4 text-center">${statusBadge}<br><span class="text-xs font-bold text-slate-500 mt-1 inline-block">Bobot: ${totalPointsCalc} Poin</span></td>
+                        <td class="px-4 py-4 text-center">
+                            <button onclick="window.exportSoalPDF('${d.id}')" class="text-rose-600 bg-rose-50 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 hover:bg-rose-100 transition">PDF</button>
+                            <button onclick="window.exportSoalCSV('${d.id}')" class="text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition">CSV</button>
+                        </td>
+                        <td class="px-4 py-4 text-right">
+                            <div class="flex items-center justify-end space-x-2">
+                                <button onclick="window.viewQuizReport('${d.id}')" class="text-sky-600 bg-sky-50 p-2.5 rounded-xl hover:bg-sky-100 transition" title="Report"><i class="fa-solid fa-chart-column"></i></button>
+                                <button onclick="window.editQuiz('${d.id}')" class="text-indigo-600 bg-indigo-50 p-2.5 rounded-xl hover:bg-indigo-100 transition"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="window.deleteQuiz('${d.id}')" class="text-rose-500 bg-rose-50 p-2.5 rounded-xl hover:bg-rose-100 transition"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>`; 
+                }); 
+                document.getElementById('stat-total-quizzes').innerText = c; 
+            } catch(e) {} 
+        }
+
+        window.exportSoalCSV = (id) => { 
+            const qz = allQuizzesMap[id]; if(!qz) return; 
+            let csv = "No,Pertanyaan,Opsi A,Opsi B,Opsi C,Opsi D,Kunci\n"; 
+            qz.questions.forEach((q,i) => { 
+                csv += `${i+1},"${q.text.replace(/"/g,'""')}","${q.options.A.replace(/"/g,'""')}","${q.options.B.replace(/"/g,'""')}","${q.options.C.replace(/"/g,'""')}","${q.options.D.replace(/"/g,'""')}",${q.correct}\n`; 
+            }); 
+            
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const l = document.createElement("a"); l.href = url; l.download = `Soal_${qz.title}.csv`; l.click(); 
+            URL.revokeObjectURL(url);
+        };
+        
+        window.exportSoalPDF = (id) => { 
+            const qz = allQuizzesMap[id]; if(!qz || !window.jspdf) return; 
+            const { jsPDF } = window.jspdf; 
+            const doc = new jsPDF('l', 'pt', 'a4'); 
+            doc.text(`Soal: ${qz.title}`, 40, 40); 
+            doc.autoTable({ startY: 60, head: [['No','Pertanyaan','Kunci']], body: qz.questions.map((q,i) => [i+1, q.text + `\nA:${q.options.A} B:${q.options.B} C:${q.options.C} D:${q.options.D}`, q.correct]) }); 
+            doc.save(`Soal_${qz.title}.pdf`); 
+        };
+        
+        window.viewQuizReport = async (quizId) => { 
+            const qz = allQuizzesMap[quizId]; if(!qz) return; 
+            currentReportQuiz = qz; 
+            document.getElementById('quiz-list-view').classList.add('hidden'); 
+            document.getElementById('quiz-report-view').classList.remove('hidden'); 
+            document.getElementById('report-quiz-title').innerText = qz.title; 
+            showLoader(); 
+            
+            try { 
+                const snap = await getDocs(query(collection(db, "results"), where("quizId", "==", quizId))); 
+                currentReportResults = []; 
+                snap.forEach(d => currentReportResults.push(d.data())); 
+                currentReportResults.sort((a,b) => b.score - a.score); 
+                
+                const s1 = document.getElementById('compare-agent-1'); 
+                const s2 = document.getElementById('compare-agent-2'); 
+                s1.innerHTML = '<option value="">- Agen A -</option>'; 
+                s2.innerHTML = '<option value="">- Agen B -</option>'; 
+                
+                currentReportResults.forEach((r,i) => { 
+                    const o = `<option value="${i}">${r.agentFullName} (${Math.round(r.score/r.totalPoints*100)}%)</option>`; 
+                    s1.innerHTML+=o; s2.innerHTML+=o; 
+                }); 
+                
+                reportDataForExport = [["Waktu Submit", "Nama Agen", "Email", "Skor Akhir", ...qz.questions.map((q, i) => `Q${i+1}: ${q.text}`)]]; 
+                
+                const keyRow = ["-", "KUNCI JAWABAN SISTEM", "-", "-", ...qz.questions.map(q => {
+                    const corrKey = q.correct ? q.correct.toUpperCase().trim() : '';
+                    const corrText = q.options && q.options[corrKey] ? q.options[corrKey] : '';
+                    return corrKey ? `${corrKey}: ${corrText}` : '-';
+                })];
+                reportDataForExport.push(keyRow);
+                
+                let hHtml = `<tr><th>Agen</th><th>Durasi</th>`; 
+                for(let i=1; i<=qz.questions.length; i++) hHtml+=`<th>Q${i}</th>`; 
+                hHtml+=`<th>Nilai</th></tr>`; 
+                document.getElementById('report-table-head').innerHTML = hHtml; 
+                
+                const tbody = document.getElementById('report-table-body'); tbody.innerHTML = ''; 
+                currentReportResults.forEach(r => { 
+                    const p = Math.round(r.score/r.totalPoints*100); 
+                    
+                    const row = [
+                        new Date(r.createdAt).toLocaleString('id-ID'), 
+                        r.agentFullName, 
+                        r.agentEmail || '-', 
+                        p + "%"
+                    ]; 
+                    
+                    let rHtml = `<tr><td class="px-4 py-3 font-bold">${r.agentFullName}</td><td class="text-xs">${formatDuration(r.durationSec)}</td>`; 
+                    qz.questions.forEach((q,i) => { 
+                        const ansKey = (r.answers||[])[i] ? String((r.answers||[])[i]).toUpperCase().trim() : "-"; 
+                        const ansText = (ansKey !== "-" && q.options && q.options[ansKey]) ? q.options[ansKey] : "";
+                        const formattedAns = ansKey !== "-" ? `${ansKey}: ${ansText}` : "-";
+                        
+                        row.push(formattedAns); 
+                        rHtml+=`<td class="text-center bg-slate-50 border-r ${ansKey===q.correct?'text-emerald-600':'text-rose-600'} font-bold">${formattedAns}</td>`; 
+                    }); 
+                    reportDataForExport.push(row); 
+                    rHtml+=`<td class="text-center font-black ${p>=globalSettings.passingGrade?'text-emerald-600':'text-rose-600'}">${p}%</td></tr>`; 
+                    tbody.innerHTML+=rHtml; 
+                }); 
+                renderItemAnalysis(qz, currentReportResults); 
+            } catch(e){} 
+            hideLoader(); 
+        };
+        
+        window.closeQuizReport = () => { document.getElementById('quiz-report-view').classList.add('hidden'); document.getElementById('quiz-list-view').classList.remove('hidden'); };
+        
+        window.exportReportCSV = () => { 
+            if(reportDataForExport.length <= 1) {
+                alert("Belum ada data pengerjaan kuis dari agen untuk di-export.");
+                return;
+            }
+            let csv = reportDataForExport.map(r => r.map(s=>`"${String(s).replace(/"/g,'""')}"`).join(",")).join("\n"); 
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const l = document.createElement("a"); l.href = url; l.download = "Laporan.csv"; l.click(); 
+            URL.revokeObjectURL(url);
+        };
+        
+        window.renderSideBySide = () => { 
+            const i1 = document.getElementById('compare-agent-1').value; 
+            const i2 = document.getElementById('compare-agent-2').value; 
+            if(i1==="" || i2==="") return; 
+            const a1 = currentReportResults[i1]; const a2 = currentReportResults[i2]; const qz = currentReportQuiz; 
+            
+            let html = `<table class="min-w-full text-sm"><thead><tr><th>Soal</th><th>Kunci</th><th>${a1.agentFullName}</th><th>${a2.agentFullName}</th></tr></thead><tbody>`; 
+            qz.questions.forEach((q,i) => { 
+                const s1 = (a1.answers||[])[i]||"-"; const s2 = (a2.answers||[])[i]||"-"; 
+                html+=`<tr><td class="font-medium">${q.text}</td><td class="text-center font-bold bg-slate-50">${q.correct}</td><td class="text-center font-bold ${s1===q.correct?'text-emerald-600':'text-rose-600'}">${s1}</td><td class="text-center font-bold ${s2===q.correct?'text-emerald-600':'text-rose-600'}">${s2}</td></tr>`; 
+            }); 
+            html+=`</tbody></table>`; 
+            document.getElementById('side-by-side-container').innerHTML = html; 
+        };
+        
+        function renderItemAnalysis(qz, res) { 
+            const c = document.getElementById('item-analysis-container'); c.innerHTML=''; 
+            qz.questions.forEach((q,i) => { 
+                let cnt = {A:0,B:0,C:0,D:0}; 
+                res.forEach(r => { const a = (r.answers||[])[i]; if(cnt[a]!==undefined) cnt[a]++; }); 
+                c.innerHTML+=`<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100"><p class="font-bold text-sm">Q${i+1}. ${q.text} <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 ml-2 rounded text-xs font-black">Kunci: ${q.correct}</span></p><div class="grid grid-cols-4 gap-2 text-xs font-bold text-center mt-3"><div class="bg-slate-50 p-2 rounded">A:${cnt.A}</div><div class="bg-slate-50 p-2 rounded">B:${cnt.B}</div><div class="bg-slate-50 p-2 rounded">C:${cnt.C}</div><div class="bg-slate-50 p-2 rounded">D:${cnt.D}</div></div></div>`; 
+            }); 
+        }
+
+        let qc = 0;
+        window.prepareCreateQuiz = () => { 
+            document.getElementById('quiz-list-view').classList.add('hidden'); 
+            document.getElementById('quiz-report-view').classList.add('hidden'); 
+            document.getElementById('quiz-form-view').classList.remove('hidden'); 
+            document.getElementById('edit-quiz-id').value = ""; 
+            document.getElementById('quiz-title').value = ""; 
+            document.getElementById('quiz-status').value = "Final";
+            document.getElementById('questions-container').innerHTML = ""; 
+            qc = 0; 
+            window.addQuestionField(); 
+            window.calculateTotalScore();
+        };
+        
+        window.cancelQuizForm = () => { document.getElementById('quiz-form-view').classList.add('hidden'); document.getElementById('quiz-list-view').classList.remove('hidden'); };
+        
+        window.calculateTotalScore = () => {
+            const pointInputs = document.querySelectorAll('.q-points');
+            let total = 0;
+            pointInputs.forEach(input => {
+                total += parseInt(input.value) || 0;
+            });
+            const disp = document.getElementById('total-score-display');
+            if(disp) {
+                disp.innerText = total;
+                if(total === 100) {
+                    disp.className = "bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-lg font-black";
+                } else if(total > 100) {
+                    disp.className = "bg-rose-100 text-rose-800 px-2.5 py-1 rounded-lg font-black";
+                } else {
+                    disp.className = "bg-amber-100 text-amber-800 px-2.5 py-1 rounded-lg font-black";
+                }
+            }
+            return total;
+        };
+
+        window.addQuestionField = (d=null) => { 
+            qc++; 
+            const textVal = escapeHTML(d ? d.text : '');
+            const optA = escapeHTML(d && d.options ? (d.options.A || '') : '');
+            const optB = escapeHTML(d && d.options ? (d.options.B || '') : '');
+            const optC = escapeHTML(d && d.options ? (d.options.C || '') : '');
+            const optD = escapeHTML(d && d.options ? (d.options.D || '') : '');
+            const correctVal = d ? d.correct : 'A';
+            const pointsVal = d ? d.points : 10;
+
+            const html = `
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200" id="q-block-${qc}">
+                <div class="flex justify-between mb-4">
+                    <span class="font-black text-indigo-700">Soal #${qc}</span>
+                    <button type="button" onclick="this.closest('.bg-white').remove(); window.calculateTotalScore();" class="text-rose-500 font-bold hover:text-rose-700 transition">Hapus</button>
+                </div>
+                <textarea class="q-text w-full p-4 border rounded-xl mb-4 focus:ring-2 focus:ring-indigo-200 transition font-semibold" required placeholder="Tuliskan pertanyaan di sini...">${textVal}</textarea>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="flex items-center"><span class="font-bold mr-2 w-4">A</span> <input type="text" class="q-opt-a border p-3 w-full rounded-xl focus:ring-2 focus:ring-indigo-200" required value="${optA}"></div>
+                    <div class="flex items-center"><span class="font-bold mr-2 w-4">B</span> <input type="text" class="q-opt-b border p-3 w-full rounded-xl focus:ring-2 focus:ring-indigo-200" required value="${optB}"></div>
+                    <div class="flex items-center"><span class="font-bold mr-2 w-4">C</span> <input type="text" class="q-opt-c border p-3 w-full rounded-xl focus:ring-2 focus:ring-indigo-200" required value="${optC}"></div>
+                    <div class="flex items-center"><span class="font-bold mr-2 w-4">D</span> <input type="text" class="q-opt-d border p-3 w-full rounded-xl focus:ring-2 focus:ring-indigo-200" required value="${optD}"></div>
+                </div>
+                <div class="flex space-x-4">
+                    <select class="q-correct p-3 border rounded-xl font-black focus:ring-2 focus:ring-indigo-200">
+                        <option value="A" ${correctVal==='A'?'selected':''}>Kunci: A</option>
+                        <option value="B" ${correctVal==='B'?'selected':''}>Kunci: B</option>
+                        <option value="C" ${correctVal==='C'?'selected':''}>Kunci: C</option>
+                        <option value="D" ${correctVal==='D'?'selected':''}>Kunci: D</option>
+                    </select>
+                    <input type="number" class="q-points p-3 border rounded-xl w-32 font-bold focus:ring-2 focus:ring-indigo-200" placeholder="Poin" value="${pointsVal}" min="1" oninput="window.calculateTotalScore()" required>
+                </div>
+            </div>`; 
+            document.getElementById('questions-container').insertAdjacentHTML('beforeend', html); 
+            window.calculateTotalScore();
+        };
+
+        window.saveQuiz = async (e) => { 
+            e.preventDefault(); 
+            const id = document.getElementById('edit-quiz-id').value; 
+            const title = document.getElementById('quiz-title').value.trim();
+            const startTime = document.getElementById('quiz-start-time').value;
+            const endTime = document.getElementById('quiz-end-time').value;
+            const duration = document.getElementById('quiz-duration').value;
+            const status = document.getElementById('quiz-status').value;
+
+            if (!title) { return alert("Judul kuis wajib diisi!"); }
+            if (!startTime || !endTime) { return alert("Waktu Mulai dan Waktu Akhir akses kuis wajib diisi!"); }
+            if (!duration || parseInt(duration) <= 0) { return alert("Durasi pengerjaan kuis (menit) harus valid!"); }
+
+            const totalScore = window.calculateTotalScore();
+            if (totalScore !== 100) {
+                if(!confirm(`Perhatian: Total bobot nilai saat ini adalah ${totalScore} Poin (Standar ideal total adalah 100 Poin). Apakah Anda tetap ingin menerbitkannya?`)) {
+                    return;
+                }
+            }
+
+            const blocks = document.querySelectorAll('[id^="q-block-"]'); 
+            if (blocks.length === 0) { return alert("Minimal harus ada 1 pertanyaan dalam kuis!"); }
+
+            let q = []; let isValidQuestions = true;
+            blocks.forEach((b, index) => { 
+                const text = b.querySelector('.q-text').value.trim();
+                const optA = b.querySelector('.q-opt-a').value.trim();
+                const optB = b.querySelector('.q-opt-b').value.trim();
+                const optC = b.querySelector('.q-opt-c').value.trim();
+                const optD = b.querySelector('.q-opt-d').value.trim();
+                const correct = b.querySelector('.q-correct').value;
+                const points = parseInt(b.querySelector('.q-points').value) || 10;
+
+                if (!text || !optA || !optB || !optC || !optD) {
+                    alert(`Soal nomor ${index + 1} belum lengkap (pertanyaan atau pilihan opsi ada yang kosong).`);
+                    isValidQuestions = false; return;
+                }
+                q.push({ text: text, options: { A: optA, B: optB, C: optC, D: optD }, correct: correct, points: points }); 
+            }); 
+            if (!isValidQuestions) return;
+
+            const data = { 
+                title: title, 
+                category: document.getElementById('quiz-category').value, 
+                status: status,
+                startTime: startTime, 
+                endTime: endTime, 
+                duration: parseInt(duration), 
+                questions: q 
+            }; 
+
+            showLoader("Menyimpan Kuis ke Sistem..."); 
+            try { 
+                if(id) { await updateDoc(doc(db, "quizzes", id), data); } 
+                else { await addDoc(collection(db, "quizzes"), { createdAt: new Date().toISOString(), ...data }); } 
+                window.cancelQuizForm(); await loadAdminQuizzes(); hideLoader(); 
+                alert("Kuis berhasil diterbitkan dan disimpan!");
+            } catch(err) { hideLoader(); alert("Gagal menyimpan kuis ke database: " + err.message); } 
+        };
+
+        window.editQuiz = (id) => { 
+            const qz = allQuizzesMap[id]; 
+            if(qz) { 
+                document.getElementById('quiz-list-view').classList.add('hidden'); 
+                document.getElementById('quiz-form-view').classList.remove('hidden'); 
+                document.getElementById('edit-quiz-id').value = id; 
+                document.getElementById('quiz-title').value = qz.title; 
+                document.getElementById('quiz-category').value = qz.category || 'Product Knowledge';
+                document.getElementById('quiz-status').value = qz.status || 'Final';
+                document.getElementById('quiz-start-time').value = qz.startTime; 
+                document.getElementById('quiz-end-time').value = qz.endTime; 
+                document.getElementById('quiz-duration').value = qz.duration; 
+                document.getElementById('questions-container').innerHTML = ""; 
+                qc = 0; 
+                if(qz.questions && qz.questions.length > 0) {
+                    qz.questions.forEach(q => window.addQuestionField(q));
+                } else {
+                    window.addQuestionField();
+                }
+                window.calculateTotalScore();
+            } 
+        };
+        
+        window.deleteQuiz = async (id) => { if(confirm("Yakin ingin menghapus kuis ini secara permanen?")){ await deleteDoc(doc(db,"quizzes",id)); await loadAdminQuizzes(); } };
+
+        async function loadAdminOverviewAndAnalytics() {
+            try {
+                const snap = await getDocs(query(collection(db, "results"), orderBy("createdAt", "desc"))); 
+                const results = []; snap.forEach(d => results.push({ id: d.id, ...d.data() })); 
+                adminChartDataCache = results; leaderboardDataForExport = []; let tp = 0; let rCount = 0;
+                
+                const agentMap = {};
+                results.forEach(r => { if (r.agentUsername) agentMap[r.agentUsername] = r.agentFullName; });
+                const filterEl = document.getElementById('admin-trend-filter');
+                if (filterEl) {
+                    const currentVal = filterEl.value;
+                    filterEl.innerHTML = '<option value="all">Semua Agen</option>';
+                    Object.keys(agentMap).forEach(un => { filterEl.innerHTML += `<option value="${un}">${agentMap[un]}</option>`; });
+                    filterEl.value = Object.keys(agentMap).includes(currentVal) ? currentVal : 'all';
+                }
+                
+                const remTbody = document.getElementById('admin-remedial-body'); remTbody.innerHTML = '';
+                const sorted = [...results].sort((a, b) => (b.score/b.totalPoints) - (a.score/a.totalPoints));
+                const tbody = document.getElementById('admin-leaderboard-body'); tbody.innerHTML = '';
+                
+                sorted.forEach((r, i) => {
+                    const p = Math.round((r.score/r.totalPoints)*100); tp += p;
+                    leaderboardDataForExport.push([i+1, r.agentFullName, r.quizTitle, r.createdAt, p+"%"]);
+                    tbody.innerHTML += `<tr><td class="px-5 py-4 font-bold">${i+1}</td><td class="px-5 py-4 font-black">${r.agentFullName}</td><td class="px-5 py-4 text-sm font-semibold">${r.quizTitle}</td><td class="px-5 py-4 text-xs font-semibold">${new Date(r.createdAt).toLocaleDateString()}</td><td class="px-5 py-4"><span class="px-3 py-1 font-black rounded ${p>=globalSettings.passingGrade?'bg-emerald-50 text-emerald-600':'bg-rose-50 text-rose-600'}">${p}%</span></td><td class="px-5 py-4 text-right"><button onclick="window.deleteLeaderboardResult('${r.id}')" class="text-rose-500 font-bold hover:text-rose-700 transition">Hapus</button></td></tr>`;
+                    
+                    if(p < globalSettings.passingGrade) {
+                        rCount++;
+                        remTbody.innerHTML += `<tr><td class="px-4 py-3 font-bold">${r.agentFullName}</td><td class="px-4 py-3 font-semibold">${r.quizTitle}</td><td class="px-4 py-3 text-center"><span class="text-rose-600 font-black">${p}%</span></td><td class="px-4 py-3 text-center"><span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-bold">Remedial</span></td><td class="px-4 py-3 text-right"><button onclick="window.deleteLeaderboardResult('${r.id}')" class="text-indigo-600 font-bold text-xs hover:text-indigo-800 transition">Retake</button></td></tr>`;
+                    }
+                });
+                
+                if (rCount === 0) remTbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-500 font-medium">Tidak ada agen yang butuh remedial.</td></tr>';
+                document.getElementById('stat-avg-score').innerText = results.length > 0 ? Math.round(tp/results.length) + "%" : "0%";
+                document.getElementById('stat-total-remedial').innerText = rCount;
+                if(!document.getElementById('admin-tab-reports-performance').classList.contains('hidden')) window.filterPerformanceReport();
+            } catch (e) {}
+        }
+        
+        window.deleteLeaderboardResult = async (id) => { if(confirm("Hapus nilai agar Agen bisa melakukan Retake?")) { showLoader(); await deleteDoc(doc(db,"results",id)); await loadAdminOverviewAndAnalytics(); hideLoader(); } };
+        
+        window.exportLeaderboardCSV = () => { 
+            if(leaderboardDataForExport.length === 0) return alert("Belum ada data leaderboard untuk di-export.");
+            let csv = "Rank,Nama,Kuis,Waktu,Skor\n" + leaderboardDataForExport.map(r=>r.join(",")).join("\n"); 
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const l = document.createElement("a"); l.href = url; l.download = "Leaderboard.csv"; l.click(); 
+            URL.revokeObjectURL(url);
+        };
+        
+        window.refreshAdminData = async () => { 
+            showLoader(); 
+            await Promise.all([loadGlobalSettings(), loadAdminOverviewAndAnalytics(), loadAdminUsers(), loadAdminQuizzes()]); 
+            const rL = document.getElementById('label-admin-remedial'); 
+            if(rL) rL.innerText = "Batas Lulus: " + globalSettings.passingGrade + "%"; 
+            if (!document.getElementById('admin-tab-overview').classList.contains('hidden')) { window.renderAdminChart(); window.renderAgentComparisonChart(); }
+            hideLoader(); 
+        };
+
+        window.filterPerformanceReport = (e) => {
+            if(e) e.preventDefault(); 
+            const s = document.getElementById('perf-start-date').value; 
+            const ed = document.getElementById('perf-end-date').value; 
+            const ag = document.getElementById('perf-agent-select').value;
+            
+            let f = adminChartDataCache; 
+            if (ag) f = f.filter(r => r.agentUsername === ag); 
+            if (s) f = f.filter(r => new Date(r.createdAt) >= new Date(s)); 
+            if (ed) { let endDate = new Date(ed); endDate.setHours(23,59,59); f = f.filter(r => new Date(r.createdAt) <= endDate); }
+            
+            const tbody = document.getElementById('perf-table-body'); tbody.innerHTML = ''; 
+            let tp = 0; let pc = 0;
+            f.forEach(r => { 
+                const p = Math.round((r.score/r.totalPoints)*100); tp+=p; 
+                if(p>=globalSettings.passingGrade) pc++; 
+                tbody.innerHTML+=`<tr><td class="px-4 py-3 text-sm font-semibold">${new Date(r.createdAt).toLocaleDateString()}</td><td class="px-4 py-3 font-bold">${r.agentFullName}</td><td class="px-4 py-3 text-sm font-semibold">${r.quizTitle}</td><td class="px-4 py-3 text-center"><span class="px-2 py-1 font-black rounded ${p>=globalSettings.passingGrade?'bg-emerald-50 text-emerald-600':'bg-rose-50 text-rose-600'}">${p}%</span></td></tr>`; 
+            });
+            document.getElementById('perf-total-data').innerText = f.length; 
+            document.getElementById('perf-pass-rate').innerText = f.length>0?Math.round((pc/f.length)*100)+"%":"0%"; 
+            document.getElementById('perf-avg-score').innerText = f.length>0?Math.round(tp/f.length)+"%":"0%";
+        };
+
+        async function loadQuizzesForAgent() {
+            const container = document.getElementById('available-quizzes');
+            try {
+                const snap = await getDocs(collection(db, "quizzes")); container.innerHTML = '';
+                const rSnap = await getDocs(query(collection(db, "results"), where("agentUsername", "==", currentUser.username))); 
+                const tk = new Set(); rSnap.forEach(d => tk.add(d.data().quizId));
+                const now = new Date();
+                
+                snap.forEach(d => {
+                    const qz = d.data(); 
+                    if (qz.status === 'Draft') return; // Sembunyikan kuis yang masih berstatus Draft dari Agen
+                    
+                    const s = new Date(qz.startTime); const e = new Date(qz.endTime); const isT = tk.has(d.id);
+                    let bl, bc, cc, act;
+                    if (isT) { bl = "Selesai"; bc = "bg-slate-200 text-slate-700"; cc = "opacity-60 cursor-not-allowed border-slate-300"; act = ""; } 
+                    else if (now < s) { bl = "Belum Mulai"; bc = "bg-amber-100 text-amber-700"; cc = "opacity-80 cursor-not-allowed border-amber-300"; act = ""; } 
+                    else if (now > e) { bl = "Ditutup"; bc = "bg-rose-100 text-rose-700"; cc = "opacity-60 cursor-not-allowed border-rose-300"; act = ""; } 
+                    else { bl = "Kerjakan"; bc = "bg-emerald-100 text-emerald-700"; cc = "cursor-pointer border-emerald-500 shadow-md hover:-translate-y-2 hover:shadow-xl transition-all"; act = `onclick="window.startQuiz('${d.id}', '${qz.title.replace(/'/g, "\\'")}', ${qz.duration})"`; }
+                    container.innerHTML += `<div class="glass p-6 sm:p-8 rounded-[2rem] border-t-8 ${cc}" ${act}><div class="mb-4"><span class="text-xs font-black px-3 py-1.5 rounded-lg ${bc}">${bl}</span></div><h3 class="text-xl font-black text-slate-800 tracking-tight leading-tight">${qz.title}</h3><p class="mt-4 text-sm font-bold text-slate-500">${qz.questions.length} Soal • ${qz.duration} Menit</p></div>`;
+                });
+            } catch(e) {}
+        }
+
+        async function loadAgentHistoryAndTrend() {
+            try {
+                const snap = await getDocs(query(collection(db, "results"), where("agentUsername", "==", currentUser.username))); 
+                let h = []; snap.forEach(d => h.push(d.data())); h.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                const tbody = document.getElementById('agent-history-body'); tbody.innerHTML = ''; 
+                const rBody = document.getElementById('agent-remedial-body'); rBody.innerHTML = '';
+                let ts = 0; let rc = 0;
+                
+                h.forEach(r => {
+                    const p = Math.round((r.score/r.totalPoints)*100); ts+=p;
+                    tbody.innerHTML += `<tr><td class="px-5 py-4 font-bold">${r.quizTitle}</td><td class="px-5 py-4 text-sm font-semibold">${new Date(r.createdAt).toLocaleDateString()}</td><td class="px-5 py-4 text-center font-semibold">${formatDuration(r.durationSec)}</td><td class="px-5 py-4 text-center"><span class="px-3 py-1 font-black rounded ${p>=globalSettings.passingGrade?'bg-emerald-50 text-emerald-600':'bg-rose-50 text-rose-600'}">${p}%</span></td></tr>`;
+                    
+                    if (p < globalSettings.passingGrade) { 
+                        rc++; 
+                        rBody.innerHTML += `<tr><td class="px-4 py-4 font-bold">${r.quizTitle}</td><td class="px-4 py-4 text-center"><span class="text-rose-600 font-black">${p}%</span></td><td class="px-4 py-4 text-center"><span class="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg font-bold">Harap Hubungi Admin (Remedial)</span></td></tr>`; 
+                    }
+                });
+                if(rc === 0) rBody.innerHTML = '<tr><td colspan="3" class="text-center py-8 text-slate-500 font-medium">Luar Biasa! Tidak ada tugas remedial.</td></tr>';
+                document.getElementById('agent-dash-avg-score').innerText = h.length>0?Math.round(ts/h.length)+"%":"0%"; 
+                agentChartDataCache = [...h].reverse(); 
+                if(!document.getElementById('agent-tab-history').classList.contains('hidden')) { renderAgentChart(); renderSkillRadar(h); }
+            } catch(e){}
+        }
+
+        async function loadAgentLeaderboard() {
+            try { 
+                const snap = await getDocs(query(collection(db, "results"), orderBy("createdAt", "desc"))); 
+                const res = []; snap.forEach(d => res.push(d.data())); 
+                res.sort((a,b) => (b.score/b.totalPoints)-(a.score/a.totalPoints)); 
+                const tbody = document.getElementById('agent-leaderboard-body'); tbody.innerHTML = '';
+                
+                res.forEach((r,i) => { 
+                    const p = Math.round((r.score/r.totalPoints)*100); 
+                    const me = r.agentUsername === currentUser.username; 
+                    tbody.innerHTML += `<tr class="${me?'bg-indigo-50 border-l-[6px] border-indigo-600':''}"><td class="px-5 py-4 font-black">${i+1}</td><td class="px-5 py-4 font-bold">${r.agentFullName} ${me?'(Anda)':''}</td><td class="px-5 py-4 text-sm font-semibold">${r.quizTitle}</td><td class="px-5 py-4 text-center"><span class="px-3 py-1 font-black rounded ${p>=globalSettings.passingGrade?'text-emerald-600':'text-rose-600'}">${p}%</span></td></tr>`; 
+                });
+            } catch(e){}
+        }
+
+        async function renderBadges() {
+            try { 
+                const snap = await getDocs(query(collection(db, "results"), where("agentUsername", "==", currentUser.username))); 
+                let c=0, pf=0, fs=0, st=0, hs=false, eb=false, no=false;
+                
+                snap.forEach(d => { 
+                    c++; const dt=d.data(); 
+                    const p=Math.round((dt.score/dt.totalPoints)*100); 
+                    if(p===100) pf++; 
+                    if(dt.durationSec<=120 && p>=globalSettings.passingGrade) fs++; 
+                    if(p>=globalSettings.passingGrade){st++; if(st>=3) hs=true;} else st=0; 
+                    const hr=new Date(dt.createdAt).getHours(); 
+                    if(hr<8) eb=true; if(hr>=20) no=true; 
+                });
+                let ub = (c>0?1:0)+(pf>0?1:0)+(fs>0?1:0)+(hs?1:0)+(eb?1:0)+(no?1:0); 
+                document.getElementById('agent-dash-badges').innerText = ub;
+                
+                document.getElementById('badges-container').innerHTML = `
+                    <div class="glass p-6 sm:p-8 rounded-[2rem] shadow-sm ${c>0?'bg-indigo-50 badge-card':'opacity-40'}"><div class="w-16 h-16 bg-indigo-500 text-white rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-md"><i class="fa-solid fa-flag-checkered"></i></div><h4 class="font-black text-xl tracking-tight">First Blood</h4><p class="text-sm font-semibold text-slate-500 mt-1">${c>0?'🏆 Aktif':'🔒 Terkunci'}</p></div>
+                    <div class="glass p-6 sm:p-8 rounded-[2rem] shadow-sm ${pf>0?'bg-emerald-50 badge-card':'opacity-40'}"><div class="w-16 h-16 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-md"><i class="fa-solid fa-star"></i></div><h4 class="font-black text-xl tracking-tight">Flawless</h4><p class="text-sm font-semibold text-slate-500 mt-1">${pf>0?'🏆 Aktif':'🔒 Skor 100%'}</p></div>
+                    <div class="glass p-6 sm:p-8 rounded-[2rem] shadow-sm ${fs>0?'bg-amber-50 badge-card':'opacity-40'}"><div class="w-16 h-16 bg-amber-500 text-white rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-md"><i class="fa-solid fa-bolt"></i></div><h4 class="font-black text-xl tracking-tight">Speed Demon</h4><p class="text-sm font-semibold text-slate-500 mt-1">${fs>0?'🏆 Aktif':'🔒 Lulus < 2 Menit'}</p></div>
+                    <div class="glass p-6 sm:p-8 rounded-[2rem] shadow-sm ${hs?'bg-rose-50 badge-card':'opacity-40'}"><div class="w-16 h-16 bg-rose-500 text-white rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-md"><i class="fa-solid fa-fire"></i></div><h4 class="font-black text-xl tracking-tight">Streak Master</h4><p class="text-sm font-semibold text-slate-500 mt-1">${hs?'🏆 Aktif':'🔒 3x Lulus Beruntun'}</p></div>
+                `;
+            } catch(e){}
+        }
+
+        window.refreshAgentData = async () => { showLoader(); await Promise.all([loadGlobalSettings(), loadQuizzesForAgent(), loadAgentHistoryAndTrend(), loadAgentLeaderboard()]); hideLoader(); };
+
+        window.startQuiz = async (quizId, quizTitle, durationMins) => {
+            showLoader(); const snap = await getDocs(collection(db, "quizzes")); let qd = null; snap.forEach(d => { if(d.id === quizId) qd = d.data(); }); if(!qd) { hideLoader(); return; }
+            document.getElementById('quiz-interface').classList.remove('hidden'); document.getElementById('main-content').scrollTo(0,0); document.getElementById('main-content').classList.add('overflow-hidden');
+            
+            const sk = `ongoing_quiz_${currentUser.username}`; let ss = JSON.parse(localStorage.getItem(sk)); let st, el=0;
+            if (ss && ss.quizId === quizId) { st = ss.startTime; el = Math.floor((Date.now() - st) / 1000); } else { st = Date.now(); localStorage.setItem(sk, JSON.stringify({ quizId: quizId, startTime: st, answers: {} })); }
+
+            let rem = (durationMins * 60) - el;
+            if (rem <= 0) { alert("Waktu habis."); activeQuizData = { id: quizId, title: quizTitle, ...qd, sessionStartTime: st }; window.submitQuiz(true); return; }
+
+            let questionMap = qd.questions.map((q, idx) => ({ ...q, originalIndex: idx }));
+            if (globalSettings.randomQuestions) { questionMap.sort(() => Math.random() - 0.5); }
+
+            activeQuizData = { id: quizId, title: quizTitle, category: qd.category||'General', sessionStartTime: st, questions: qd.questions, questionMap: questionMap };
+            document.getElementById('active-quiz-title').innerText = quizTitle; const form = document.getElementById('quiz-questions-form'); form.innerHTML = '';
+            
+            let svA = ss ? (ss.answers || {}) : {};
+
+            questionMap.forEach((q, renderIndex) => {
+                const i = q.originalIndex; 
+                let cA = svA[i] === 'A' ? 'checked' : ''; let cB = svA[i] === 'B' ? 'checked' : ''; let cC = svA[i] === 'C' ? 'checked' : ''; let cD = svA[i] === 'D' ? 'checked' : '';
+                form.innerHTML += `
+                <div class="bg-white p-6 sm:p-10 rounded-[2rem] border-2 border-slate-100 shadow-xl mb-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -z-10 opacity-50"></div>
+                    
+                    <p class="font-black text-xl sm:text-2xl text-slate-800 mb-8 leading-relaxed"><span class="text-indigo-400 mr-2">Q${renderIndex+1}.</span> ${q.text}</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="cursor-pointer group relative">
+                            <input type="radio" name="q-${i}" value="A" onchange="window.saveTempAnswer(${i}, 'A')" class="peer sr-only" ${cA}>
+                            <div class="h-full flex items-center p-5 rounded-2xl bg-white border-2 border-rose-200 text-slate-700 font-bold text-lg shadow-sm transition-all duration-200 peer-checked:bg-rose-500 peer-checked:text-white peer-checked:border-rose-600 peer-checked:shadow-rose-200 peer-checked:shadow-lg hover:-translate-y-1 hover:border-rose-400 active:scale-95">
+                                <div class="w-10 h-10 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center mr-4 peer-checked:bg-rose-600 peer-checked:text-white transition-colors shrink-0"><i class="fa-solid fa-play -rotate-90"></i></div>
+                                <span class="break-words flex-1">${q.options.A}</span>
+                            </div>
+                        </label>
+                        
+                        <label class="cursor-pointer group relative">
+                            <input type="radio" name="q-${i}" value="B" onchange="window.saveTempAnswer(${i}, 'B')" class="peer sr-only" ${cB}>
+                            <div class="h-full flex items-center p-5 rounded-2xl bg-white border-2 border-sky-200 text-slate-700 font-bold text-lg shadow-sm transition-all duration-200 peer-checked:bg-sky-500 peer-checked:text-white peer-checked:border-sky-600 peer-checked:shadow-sky-200 peer-checked:shadow-lg hover:-translate-y-1 hover:border-sky-400 active:scale-95">
+                                <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center mr-4 peer-checked:bg-sky-600 peer-checked:text-white transition-colors shrink-0"><i class="fa-solid fa-square"></i></div>
+                                <span class="break-words flex-1">${q.options.B}</span>
+                            </div>
+                        </label>
+                        
+                        <label class="cursor-pointer group relative">
+                            <input type="radio" name="q-${i}" value="C" onchange="window.saveTempAnswer(${i}, 'C')" class="peer sr-only" ${cC}>
+                            <div class="h-full flex items-center p-5 rounded-2xl bg-white border-2 border-amber-200 text-slate-700 font-bold text-lg shadow-sm transition-all duration-200 peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-600 peer-checked:shadow-amber-200 peer-checked:shadow-lg hover:-translate-y-1 hover:border-amber-400 active:scale-95">
+                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mr-4 peer-checked:bg-amber-600 peer-checked:text-white transition-colors shrink-0"><i class="fa-solid fa-circle"></i></div>
+                                <span class="break-words flex-1">${q.options.C}</span>
+                            </div>
+                        </label>
+                        
+                        <label class="cursor-pointer group relative">
+                            <input type="radio" name="q-${i}" value="D" onchange="window.saveTempAnswer(${i}, 'D')" class="peer sr-only" ${cD}>
+                            <div class="h-full flex items-center p-5 rounded-2xl bg-white border-2 border-emerald-200 text-slate-700 font-bold text-lg shadow-sm transition-all duration-200 peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:border-emerald-600 peer-checked:shadow-emerald-200 peer-checked:shadow-lg hover:-translate-y-1 hover:border-emerald-400 active:scale-95">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center mr-4 peer-checked:bg-emerald-600 peer-checked:text-white rotate-45 transition-colors shrink-0"><i class="fa-solid fa-square"></i></div>
+                                <span class="break-words flex-1">${q.options.D}</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>`;
+            });
+            hideLoader(); startTimer(rem);
+        };
+
+        window.saveTempAnswer = (idx, val) => { const sk = `ongoing_quiz_${currentUser.username}`; let ss = JSON.parse(localStorage.getItem(sk)); if(ss) { if(!ss.answers) ss.answers={}; ss.answers[idx]=val; localStorage.setItem(sk, JSON.stringify(ss)); } };
+
+        function startTimer(rem) { let t = rem; const disp = document.getElementById('timer-display'); const upd = () => { let m = Math.floor(t / 60).toString().padStart(2, '0'); let s = (t % 60).toString().padStart(2, '0'); disp.innerText = `${m}:${s}`; }; upd(); timerInterval = setInterval(() => { t--; upd(); if (t <= 0) { clearInterval(timerInterval); alert("Waktu Habis!"); window.submitQuiz(true); } }, 1000); }
+
+        window.submitQuiz = async (auto = false) => {
+            if(!auto && !confirm("Yakin ingin mengirim jawaban sekarang?")) return;
+            if(timerInterval) clearInterval(timerInterval); showLoader("Memproses Jawaban...");
+            const timeT = Math.floor((Date.now() - activeQuizData.sessionStartTime) / 1000);
+            let s = 0, c = 0, tp = 0; let aArr = []; 
+
+            activeQuizData.questions.forEach((q, i) => { 
+                tp += q.points; 
+                const sel = document.querySelector(`input[name="q-${i}"]:checked`); 
+                const ans = sel ? sel.value : "-"; 
+                aArr.push(ans); 
+                if (ans === q.correct) { s += q.points; c++; } 
+            });
+            const p = Math.round((s / tp) * 100);
+
+            try { 
+                await addDoc(collection(db, "results"), { quizId: activeQuizData.id, quizTitle: activeQuizData.title, category: activeQuizData.category, agentUsername: currentUser.username, agentFullName: currentUser.fullName, agentEmail: currentUser.email || '', score: s, totalPoints: tp, durationSec: timeT, answers: aArr, createdAt: new Date().toISOString() }); 
+                localStorage.removeItem(`ongoing_quiz_${currentUser.username}`); 
+            } catch (e) {}
+            
+            document.getElementById('result-score').innerText = `${p}%`; document.getElementById('result-correct').innerText = c; document.getElementById('result-incorrect').innerText = activeQuizData.questions.length - c;
+            hideLoader(); document.getElementById('results-modal').classList.remove('hidden');
+        };
+
+        window.closeResults = () => { 
+            document.getElementById('results-modal').classList.add('hidden'); 
+            document.getElementById('quiz-interface').classList.add('hidden'); 
+            document.getElementById('main-content').classList.remove('overflow-hidden'); 
+            window.refreshAgentData(); window.switchAgentTab('dashboard'); 
+            document.getElementById('main-content').scrollTo(0,0); 
+        };
+    </script>
+</body>
+</html>
