@@ -95,8 +95,8 @@
         <!-- Top Navbar -->
         <header class="h-16 flex-shrink-0 bg-white/95 backdrop-blur-md shadow-sm z-50 border-b border-slate-200 px-4 md:px-6 flex justify-between items-center w-full">
             <div class="flex items-center space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="text-slate-600 hover:text-indigo-600 md:hidden p-2 rounded-lg hover:bg-slate-100">
-                    <i class="fa-solid fa-bars text-xl"></i>
+                <button onclick="window.toggleMobileSidebar()" class="text-indigo-600 bg-indigo-50 md:hidden p-2.5 rounded-xl hover:bg-indigo-100 border border-indigo-100 shadow-sm transition">
+                    <i class="fa-solid fa-bars text-lg"></i>
                 </button>
                 
                 <div class="flex items-center">
@@ -118,7 +118,7 @@
             </div>
         </header>
 
-        <div class="flex-1 flex overflow-hidden relative">
+        <div class="flex-1 flex overflow-hidden relative pb-16 md:pb-0">
             <div id="sidebar-overlay" onclick="window.toggleMobileSidebar()" class="hidden fixed inset-0 bg-slate-900/40 z-30 backdrop-blur-sm md:hidden"></div>
 
             <!-- Sidebar -->
@@ -245,7 +245,7 @@
             </aside>
 
             <!-- Main Content Area -->
-            <main id="main-content" class="flex-1 h-full overflow-y-auto p-4 md:p-6 lg:p-8 relative bg-transparent scroll-smooth">
+            <main id="main-content" class="flex-1 h-full overflow-y-auto p-4 md:p-6 lg:p-8 relative bg-transparent scroll-smooth pb-24 md:pb-8">
                 
                 <!-- ============================ ADMIN VIEWS ============================ -->
                 <div id="admin-views" class="hidden">
@@ -324,7 +324,7 @@
                         </div>
                     </div>
 
-                    <!-- FITUR 2: BANK SOAL VIEW -->
+                    <!-- BANK SOAL VIEW -->
                     <div id="admin-tab-question-bank" class="admin-tab-content hidden space-y-6">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                             <div>
@@ -456,7 +456,6 @@
                                 <div><label class="block text-sm font-bold text-slate-700 mb-2">Judul Kuis Utama</label><input type="text" id="quiz-title" required placeholder="Contoh: Evaluasi Layanan Q3" class="block w-full rounded-xl border-slate-200 px-5 py-4 bg-white font-black text-lg focus:ring-2 focus:ring-indigo-200 transition"></div>
                                 <div class="pt-4 flex justify-between items-center border-b border-slate-200 pb-2">
                                     <h4 class="font-black text-slate-800 text-lg"><i class="fa-solid fa-list-check mr-2 text-indigo-500"></i>Daftar Pertanyaan</h4>
-                                    <!-- FITUR 2: TOMBOL AMBIL DARI BANK SOAL -->
                                     <button type="button" onclick="window.openQuizBankPicker()" class="text-xs bg-indigo-50 text-indigo-700 font-bold px-4 py-2 rounded-xl border border-indigo-200 hover:bg-indigo-100 transition shadow-sm">
                                         <i class="fa-solid fa-database mr-1"></i> Ambil dari Bank Soal
                                     </button>
@@ -819,7 +818,7 @@
                         </div>
                     </div>
 
-                    <!-- QUIZ INTERFACE (KAHOOT STYLE) -->
+                    <!-- QUIZ INTERFACE -->
                     <div id="quiz-interface" class="hidden absolute inset-0 bg-[#f0f4f8] z-50 overflow-y-auto p-4 sm:p-6 lg:p-8">
                         <div class="max-w-5xl mx-auto w-full relative pb-16 pt-2">
                             <div class="sticky-timer flex justify-end mb-6">
@@ -850,6 +849,26 @@
                 </div>
             </main>
         </div>
+
+        <!-- MOBILE BOTTOM NAVIGATION BAR (KHUSUS TAMPILAN HP) -->
+        <div id="mobile-bottom-nav" class="md:hidden fixed bottom-0 inset-x-0 h-16 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex justify-around items-center px-2 shadow-lg">
+            <button onclick="window.handleMobileNavClick('dashboard')" class="flex flex-col items-center justify-center flex-1 py-1 text-slate-500 hover:text-indigo-600">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">Home</span>
+            </button>
+            <button onclick="window.handleMobileNavClick('assessment')" class="flex flex-col items-center justify-center flex-1 py-1 text-slate-500 hover:text-indigo-600">
+                <i class="fa-solid fa-file-signature text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">Assessment</span>
+            </button>
+            <button onclick="window.handleMobileNavClick('leaderboard')" class="flex flex-col items-center justify-center flex-1 py-1 text-slate-500 hover:text-indigo-600">
+                <i class="fa-solid fa-trophy text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">Rank</span>
+            </button>
+            <button onclick="window.handleMobileNavClick('profile')" class="flex flex-col items-center justify-center flex-1 py-1 text-slate-500 hover:text-indigo-600">
+                <i class="fa-solid fa-user text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">Profil</span>
+            </button>
+        </div>
     </div>
 
     <!-- RESULTS MODAL -->
@@ -877,7 +896,7 @@
         </div>
     </div>
 
-    <!-- MODAL BANK SOAL (FITUR 2) -->
+    <!-- MODAL BANK SOAL -->
     <div id="qb-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-xl w-full shadow-2xl relative">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -940,7 +959,7 @@
         let leaderboardDataForExport = []; let reportDataForExport = []; 
         let agentChartDataCache = []; let adminChartDataCache = [];
         let currentReportQuiz = null; let currentReportResults = []; let allQuizzesMap = {};
-        let questionBankCache = []; // FITUR 2: Cache Bank Soal
+        let questionBankCache = []; 
 
         let inactivityTimer = null;
         const INACTIVITY_LIMIT = 5 * 60 * 1000; 
@@ -980,6 +999,22 @@
                 el.classList.add('submenu-open'); icon.classList.add('rotate-180'); 
             } 
         };
+
+        // Handler untuk navigasi cepat bawah (Mobile)
+        window.handleMobileNavClick = (action) => {
+            if (!currentUser) return;
+            if (currentUser.role === 'admin') {
+                if (action === 'dashboard') window.switchAdminTab('overview');
+                else if (action === 'assessment') window.switchAdminTab('quizzes');
+                else if (action === 'leaderboard') window.switchAdminTab('leaderboard');
+                else if (action === 'profile') window.switchAdminTab('profile');
+            } else {
+                if (action === 'dashboard') window.switchAgentTab('dashboard');
+                else if (action === 'assessment') window.switchAgentTab('quizzes');
+                else if (action === 'leaderboard') window.switchAgentTab('leaderboard');
+                else if (action === 'profile') window.switchAgentTab('profile');
+            }
+        };
         
         function formatDuration(totalSeconds) { 
             if(totalSeconds === undefined || totalSeconds === null) return "-"; 
@@ -997,7 +1032,6 @@
                 .replace(/'/g, '&#39;');
         };
 
-        // ================= IMPORT & TEMPLATE CSV =================
         window.downloadTemplateCSV = () => {
             const csv = "Pertanyaan,Opsi A,Opsi B,Opsi C,Opsi D,Kunci (A/B/C/D),Poin\nApa ibukota Provinsi NTB?,Jakarta,Bandung,Mataram,Bima,C,10\nBerapa batas waktu SLA komplain?,1 Hari,2 Hari,5 Hari,14 Hari,D,10";
             const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
@@ -1314,7 +1348,6 @@
             } 
         };
 
-        // ================= FITUR 2: BANK SOAL LOGIC =================
         window.openQBModal = () => {
             document.getElementById('qb-edit-id').value = "";
             document.getElementById('qb-modal-title').innerText = "Tambah Soal ke Bank";
@@ -1443,7 +1476,6 @@
             window.closeQuizBankPicker();
         };
 
-        // ================= FITUR 1: CETAK KERTAS KERJA AGEN =================
         window.printAgentWorksheet = (agentUsername, quizId) => {
             const res = currentReportResults.find(r => r.agentUsername === agentUsername);
             const qz = currentReportQuiz;
@@ -1851,7 +1883,7 @@
                     </select>
                     <input type="number" class="q-points p-3 border rounded-xl w-full sm:w-32 font-bold focus:ring-2 focus:ring-indigo-200" placeholder="Poin" value="${pointsVal}" min="1" oninput="window.calculateTotalScore()" required>
                 </div>
-            </div>`; 
+            `; 
             document.getElementById('questions-container').insertAdjacentHTML('beforeend', html); 
             window.calculateTotalScore();
         };
@@ -2055,7 +2087,6 @@
                 const snap = await getDocs(collection(db, "quizzes")); container.innerHTML = '';
                 const rSnap = await getDocs(query(collection(db, "results"), where("agentUsername", "==", currentUser.username))); 
                 
-                // FITUR 3: Kunci jika sudah pernah diisi/disubmit sekali pun
                 const submittedQuizzes = new Set();
                 rSnap.forEach(d => {
                     const data = d.data();
@@ -2178,7 +2209,6 @@
         window.startQuiz = async (quizId, quizTitle, durationMins) => {
             showLoader();
             
-            // FITUR 3: Cek apakah agen sudah pernah submit sebelumnya di database
             const qCheck = query(collection(db, "results"), where("agentUsername", "==", currentUser.username), where("quizId", "==", quizId));
             const checkSnap = await getDocs(qCheck);
             if(!checkSnap.empty) {
@@ -2250,7 +2280,6 @@
             hideLoader(); startTimer(rem);
         };
 
-        // FITUR 4: Auto-save temp answer on change (persists across page refreshes)
         window.saveTempAnswer = (quizId, idx, val) => { 
             const sk = `ongoing_quiz_${currentUser.username}_${quizId}`; 
             let ss = JSON.parse(localStorage.getItem(sk)); 
