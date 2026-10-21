@@ -78,7 +78,6 @@
                         <input type="password" id="login-password" required class="block w-full pl-11 pr-4 py-3.5 rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-white/70 transition-all font-semibold">
                     </div>
                 </div>
-                <!-- Chunky 3D Button -->
                 <button type="submit" id="login-btn" class="w-full flex justify-center items-center py-3.5 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-1 transition-all shadow-lg hover:shadow-xl mt-6">
                     Masuk Sistem <i class="fa-solid fa-arrow-right ml-2"></i>
                 </button>
@@ -91,14 +90,12 @@
 
     <!-- APP LAYOUT -->
     <div id="app-layout" class="hidden h-full w-full flex flex-col overflow-hidden relative">
-        
         <!-- Top Navbar -->
         <header class="h-16 flex-shrink-0 bg-white/95 backdrop-blur-md shadow-sm z-50 border-b border-slate-200 px-4 md:px-6 flex justify-between items-center w-full">
             <div class="flex items-center space-x-3">
                 <button onclick="window.toggleMobileSidebar()" class="text-indigo-600 bg-indigo-50 md:hidden p-2.5 rounded-xl hover:bg-indigo-100 border border-indigo-100 shadow-sm transition">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
-                
                 <div class="flex items-center">
                     <div class="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-indigo-600 to-emerald-500 rounded-xl flex items-center justify-center text-white shadow-sm">
                         <i class="fa-solid fa-building-columns text-sm sm:text-lg"></i>
@@ -108,7 +105,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="flex items-center space-x-2 sm:space-x-4">
                 <span id="nav-username-display" class="text-sm font-bold text-slate-700 hidden sm:block border-slate-200 pl-4">User</span>
                 <button onclick="window.logout()" class="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white transition-colors duration-200 flex items-center">
@@ -342,6 +338,9 @@
                                 <button onclick="window.openQBModal()" class="flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 shadow-md transition">
                                     <i class="fa-solid fa-plus mr-2"></i> Tambah Manual
                                 </button>
+                                <button onclick="window.deleteSelectedBankQuestions()" class="flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-black text-white bg-rose-500 border-b-4 border-rose-700 hover:bg-rose-400 shadow-md transition">
+                                    <i class="fa-solid fa-trash mr-2"></i> Hapus Terpilih
+                                </button>
                             </div>
                         </div>
                         <div class="glass p-5 rounded-[2rem] shadow-sm">
@@ -349,6 +348,9 @@
                                 <table class="min-w-full divide-y divide-slate-200">
                                     <thead class="bg-slate-50">
                                         <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-10">
+                                                <input type="checkbox" id="qb-select-all" onchange="window.toggleAllBankQuestions(this)" class="w-4 h-4 text-indigo-600 rounded cursor-pointer">
+                                            </th>
                                             <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Pertanyaan & Opsi</th>
                                             <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Kategori</th>
                                             <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Kunci & Poin</th>
@@ -859,7 +861,7 @@
             </main>
         </div>
 
-        <!-- MOBILE BOTTOM NAVIGATION BAR (KHUSUS TAMPILAN HP) -->
+        <!-- MOBILE BOTTOM NAVIGATION BAR -->
         <div id="mobile-bottom-nav" class="md:hidden fixed bottom-0 inset-x-0 h-16 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex justify-around items-center px-2 shadow-lg">
             <button onclick="window.handleMobileNavClick('dashboard')" class="flex flex-col items-center justify-center flex-1 py-1 text-slate-500 hover:text-indigo-600">
                 <i class="fa-solid fa-house text-lg"></i>
@@ -942,6 +944,38 @@
             <button type="button" onclick="window.importSelectedBankQuestions()" class="w-full py-3 px-4 rounded-xl text-sm font-black text-white bg-emerald-500 hover:bg-emerald-600 shadow-md">Masukkan Soal Terpilih ke Kuis</button>
         </div>
     </div>
+    
+    <!-- MODAL PREVIEW IMPORT BANK SOAL -->
+    <div id="qb-preview-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-4xl w-full shadow-2xl relative max-h-[90vh] flex flex-col">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b pb-4 gap-4">
+                <div>
+                    <h3 class="text-xl font-black text-slate-800">Preview Import Soal</h3>
+                    <p class="text-sm font-semibold text-slate-500">Periksa soal dan sesuaikan poin secara kolektif sebelum menyimpan permanen.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="number" id="global-preview-points" placeholder="Set Semua Poin" class="w-32 rounded-xl border-slate-200 px-3 py-2 text-sm font-bold bg-slate-50 focus:ring-2 focus:ring-indigo-200">
+                    <button type="button" onclick="window.applyGlobalPreviewPoints()" class="py-2 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 hover:bg-indigo-600 shadow-md transition">Terapkan Poin</button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto mb-4 border rounded-xl bg-white shadow-inner">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50 sticky top-0 shadow-sm z-10">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Pertanyaan</th>
+                            <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase w-24">Poin</th>
+                            <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase w-16">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="qb-preview-body" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="window.closePreviewModal()" class="py-3 px-6 rounded-xl text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">Batal</button>
+                <button type="button" onclick="window.confirmImportQBCSV()" class="py-3 px-6 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 shadow-md transition">Import Sekarang</button>
+            </div>
+        </div>
+    </div>
 
     <!-- FIREBASE & APP LOGIC -->
     <script type="module">
@@ -969,6 +1003,9 @@
         let agentChartDataCache = []; let adminChartDataCache = [];
         let currentReportQuiz = null; let currentReportResults = []; let allQuizzesMap = {};
         let questionBankCache = []; 
+        
+        // Cache data untuk preview import
+        window.tempImportData = [];
 
         let inactivityTimer = null;
         const INACTIVITY_LIMIT = 5 * 60 * 1000; 
@@ -1009,7 +1046,6 @@
             } 
         };
 
-        // Handler untuk navigasi cepat bawah (Mobile)
         window.handleMobileNavClick = (action) => {
             if (!currentUser) return;
             if (currentUser.role === 'admin') {
@@ -1105,7 +1141,6 @@
             reader.readAsText(file);
         };
         
-        // FITUR BARU: Template CSV Khusus Bank Soal
         window.downloadQBTemplateCSV = () => {
             const csv = "Kategori,Pertanyaan,Opsi A,Opsi B,Opsi C,Opsi D,Kunci (A/B/C/D),Poin\nProduct Knowledge,Apa ibukota Provinsi NTB?,Jakarta,Bandung,Mataram,Bima,C,10\nSOP Penanganan,Berapa batas waktu SLA komplain?,1 Hari,2 Hari,5 Hari,14 Hari,D,10";
             const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
@@ -1114,27 +1149,22 @@
             URL.revokeObjectURL(url);
         };
 
-        // FITUR BARU: Proses Import CSV Langsung ke Database Bank Soal
-        window.processImportQBCSV = async () => {
+        // FITUR BARU: Modifikasi Proses Import untuk menampilkan modal preview terlebih dahulu
+        window.processImportQBCSV = () => {
             const fileInput = document.getElementById('import-qb-csv-file');
             if (!fileInput.files.length) return;
             
             const file = fileInput.files[0];
             const reader = new FileReader();
-            reader.onload = async (e) => {
-                showLoader("Mengimport ke Bank Soal...");
+            reader.onload = (e) => {
                 const text = e.target.result;
                 const rows = text.split('\n').filter(row => row.trim() !== '');
                 
-                let successCount = 0;
-                const importPromises = [];
-                
-                // Mulai dari i = 1 untuk melewati baris header (Kategori, Pertanyaan, Opsi...)
+                window.tempImportData = [];
                 for (let i = 1; i < rows.length; i++) {
                     const cols = parseCSVRow(rows[i]);
-                    // Validasi harus ada minimal 7 kolom (Kategori s/d Kunci)
                     if (cols.length >= 7) {
-                        const data = {
+                        window.tempImportData.push({
                             category: cols[0].trim() || 'Product Knowledge',
                             text: cols[1].trim(),
                             options: { 
@@ -1146,31 +1176,87 @@
                             correct: cols[6].toUpperCase().trim(),
                             points: cols[7] ? parseInt(cols[7]) : 10,
                             createdAt: new Date().toISOString()
-                        };
-                        // Simpan ke Firestore paralel array
-                        importPromises.push(addDoc(collection(db, "questionBank"), data));
-                        successCount++;
+                        });
                     }
                 }
                 
-                try {
-                    // Eksekusi semua upload bersamaan
-                    await Promise.all(importPromises);
-                    await loadQuestionBank(); // Refresh tabel Bank Soal
-                    hideLoader();
-                    
-                    if (successCount > 0) {
-                        alert(`Sukses! ${successCount} soal berhasil di-import dan disimpan permanen ke Bank Soal.`);
-                    } else {
-                        alert("Gagal membaca soal. Pastikan format file sesuai dengan template Bank Soal CSV.");
-                    }
-                } catch(err) {
-                    hideLoader();
-                    alert("Terjadi kesalahan saat menyimpan ke database: " + err.message);
+                if (window.tempImportData.length > 0) {
+                    window.renderImportPreview();
+                    document.getElementById('global-preview-points').value = '';
+                    document.getElementById('qb-preview-modal').classList.remove('hidden');
+                } else {
+                    alert("Gagal membaca soal. Pastikan format file sesuai dengan template Bank Soal CSV.");
                 }
                 fileInput.value = ''; // Reset file input
             };
             reader.readAsText(file);
+        };
+
+        // FITUR BARU: Preview Logic
+        window.closePreviewModal = () => {
+            document.getElementById('qb-preview-modal').classList.add('hidden');
+            window.tempImportData = [];
+        };
+
+        window.renderImportPreview = () => {
+            const tbody = document.getElementById('qb-preview-body');
+            tbody.innerHTML = '';
+            window.tempImportData.forEach((item, index) => {
+                tbody.innerHTML += `
+                <tr id="preview-row-${index}" class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 text-sm font-semibold text-slate-800">${escapeHTML(item.text)}</td>
+                    <td class="px-4 py-3 text-center">
+                        <input type="number" min="1" value="${item.points}" onchange="window.updatePreviewPoint(${index}, this.value)" class="w-16 text-center rounded-lg border-slate-200 px-2 py-1.5 text-sm font-bold bg-white focus:ring-2 focus:ring-indigo-200">
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <button onclick="window.removePreviewItem(${index})" class="text-rose-500 hover:text-rose-700 bg-rose-50 p-2 rounded-lg transition" title="Hapus dari antrean"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+                `;
+            });
+        };
+
+        window.updatePreviewPoint = (index, value) => {
+            const point = parseInt(value);
+            if(!isNaN(point) && point >= 1) window.tempImportData[index].points = point;
+        };
+
+        window.removePreviewItem = (index) => {
+            window.tempImportData.splice(index, 1);
+            window.renderImportPreview();
+            if(window.tempImportData.length === 0) {
+                alert("Semua data antrean import telah dihapus.");
+                window.closePreviewModal();
+            }
+        };
+
+        window.applyGlobalPreviewPoints = () => {
+            const point = parseInt(document.getElementById('global-preview-points').value);
+            if(isNaN(point) || point < 1) return alert("Masukkan nilai poin yang valid di kolom 'Set Semua Poin'!");
+            window.tempImportData.forEach(item => item.points = point);
+            window.renderImportPreview(); // Re-render dengan poin baru
+        };
+
+        // FITUR BARU: Simpan Soal dari Preview ke Database
+        window.confirmImportQBCSV = async () => {
+            if(window.tempImportData.length === 0) return alert("Tidak ada data untuk diimport.");
+            
+            showLoader("Menyimpan ke Bank Soal...");
+            try {
+                const importPromises = [];
+                window.tempImportData.forEach(data => {
+                    importPromises.push(addDoc(collection(db, "questionBank"), data));
+                });
+                
+                await Promise.all(importPromises);
+                window.closePreviewModal();
+                await loadQuestionBank();
+                hideLoader();
+                alert(`Sukses! ${window.tempImportData.length} soal berhasil di-import dan disimpan permanen ke Bank Soal.`);
+            } catch(err) {
+                hideLoader();
+                alert("Terjadi kesalahan saat menyimpan ke database: " + err.message);
+            }
         };
 
         async function loadGlobalSettings() {
@@ -1476,11 +1562,21 @@
                 questionBankCache = [];
                 const tbody = document.getElementById('question-bank-body');
                 tbody.innerHTML = '';
+                
+                // Reset checkbox select all
+                const selectAllChk = document.getElementById('qb-select-all');
+                if(selectAllChk) selectAllChk.checked = false;
+
                 snap.forEach(d => {
                     const q = { id: d.id, ...d.data() };
                     questionBankCache.push(q);
+                    
+                    // FITUR BARU: Tambahan kolom checkbox untuk Batch Delete
                     tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 border-b border-slate-100">
+                        <td class="px-4 py-3">
+                            <input type="checkbox" class="qb-del-checkbox w-4 h-4 text-indigo-600 rounded cursor-pointer" value="${d.id}">
+                        </td>
                         <td class="px-4 py-3 text-sm">
                             <span class="font-bold text-slate-800 block">${escapeHTML(q.text)}</span>
                             <span class="text-xs text-slate-500 block mt-1">A: ${escapeHTML(q.options.A)} | B: ${escapeHTML(q.options.B)} | C: ${escapeHTML(q.options.C)} | D: ${escapeHTML(q.options.D)}</span>
@@ -1494,10 +1590,43 @@
                     </tr>`;
                 });
                 if(questionBankCache.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-500 font-medium">Belum ada soal di Bank Soal.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-500 font-medium">Belum ada soal di Bank Soal.</td></tr>';
                 }
             } catch(e) {}
         }
+
+        // FITUR BARU: Logic Select All untuk Checkbox Hapus Sekaligus
+        window.toggleAllBankQuestions = (el) => {
+            const checks = document.querySelectorAll('.qb-del-checkbox');
+            checks.forEach(c => c.checked = el.checked);
+        };
+
+        // FITUR BARU: Hapus Terpilih
+        window.deleteSelectedBankQuestions = async () => {
+            const checks = document.querySelectorAll('.qb-del-checkbox:checked');
+            if(checks.length === 0) return alert("Pilih setidaknya satu soal dengan mencentang kotak di sebelahnya.");
+            
+            if(confirm(`Anda yakin ingin menghapus ${checks.length} soal terpilih secara permanen?`)) {
+                showLoader("Menghapus soal terpilih...");
+                try {
+                    const deletePromises = [];
+                    checks.forEach(c => {
+                        deletePromises.push(deleteDoc(doc(db, "questionBank", c.value)));
+                    });
+                    
+                    // Eksekusi semua secara paralel
+                    await Promise.all(deletePromises);
+                    
+                    document.getElementById('qb-select-all').checked = false;
+                    await loadQuestionBank();
+                    hideLoader();
+                    alert(`${checks.length} Soal berhasil dihapus.`);
+                } catch(err) {
+                    hideLoader();
+                    alert("Gagal menghapus beberapa soal: " + err.message);
+                }
+            }
+        };
 
         window.editBankQuestion = (id) => {
             const q = questionBankCache.find(item => item.id === id);
