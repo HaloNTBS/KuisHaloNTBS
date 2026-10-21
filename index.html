@@ -331,9 +331,18 @@
                                 <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Bank Soal Terpusat</h2>
                                 <p class="text-sm text-slate-500 font-semibold mt-1">Kelola bank soal yang dapat digunakan kembali untuk berbagai kuis.</p>
                             </div>
-                            <button onclick="window.openQBModal()" class="flex justify-center items-center py-3 px-5 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 shadow-md">
-                                <i class="fa-solid fa-plus mr-2"></i> Tambah Soal ke Bank
-                            </button>
+                            <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                                <button onclick="window.downloadQBTemplateCSV()" class="flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 shadow-sm transition">
+                                    <i class="fa-solid fa-download mr-2"></i> Template
+                                </button>
+                                <label class="flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 shadow-md cursor-pointer transition mb-0">
+                                    <i class="fa-solid fa-file-import mr-2"></i> Import CSV
+                                    <input type="file" id="import-qb-csv-file" accept=".csv" class="hidden" onchange="window.processImportQBCSV()">
+                                </label>
+                                <button onclick="window.openQBModal()" class="flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 shadow-md transition">
+                                    <i class="fa-solid fa-plus mr-2"></i> Tambah Manual
+                                </button>
+                            </div>
                         </div>
                         <div class="glass p-5 rounded-[2rem] shadow-sm">
                             <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
@@ -1092,6 +1101,74 @@
                     window.addQuestionField(); 
                 }
                 fileInput.value = ''; 
+            };
+            reader.readAsText(file);
+        };
+        
+        // FITUR BARU: Template CSV Khusus Bank Soal
+        window.downloadQBTemplateCSV = () => {
+            const csv = "Kategori,Pertanyaan,Opsi A,Opsi B,Opsi C,Opsi D,Kunci (A/B/C/D),Poin\nProduct Knowledge,Apa ibukota Provinsi NTB?,Jakarta,Bandung,Mataram,Bima,C,10\nSOP Penanganan,Berapa batas waktu SLA komplain?,1 Hari,2 Hari,5 Hari,14 Hari,D,10";
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const l = document.createElement("a"); l.href = url; l.download = "Template_Import_Bank_Soal.csv"; l.click();
+            URL.revokeObjectURL(url);
+        };
+
+        // FITUR BARU: Proses Import CSV Langsung ke Database Bank Soal
+        window.processImportQBCSV = async () => {
+            const fileInput = document.getElementById('import-qb-csv-file');
+            if (!fileInput.files.length) return;
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                showLoader("Mengimport ke Bank Soal...");
+                const text = e.target.result;
+                const rows = text.split('\n').filter(row => row.trim() !== '');
+                
+                let successCount = 0;
+                const importPromises = [];
+                
+                // Mulai dari i = 1 untuk melewati baris header (Kategori, Pertanyaan, Opsi...)
+                for (let i = 1; i < rows.length; i++) {
+                    const cols = parseCSVRow(rows[i]);
+                    // Validasi harus ada minimal 7 kolom (Kategori s/d Kunci)
+                    if (cols.length >= 7) {
+                        const data = {
+                            category: cols[0].trim() || 'Product Knowledge',
+                            text: cols[1].trim(),
+                            options: { 
+                                A: cols[2].trim(), 
+                                B: cols[3].trim(), 
+                                C: cols[4].trim(), 
+                                D: cols[5].trim() 
+                            },
+                            correct: cols[6].toUpperCase().trim(),
+                            points: cols[7] ? parseInt(cols[7]) : 10,
+                            createdAt: new Date().toISOString()
+                        };
+                        // Simpan ke Firestore paralel array
+                        importPromises.push(addDoc(collection(db, "questionBank"), data));
+                        successCount++;
+                    }
+                }
+                
+                try {
+                    // Eksekusi semua upload bersamaan
+                    await Promise.all(importPromises);
+                    await loadQuestionBank(); // Refresh tabel Bank Soal
+                    hideLoader();
+                    
+                    if (successCount > 0) {
+                        alert(`Sukses! ${successCount} soal berhasil di-import dan disimpan permanen ke Bank Soal.`);
+                    } else {
+                        alert("Gagal membaca soal. Pastikan format file sesuai dengan template Bank Soal CSV.");
+                    }
+                } catch(err) {
+                    hideLoader();
+                    alert("Terjadi kesalahan saat menyimpan ke database: " + err.message);
+                }
+                fileInput.value = ''; // Reset file input
             };
             reader.readAsText(file);
         };
