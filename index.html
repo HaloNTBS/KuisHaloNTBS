@@ -328,7 +328,6 @@
                                 <p class="text-sm text-slate-500 font-semibold mt-1">Kelola bank soal yang dapat digunakan kembali untuk berbagai kuis.</p>
                             </div>
                             <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-                                <!-- Dropdown Tampilan Soal yang Lebih Menarik -->
                                 <div class="relative flex-1 sm:flex-none group min-w-[140px]">
                                     <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400 group-hover:text-indigo-500 transition-colors">
                                         <i class="fa-solid fa-list-ol"></i>
@@ -363,12 +362,15 @@
                                 <table class="min-w-full divide-y divide-slate-200">
                                     <thead class="bg-slate-50">
                                         <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-10">
-                                                <input type="checkbox" id="qb-select-all" onchange="window.toggleAllBankQuestions(this)" class="w-4 h-4 text-indigo-600 rounded cursor-pointer">
+                                            <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-16 whitespace-nowrap">
+                                                <div class="flex items-center space-x-2">
+                                                    <input type="checkbox" id="qb-select-all" onchange="window.toggleAllBankQuestions(this)" class="w-4 h-4 text-indigo-600 rounded cursor-pointer">
+                                                    <span>No.</span>
+                                                </div>
                                             </th>
                                             <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Pertanyaan & Opsi</th>
                                             <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Kategori</th>
-                                            <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Kunci & Poin</th>
+                                            <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Kunci & Info</th>
                                             <th class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
@@ -955,8 +957,23 @@
                 <h3 class="text-xl font-black text-slate-800">Pilih Soal dari Bank Soal</h3>
                 <button onclick="window.closeQuizBankPicker()" class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-times text-lg"></i></button>
             </div>
+            <!-- Info Soal Terpilih & Total Poin -->
+            <div class="flex justify-between items-center bg-indigo-50 px-5 py-3.5 rounded-xl mb-4 border border-indigo-100 shadow-inner">
+                <div class="font-bold text-indigo-800 text-sm flex items-center">
+                    <i class="fa-solid fa-check-square mr-2.5 text-indigo-400"></i>Terpilih: 
+                    <span id="qb-picker-selected-count" class="text-xl font-black text-indigo-600 ml-1.5 mr-1">0</span> 
+                    <span class="text-[10px] uppercase tracking-wider text-indigo-500 mt-1">Soal</span>
+                </div>
+                <div class="font-bold text-indigo-800 text-sm flex items-center">
+                    <i class="fa-solid fa-star mr-2.5 text-amber-500"></i>Total Poin: 
+                    <span id="qb-picker-selected-score" class="text-xl font-black text-indigo-600 ml-1.5">0</span>
+                </div>
+            </div>
+            
             <div id="qb-picker-list" class="flex-1 overflow-y-auto space-y-3 pr-2 mb-4"></div>
-            <button type="button" onclick="window.importSelectedBankQuestions()" class="w-full py-3 px-4 rounded-xl text-sm font-black text-white bg-emerald-500 hover:bg-emerald-600 shadow-md">Masukkan Soal Terpilih ke Kuis</button>
+            <button type="button" onclick="window.importSelectedBankQuestions()" class="w-full py-4 px-4 rounded-xl text-sm font-black text-white bg-emerald-500 hover:bg-emerald-400 border-b-4 border-emerald-700 active:border-b-0 active:translate-y-1 shadow-md transition-all">
+                <i class="fa-solid fa-file-import mr-2"></i> Masukkan Soal Terpilih ke Kuis
+            </button>
         </div>
     </div>
     
@@ -1594,21 +1611,43 @@
             }
 
             let htmlString = '';
-            displayData.forEach(q => {
+            displayData.forEach((q, index) => {
+                // Menghitung berapa kali soal dipakai
+                let usageCount = 0;
+                Object.values(allQuizzesMap).forEach(quiz => {
+                    if(quiz.questions) {
+                        quiz.questions.forEach(quizQ => {
+                            if(quizQ.bankId === q.id || quizQ.text === q.text) usageCount++;
+                        });
+                    }
+                });
+
                 htmlString += `
-                <tr class="hover:bg-slate-50 border-b border-slate-100">
+                <tr class="hover:bg-slate-50 border-b border-slate-100 transition">
                     <td class="px-4 py-3">
-                        <input type="checkbox" class="qb-del-checkbox w-4 h-4 text-indigo-600 rounded cursor-pointer" value="${q.id}">
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" class="qb-del-checkbox w-4 h-4 text-indigo-600 rounded cursor-pointer shadow-sm" value="${q.id}">
+                            <span class="text-xs font-bold text-slate-500 w-5 text-right">${index + 1}.</span>
+                        </div>
                     </td>
                     <td class="px-4 py-3 text-sm">
-                        <span class="font-bold text-slate-800 block">${escapeHTML(q.text)}</span>
-                        <span class="text-xs text-slate-500 block mt-1">A: ${escapeHTML(q.options.A)} | B: ${escapeHTML(q.options.B)} | C: ${escapeHTML(q.options.C)} | D: ${escapeHTML(q.options.D)}</span>
+                        <span class="font-bold text-slate-800 block mb-1">${escapeHTML(q.text)}</span>
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-semibold border border-slate-200">A: ${escapeHTML(q.options.A)}</span>
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-semibold border border-slate-200">B: ${escapeHTML(q.options.B)}</span>
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-semibold border border-slate-200">C: ${escapeHTML(q.options.C)}</span>
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-semibold border border-slate-200">D: ${escapeHTML(q.options.D)}</span>
+                        </div>
                     </td>
                     <td class="px-4 py-3 text-center text-xs font-bold text-indigo-600">${escapeHTML(q.category)}</td>
-                    <td class="px-4 py-3 text-center text-xs font-bold"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">Kunci: ${q.correct}</span> (${q.points} Poin)</td>
-                    <td class="px-4 py-3 text-right">
-                        <button onclick="window.editBankQuestion('${q.id}')" class="text-indigo-600 bg-indigo-50 p-2 rounded-lg mr-1 hover:bg-indigo-100"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="window.deleteBankQuestion('${q.id}')" class="text-rose-500 bg-rose-50 p-2 rounded-lg hover:bg-rose-100"><i class="fa-solid fa-trash"></i></button>
+                    <td class="px-4 py-3 text-center text-xs font-bold">
+                        <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded block w-max mx-auto mb-1">Kunci: ${q.correct}</span> 
+                        <span class="text-slate-500 block">${q.points} Poin</span>
+                        <span class="${usageCount > 0 ? 'bg-sky-100 text-sky-700 border-sky-200' : 'bg-slate-100 text-slate-500 border-slate-200'} border px-2 py-0.5 rounded block w-max mx-auto mt-1 text-[10px]"><i class="fa-solid fa-link mr-1"></i>Digunakan: ${usageCount}x</span>
+                    </td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">
+                        <button onclick="window.editBankQuestion('${q.id}')" class="text-indigo-600 bg-indigo-50 p-2 rounded-lg mr-1 hover:bg-indigo-100 shadow-sm transition"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="window.deleteBankQuestion('${q.id}')" class="text-rose-500 bg-rose-50 p-2 rounded-lg hover:bg-rose-100 shadow-sm transition"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>`;
             });
@@ -1680,21 +1719,54 @@
             }
         };
 
+        // Fungsi menghitung total soal dan poin yang dipilih di modal Picker
+        window.updatePickerSummary = () => {
+            const checks = document.querySelectorAll('.picker-checkbox:checked');
+            let count = 0;
+            let score = 0;
+            checks.forEach(chk => {
+                const q = questionBankCache[parseInt(chk.value)];
+                if(q) {
+                    count++;
+                    score += parseInt(q.points) || 0;
+                }
+            });
+            const cEl = document.getElementById('qb-picker-selected-count');
+            const sEl = document.getElementById('qb-picker-selected-score');
+            if (cEl) cEl.innerText = count;
+            if (sEl) sEl.innerText = score;
+        };
+
         window.openQuizBankPicker = () => {
             if(questionBankCache.length === 0) return alert("Bank soal masih kosong. Tambahkan soal ke Bank Soal terlebih dahulu.");
             const listContainer = document.getElementById('qb-picker-list');
             let htmlString = '';
             questionBankCache.forEach((q, idx) => {
+                let usageCount = 0;
+                Object.values(allQuizzesMap).forEach(quiz => {
+                    if(quiz.questions) {
+                        quiz.questions.forEach(quizQ => {
+                            if(quizQ.bankId === q.id || quizQ.text === q.text) usageCount++;
+                        });
+                    }
+                });
+
                 htmlString += `
-                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-start space-x-3">
-                    <input type="checkbox" value="${idx}" class="picker-checkbox mt-1 h-4 w-4 text-indigo-600 rounded">
-                    <div class="text-xs font-semibold text-slate-700">
+                <div class="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex items-start space-x-3 cursor-pointer transition shadow-sm" onclick="const cb = this.querySelector('.picker-checkbox'); cb.checked = !cb.checked; window.updatePickerSummary();">
+                    <input type="checkbox" value="${idx}" class="picker-checkbox mt-1.5 h-4 w-4 text-indigo-600 rounded shadow-sm" onclick="event.stopPropagation(); window.updatePickerSummary();">
+                    <div class="text-xs font-black text-slate-400 mt-1 w-6 text-right shrink-0">${idx + 1}.</div>
+                    <div class="text-xs font-semibold text-slate-700 flex-1">
                         <p class="font-bold text-slate-900">${escapeHTML(q.text)}</p>
-                        <p class="text-slate-500 mt-0.5">Kunci: <span class="text-emerald-600 font-bold">${q.correct}</span> | Poin: ${q.points}</p>
+                        <div class="mt-2 flex flex-wrap gap-2 items-center">
+                            <span class="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">Kunci: ${q.correct}</span> 
+                            <span class="text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-100">Poin: ${q.points}</span>
+                            <span class="text-sky-600 font-bold bg-sky-50 px-2 py-0.5 rounded border border-sky-100"><i class="fa-solid fa-link mr-1"></i>Dipakai: ${usageCount}x</span>
+                        </div>
                     </div>
                 </div>`;
             });
             listContainer.innerHTML = htmlString;
+            window.updatePickerSummary(); // Update 0 state form display
             document.getElementById('qb-picker-modal').classList.remove('hidden');
         };
 
@@ -2109,9 +2181,11 @@
             const optD = escapeHTML(d && d.options ? (d.options.D || '') : '');
             const correctVal = d ? d.correct : 'A';
             const pointsVal = d ? d.points : 10;
+            const bankIdVal = d ? (d.bankId || d.id || '') : '';
 
             const html = `
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200" id="q-block-${qc}">
+                <input type="hidden" class="q-bank-id" value="${bankIdVal}">
                 <div class="flex justify-between mb-4">
                     <span class="font-black text-indigo-700">Soal #${qc}</span>
                     <button type="button" onclick="this.closest('.bg-white').remove(); window.calculateTotalScore();" class="text-rose-500 font-bold hover:text-rose-700 transition">Hapus</button>
@@ -2169,12 +2243,13 @@
                 const optD = b.querySelector('.q-opt-d').value.trim();
                 const correct = b.querySelector('.q-correct').value;
                 const points = parseInt(b.querySelector('.q-points').value) || 10;
+                const bankId = b.querySelector('.q-bank-id').value;
 
                 if (!text || !optA || !optB || !optC || !optD) {
                     alert(`Soal nomor ${index + 1} belum lengkap (pertanyaan atau pilihan opsi ada yang kosong).`);
                     isValidQuestions = false; return;
                 }
-                q.push({ text: text, options: { A: optA, B: optB, C: optC, D: optD }, correct: correct, points: points }); 
+                q.push({ text: text, options: { A: optA, B: optB, C: optC, D: optD }, correct: correct, points: points, bankId: bankId }); 
             }); 
             if (!isValidQuestions) return;
 
@@ -2599,3 +2674,14 @@
     </script>
 </body>
 </html>
+```eof
+
+### Detail Perubahan & Fitur yang Ditambahkan:
+1. **Penomoran pada Tabel Bank Soal Utama**: Saya telah menambahkan index dinamis untuk memberikan nomor berurutan pada tabel Bank Soal (No. 1, 2, dst) tepat di sebelah checkbox (kolom pertama).
+2. **Informasi "Berapa Kali Digunakan"**: Sistem sekarang akan secara otomatis membaca dan menghitung tiap kuis yang sudah dibuat untuk melihat berapa kali sebuah soal Bank Soal tersebut digunakan pada kuis aktif/draf. Informasinya tampil dengan tampilan badge ("Digunakan: Xx"). 
+3. **Penomoran & UX Pada Modal Ambil Soal (Picker)**:
+   - Kini, di jendela modal yang terbuka untuk memindahkan/memilih soal dari Bank Soal ke form pembuatan kuis, setiap item sudah diurutkan angkanya dari 1, 2, dst.
+   - Kotak soal dalam picker juga sekarang bisa diklik di area kosong (tidak hanya tepat pada checkbox-nya) agar lebih nyaman memilih.
+4. **Ringkasan Realtime (Soal Terpilih & Total Poin)**: Tepat di bagian atas Modal Ambil Soal, saya telah membuat fitur "Summary" yang secara seketika (*realtime*) berubah setiap kali Anda mencentang soal. Sistem akan otomatis menjumlahkan "Berapa soal yang dicentang" dan "Berapa total poin dari keseluruhan soal yang dicentang".
+
+Semua pembaruan tersebut diterapkan dalam barisan fungsi native yang mulus, ringan, dan tentunya tidak "merusak" maupun "menabrak" fungsi lainnya sama sekali.
