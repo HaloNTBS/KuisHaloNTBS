@@ -120,12 +120,12 @@
                     <!-- Dropdown Notifikasi -->
                     <div id="notif-dropdown" class="hidden absolute right-0 mt-3 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 z-[100] overflow-hidden origin-top-right transition-all transform opacity-100 scale-100">
                         <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-    <h4 class="font-black text-slate-800"><i class="fa-solid fa-bell text-indigo-500 mr-2"></i>Notifikasi</h4>
-    <div class="space-x-3">
-        <button onclick="window.markNotifAsRead()" class="text-[11px] text-emerald-600 font-black hover:underline bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100"><i class="fa-solid fa-check-double mr-1"></i>Mark Read</button>
-        <button onclick="window.toggleNotifications()" class="text-[11px] text-rose-500 font-bold hover:underline">Tutup</button>
-    </div>
-</div>
+                            <h4 class="font-black text-slate-800"><i class="fa-solid fa-bell text-indigo-500 mr-2"></i>Notifikasi</h4>
+                            <div class="space-x-3">
+                                <button onclick="window.markNotifAsRead()" class="text-[11px] text-emerald-600 font-black hover:underline bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100"><i class="fa-solid fa-check-double mr-1"></i>Mark Read</button>
+                                <button onclick="window.toggleNotifications()" class="text-[11px] text-rose-500 font-bold hover:underline">Tutup</button>
+                            </div>
+                        </div>
                         <div id="notif-list" class="max-h-80 overflow-y-auto divide-y divide-slate-100 bg-white custom-scrollbar">
                             <!-- List Notifikasi dimuat via JS -->
                         </div>
@@ -175,7 +175,6 @@
                         <div id="sub-assessment" class="submenu-transition pl-9 pr-2 space-y-1 mt-1">
                             <button onclick="window.switchAdminTab('quizzes')" id="tab-btn-admin-quizzes" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Manajemen Kuis</button>
                             <button onclick="window.switchAdminTab('question-bank')" id="tab-btn-admin-question-bank" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Bank Soal</button>
-                            <!-- Fitur 5: Ditambahkan sv-hidden di Tab Import CSV Kuis untuk supervisor -->
                             <button onclick="window.switchAdminTab('import-quiz')" id="tab-btn-admin-import-quiz" class="sv-hidden w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Import Kuis (CSV)</button>
                             <button onclick="window.switchAdminTab('assessment-remedial')" id="tab-btn-admin-assessment-remedial" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Data Remedial</button>
                         </div>
@@ -234,7 +233,7 @@
                             <button onclick="window.switchAgentTab('quizzes')" id="tab-btn-agent-quizzes" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Kuis Tersedia</button>
                             <button onclick="window.switchAgentTab('assessment-remedial')" id="tab-btn-agent-assessment-remedial" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Remedial Saya</button>
                             <button onclick="window.switchAgentTab('history')" id="tab-btn-agent-history" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Riwayat Assessment</button>
-							<button onclick="window.switchAgentTab('simulasi')" id="tab-btn-agent-simulasi" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Simulasi (Tryout)</button>
+                            <button onclick="window.switchAgentTab('simulasi')" id="tab-btn-agent-simulasi" class="w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50">Simulasi (Tryout)</button>
                         </div>
                     </div>
                     
@@ -769,7 +768,7 @@
                             </div>
                         </div>
 
-                        <!-- Fitur 4: Widget Tingkat Kepatuhan -->
+                        <!-- Widget Tingkat Kepatuhan -->
                         <div class="glass p-6 sm:p-8 rounded-[2rem] shadow-sm mt-6">
                             <div class="flex justify-between items-end mb-3">
                                 <div>
@@ -844,38 +843,37 @@
                                             <th class="px-5 py-4 text-right text-xs font-bold text-slate-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
-                                    <!-- Fitur 1: Kolom Aksi untuk Review Pembahasan -->
                                     <tbody id="agent-history-body" class="divide-y divide-slate-100"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-					<div id="agent-tab-simulasi" class="agent-tab-content hidden space-y-6">
-    <div class="mb-6 border-b border-slate-200 pb-4">
-        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Mode Simulasi (Tryout)</h2>
-        <p class="text-sm text-slate-500 mt-1 font-semibold">Berlatih menggunakan soal-soal ujian asli yang pernah digunakan sebelumnya.</p>
-    </div>
-    <div class="glass p-5 rounded-[2rem] shadow-sm">
-        <div class="flex justify-between items-center mb-4">
-            <span class="font-bold text-slate-700 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100" id="simulasi-selected-count">0 Soal Terpilih</span>
-            <button onclick="window.mulaiSimulasiKustom()" class="py-2.5 px-5 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 active:translate-y-1 shadow-md transition">
-                <i class="fa-solid fa-play mr-2"></i> Mulai Tryout
-            </button>
-        </div>
-        <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50">
-                    <tr>
-                        <th class="px-4 py-3 text-left w-12"><input type="checkbox" onchange="window.toggleAllSimulasi(this)" class="w-4 h-4 text-indigo-600 rounded"></th>
-                        <th class="px-4 py-3 text-left font-bold text-slate-500 uppercase">Pertanyaan Ujian</th>
-                        <th class="px-4 py-3 text-center font-bold text-slate-500 uppercase">Kategori & Poin</th>
-                    </tr>
-                </thead>
-                <tbody id="agent-simulasi-body" class="divide-y divide-slate-100"></tbody>
-            </table>
-        </div>
-    </div>
-</div>
+                    <div id="agent-tab-simulasi" class="agent-tab-content hidden space-y-6">
+                        <div class="mb-6 border-b border-slate-200 pb-4">
+                            <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Mode Simulasi (Tryout)</h2>
+                            <p class="text-sm text-slate-500 mt-1 font-semibold">Berlatih menggunakan soal-soal ujian asli yang pernah digunakan sebelumnya.</p>
+                        </div>
+                        <div class="glass p-5 rounded-[2rem] shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="font-bold text-slate-700 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100" id="simulasi-selected-count">0 Soal Terpilih</span>
+                                <button onclick="window.mulaiSimulasiKustom()" class="py-2.5 px-5 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 active:translate-y-1 shadow-md transition">
+                                    <i class="fa-solid fa-play mr-2"></i> Mulai Tryout
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left w-12"><input type="checkbox" onchange="window.toggleAllSimulasi(this)" class="w-4 h-4 text-indigo-600 rounded"></th>
+                                            <th class="px-4 py-3 text-left font-bold text-slate-500 uppercase">Pertanyaan Ujian</th>
+                                            <th class="px-4 py-3 text-center font-bold text-slate-500 uppercase">Kategori & Poin</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="agent-simulasi-body" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                     <div id="agent-tab-leaderboard" class="agent-tab-content hidden space-y-6">
                         <div class="mb-6 border-b border-slate-200 pb-4">
                             <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Leaderboard Umum</h2>
@@ -999,7 +997,6 @@
                 </div>
             </div>
             
-            <!-- Fitur 1: Tombol Lihat Pembahasan -->
             <button id="btn-show-review" onclick="window.showReviewFromResults()" class="mb-3 w-full flex justify-center items-center py-4 px-4 rounded-xl text-sm font-black text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 transition-all shadow-sm">
                 Lihat Pembahasan <i class="fa-solid fa-magnifying-glass ml-2"></i>
             </button>
@@ -1017,15 +1014,12 @@
                 <h3 class="text-2xl font-black text-slate-800 tracking-tight"><i class="fa-solid fa-book-open text-indigo-500 mr-2"></i>Pembahasan Soal</h3>
                 <button onclick="window.closeReviewModal()" class="text-slate-400 hover:text-rose-500 bg-slate-50 p-2 rounded-xl transition"><i class="fa-solid fa-times text-xl"></i></button>
             </div>
-            <div id="review-content" class="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                <!-- Konten Pembahasan diisi via JS -->
-            </div>
+            <div id="review-content" class="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar"></div>
         </div>
     </div>
 
     <!-- MODAL BANK SOAL -->
     <div id="qb-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
-        <!-- ... [Modals retained perfectly] ... -->
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-xl w-full shadow-2xl relative">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
                 <h3 class="text-xl font-black text-slate-800" id="qb-modal-title">Tambah Soal ke Bank</h3>
@@ -1052,13 +1046,11 @@
 
     <!-- MODAL PEMILIH BANK SOAL UNTUK KUIS -->
     <div id="qb-picker-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
-        <!-- ... [Modals retained perfectly] ... -->
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative max-h-[80vh] flex flex-col">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
                 <h3 class="text-xl font-black text-slate-800">Pilih Soal dari Bank Soal</h3>
                 <button onclick="window.closeQuizBankPicker()" class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-times text-lg"></i></button>
             </div>
-            <!-- Info Soal Terpilih & Total Poin -->
             <div class="flex justify-between items-center bg-indigo-50 px-5 py-3.5 rounded-xl mb-4 border border-indigo-100 shadow-inner">
                 <div class="font-bold text-indigo-800 text-sm flex items-center">
                     <i class="fa-solid fa-check-square mr-2.5 text-indigo-400"></i>Terpilih: 
@@ -1080,7 +1072,6 @@
     
     <!-- MODAL PREVIEW IMPORT BANK SOAL -->
     <div id="qb-preview-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
-        <!-- ... [Modals retained perfectly] ... -->
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-4xl w-full shadow-2xl relative max-h-[90vh] flex flex-col">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b pb-4 gap-4">
                 <div>
@@ -1138,7 +1129,6 @@
         let currentReportQuiz = null; let currentReportResults = []; let allQuizzesMap = {};
         let questionBankCache = []; 
         
-        // Cache data 
         window.tempImportData = [];
         window.pendingQuizzesCount = 0;
 
@@ -1196,16 +1186,16 @@
             }
         };
 
-        // Fitur 3: UI Notifikasi
         window.markNotifAsRead = () => {
-    document.getElementById('notif-badge').classList.add('hidden');
-    document.getElementById('notif-list').innerHTML = `
-        <div class="p-6 text-center">
-            <i class="fa-solid fa-box-open text-3xl text-slate-300 mb-2"></i>
-            <p class="text-sm font-bold text-slate-400">Semua notifikasi telah dibaca.</p>
-        </div>`;
-};
-		window.toggleNotifications = () => {
+            document.getElementById('notif-badge').classList.add('hidden');
+            document.getElementById('notif-list').innerHTML = `
+                <div class="p-6 text-center">
+                    <i class="fa-solid fa-box-open text-3xl text-slate-300 mb-2"></i>
+                    <p class="text-sm font-bold text-slate-400">Semua notifikasi telah dibaca.</p>
+                </div>`;
+        };
+
+        window.toggleNotifications = () => {
             const dropdown = document.getElementById('notif-dropdown');
             if (dropdown) dropdown.classList.toggle('hidden');
         };
@@ -1306,7 +1296,8 @@
                         const questionData = {
                             text: cols[0],
                             options: { A: cols[1], B: cols[2], C: cols[3], D: cols[4] },
-                            correct: cols[5].toUpperCase().trim(),
+                            // Validasi kunci jawaban: dibersihkan dan dipastikan huruf kapital
+                            correct: cols[5] ? cols[5].toUpperCase().trim() : 'A',
                             points: cols[6] ? parseInt(cols[6]) : 10
                         };
                         window.addQuestionField(questionData);
@@ -1351,7 +1342,8 @@
                             category: cols[0].trim() || 'Product Knowledge',
                             text: cols[1].trim(),
                             options: { A: cols[2].trim(), B: cols[3].trim(), C: cols[4].trim(), D: cols[5].trim() },
-                            correct: cols[6].toUpperCase().trim(),
+                            // Validasi kunci jawaban: dibersihkan dan dipastikan huruf kapital
+                            correct: cols[6] ? cols[6].toUpperCase().trim() : 'A',
                             points: cols[7] ? parseInt(cols[7]) : 10,
                             createdAt: new Date().toISOString()
                         });
@@ -1463,11 +1455,12 @@
         };
 
         window.updateUserPresence = async (status) => {
-    if(currentUser && currentUser.id) {
-        try { await updateDoc(doc(db, "users", currentUser.id), { presence: status }); } catch(e){}
-    }
-};
-		window.onload = async () => {
+            if(currentUser && currentUser.id) {
+                try { await updateDoc(doc(db, "users", currentUser.id), { presence: status }); } catch(e){}
+            }
+        };
+
+        window.onload = async () => {
             const savedUser = localStorage.getItem('currentUser');
             if (savedUser) { 
                 showLoader("Mempersiapkan Lingkungan...");
@@ -1511,7 +1504,7 @@
                     }
                     currentUser = { id: adminId, username: 'admin', fullName: 'System Administrator', password: 'admin123', role: 'admin', phone: '', email: 'admin@bankntbsyariah.co.id' }; 
                     localStorage.setItem('currentUser', JSON.stringify(currentUser)); 
-					window.updateUserPresence("Online");
+                    window.updateUserPresence("Online");
                     hideLoader(); routeUser();
                     resetInactivityTimer();
                 } else { 
@@ -1531,7 +1524,7 @@
             if(timerInterval) clearInterval(timerInterval); 
             if(inactivityTimer) clearTimeout(inactivityTimer);
             window.updateUserPresence("Offline");
-			currentUser = null; 
+            currentUser = null; 
             localStorage.removeItem('currentUser'); 
             document.body.classList.remove('is-supervisor');
             document.getElementById('app-layout').classList.add('hidden'); 
@@ -1567,7 +1560,6 @@
                 
                 if (isSv) {
                     document.getElementById('user-table-panel').classList.replace('xl:col-span-2', 'xl:col-span-3');
-                    // Fitur 5: Keamanan tambahan pastikan Supervisor tidak bisa klik menu import via JS
                     document.getElementById('tab-btn-admin-import-quiz').style.display = 'none';
                 } else {
                     document.getElementById('user-table-panel').classList.replace('xl:col-span-3', 'xl:col-span-2');
@@ -1652,7 +1644,6 @@
         };
 
         window.switchAdminTab = (tabName) => { 
-            // Perlindungan ekstra untuk Import (Supervisor)
             if (tabName === 'import-quiz' && currentUser.role === 'supervisor') return alert('Akses Ditolak.');
             
             document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden')); 
@@ -1746,7 +1737,7 @@
                     C: document.getElementById('qb-opt-c').value.trim(),
                     D: document.getElementById('qb-opt-d').value.trim()
                 },
-                correct: document.getElementById('qb-correct').value,
+                correct: document.getElementById('qb-correct').value.toUpperCase().trim(),
                 points: parseInt(document.getElementById('qb-points').value) || 10
             };
             showLoader("Menyimpan ke Bank Soal...");
@@ -2002,10 +1993,12 @@
             doc.save(`Kertas_Kerja_${res.agentFullName.replace(/\s+/g, '_')}_${qz.title.replace(/\s+/g, '_')}.pdf`);
         };
 
+        // REVISI PENGAMAN CHART: Mengecek keberadaan elemen canvas sebelum inisialisasi/destroy
         window.renderAdminChart = () => { 
+            const canvasEl = document.getElementById('adminTrendChart');
+            if(!canvasEl) return; 
             if(adminChartInstance) adminChartInstance.destroy(); 
-            const ctx = document.getElementById('adminTrendChart')?.getContext('2d'); 
-            if(!ctx) return; 
+            const ctx = canvasEl.getContext('2d'); 
             
             const filterEl = document.getElementById('admin-trend-filter');
             const filterVal = filterEl ? filterEl.value : 'all';
@@ -2043,9 +2036,10 @@
         };
 
         window.renderAgentComparisonChart = () => { 
+            const canvasEl = document.getElementById('agentComparisonChart');
+            if(!canvasEl) return; 
             if(adminComparisonChartInstance) adminComparisonChartInstance.destroy(); 
-            const ctx = document.getElementById('agentComparisonChart')?.getContext('2d'); 
-            if(!ctx) return; 
+            const ctx = canvasEl.getContext('2d'); 
             
             const stats = {}; 
             adminChartDataCache.forEach(r => { 
@@ -2065,9 +2059,10 @@
         };
 
         function renderAgentChart() { 
+            const canvasEl = document.getElementById('agentTrendChart');
+            if(!canvasEl) return; 
             if(agentChartInstance) agentChartInstance.destroy(); 
-            const ctx = document.getElementById('agentTrendChart')?.getContext('2d'); 
-            if(!ctx) return; 
+            const ctx = canvasEl.getContext('2d'); 
             const labels = agentChartDataCache.map(r => new Date(r.createdAt).toLocaleDateString('id-ID', {day:'numeric', month:'short'})); 
             const dataPoints = agentChartDataCache.map(r => Math.round((r.score / r.totalPoints) * 100)); 
             
@@ -2079,9 +2074,10 @@
         }
 
         function renderSkillRadar(history) { 
+            const canvasEl = document.getElementById('skillRadarChart');
+            if(!canvasEl) return; 
             if(skillRadarInstance) skillRadarInstance.destroy(); 
-            const ctx = document.getElementById('skillRadarChart')?.getContext('2d'); 
-            if(!ctx) return; 
+            const ctx = canvasEl.getContext('2d'); 
             const cats = { "Product Knowledge": [], "SOP Penanganan": [], "Regulasi & Anti-Fraud": [], "Sistem & Aplikasi": [] }; 
             history.forEach(h => { 
                 if(cats[h.category]) cats[h.category].push(Math.round((h.score / h.totalPoints) * 100)); 
@@ -2395,7 +2391,7 @@
             const optB = escapeHTML(d && d.options ? (d.options.B || '') : '');
             const optC = escapeHTML(d && d.options ? (d.options.C || '') : '');
             const optD = escapeHTML(d && d.options ? (d.options.D || '') : '');
-            const correctVal = d ? d.correct : 'A';
+            const correctVal = d && d.correct ? d.correct.toUpperCase().trim() : 'A';
             const pointsVal = d ? d.points : 10;
             const bankIdVal = d ? (d.bankId || d.id || '') : '';
 
@@ -2457,7 +2453,8 @@
                 const optB = b.querySelector('.q-opt-b').value.trim();
                 const optC = b.querySelector('.q-opt-c').value.trim();
                 const optD = b.querySelector('.q-opt-d').value.trim();
-                const correct = b.querySelector('.q-correct').value;
+                // Validasi kunci jawaban: memastikan kapital dan bersih dari spasi
+                const correct = b.querySelector('.q-correct').value.toUpperCase().trim();
                 const points = parseInt(b.querySelector('.q-points').value) || 10;
                 const bankId = b.querySelector('.q-bank-id').value;
 
@@ -2656,7 +2653,6 @@
                 const now = new Date();
                 let htmlString = '';
                 
-                // Fitur 4: Kebutuhan Completion Tracker
                 let totalActive = 0;
                 let doneActive = 0;
                 
@@ -2664,7 +2660,6 @@
                     const qz = d.data(); 
                     if (qz.status === 'Draft') return; 
                     
-                    // Simpan map kuis untuk Fitur Review History
                     allQuizzesMap[d.id] = qz;
                     
                     const s = new Date(qz.startTime); const e = new Date(qz.endTime); 
@@ -2679,7 +2674,6 @@
 
                     if (isSubmitted) { 
                         bl = "Sudah Dikerjakan"; bc = "bg-slate-200 text-slate-700"; cc = "opacity-80 border-slate-300"; 
-                        // Fitur 2: Izinkan Simulasi meskipun sudah dikerjakan
                         simBtn = `<button onclick="window.startQuiz('${d.id}', '${escapeHTML(qz.title)}', ${qz.duration}, true)" class="w-full mt-3 py-2 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition shadow-sm">Coba Ulang (Simulasi)</button>`;
                     } else if (now < s) { 
                         bl = "Belum Mulai"; bc = "bg-amber-100 text-amber-700"; cc = "opacity-80 cursor-not-allowed border-amber-300"; act = ""; 
@@ -2701,7 +2695,6 @@
                 });
                 container.innerHTML = htmlString;
                 
-                // Update Completion Tracker
                 window.pendingQuizzesCount = totalActive - doneActive;
                 let pct = totalActive > 0 ? Math.round((doneActive/totalActive)*100) : 100;
                 document.getElementById('completion-percentage').innerText = pct + '%';
@@ -2727,7 +2720,6 @@
                 h.forEach(r => {
                     const p = Math.round((r.score/r.totalPoints)*100);
                     ts += p;
-                    // Fitur 1: Tombol Review pada tabel history
                     const reviewBtn = `<button onclick="window.openHistoryReview('${r.quizId}', '${r.id}')" class="text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-indigo-100 transition whitespace-nowrap"><i class="fa-solid fa-magnifying-glass mr-1"></i> Pembahasan</button>`;
                     histHtml += `<tr><td class="px-5 py-4 font-bold">${r.quizTitle}</td><td class="px-5 py-4 text-sm font-semibold">${new Date(r.createdAt).toLocaleDateString()}</td><td class="px-5 py-4 text-center font-semibold">${formatDuration(r.durationSec)}</td><td class="px-5 py-4 text-center"><span class="px-3 py-1 font-black rounded ${p>=globalSettings.passingGrade?'bg-emerald-50 text-emerald-600':'bg-rose-50 text-rose-600'}">${p}%</span></td><td class="px-5 py-4 text-right">${reviewBtn}</td></tr>`;
                     
@@ -2757,7 +2749,6 @@
             } catch(e){}
         }
 
-        // Fungsi Fitur 1: Menampilkan Modal Review Pembahasan dari Riwayat
         window.openHistoryReview = async (quizId, resultId) => {
             showLoader("Menyiapkan Pembahasan...");
             try {
@@ -2776,7 +2767,6 @@
             hideLoader();
         };
 
-        // Fungsi Inti Render UI Pembahasan
         window.showReviewModal = (quizData, userAnswersArr) => {
             const container = document.getElementById('review-content');
             let htmlStr = '';
@@ -2803,7 +2793,6 @@
             });
             
             container.innerHTML = htmlStr;
-            // Jika dipanggil dari page results, sembunyikan results terlebih dahulu atau tumpuk di atasnya. (Kita tumpuk z-[1000])
             document.getElementById('review-modal').classList.remove('hidden');
         };
 
@@ -2811,7 +2800,6 @@
         
         window.showReviewFromResults = () => {
             if(!activeQuizData || !activeQuizData.lastAnswers) return alert("Data jawaban tidak tersedia.");
-            // Karena urutan activeQuizData.questions mungkin diacak, kita gunakan questionMap yang mencatat index saat dirender
             window.showReviewModal(activeQuizData, activeQuizData.lastAnswers);
         };
 
@@ -2871,7 +2859,6 @@
 
         window.refreshAgentData = async () => { showLoader(); await Promise.all([loadGlobalSettings(), loadQuizzesForAgent(), loadAgentHistoryAndTrend(), loadAgentLeaderboard()]); hideLoader(); loadNotifications(); };
 
-        // Modifikasi Fungsi Fitur 2: Support Mode Simulasi (Parameter isSimulation)
         window.startQuiz = async (quizId, quizTitle, durationMins, isSimulation = false) => {
             showLoader();
             
@@ -2895,7 +2882,7 @@
             let ss = JSON.parse(localStorage.getItem(sk)); let st, el=0;
             
             if (isSimulation) {
-                st = Date.now(); // Reset full for simulation
+                st = Date.now(); 
                 ss = null;
             } else {
                 if (ss && ss.quizId === quizId) { st = ss.startTime; el = Math.floor((Date.now() - st) / 1000); } else { st = Date.now(); localStorage.setItem(sk, JSON.stringify({ quizId: quizId, startTime: st, answers: {} })); }
@@ -2968,7 +2955,7 @@
         };
 
         window.saveTempAnswer = (quizId, idx, val, isSim) => { 
-            if(isSim) return; // Jangan di cache di localStorage jika simulasi
+            if(isSim) return; 
             const sk = `ongoing_quiz_${currentUser.username}_${quizId}`; 
             let ss = JSON.parse(localStorage.getItem(sk)); 
             if(ss) { 
@@ -2986,17 +2973,15 @@
             const timeT = Math.floor((Date.now() - activeQuizData.sessionStartTime) / 1000);
             let s = 0, c = 0, tp = 0; let aArr = []; 
 
-            // Gunakan array questions urutan aslinya agar sinkron di report/review
             activeQuizData.questions.forEach((q, i) => { 
                 tp += q.points; 
                 const sel = document.querySelector(`input[name="q-${i}"]:checked`); 
-                const ans = sel ? sel.value : "-"; 
+                const ans = sel ? sel.value.toUpperCase().trim() : "-"; 
                 aArr.push(ans); 
                 if (ans === q.correct) { s += q.points; c++; } 
             });
             const p = Math.round((s / tp) * 100);
 
-            // Simpan sementara di state memory (untuk fitur Review)
             activeQuizData.lastAnswers = aArr;
 
             if (!activeQuizData.isSimulation) {
@@ -3018,115 +3003,116 @@
             window.refreshAgentData(); window.switchAgentTab('dashboard'); 
             document.getElementById('main-content').scrollTo(0,0); 
         };
-    window.simulasiBankData = [];
-window.loadAgentSimulasiBank = async () => {
-    showLoader("Memuat Soal Tryout...");
-    try {
-        const qbSnap = await getDocs(collection(db, "questionBank"));
-        const qzSnap = await getDocs(collection(db, "quizzes"));
-        let usedBankIds = new Set();
-        let usedTexts = new Set();
-        
-        qzSnap.forEach(d => {
-            const qz = d.data();
-            if(qz.questions) {
-                qz.questions.forEach(q => {
-                    if(q.bankId) usedBankIds.add(q.bankId);
-                    if(q.text) usedTexts.add(q.text);
-                });
-            }
-        });
 
         window.simulasiBankData = [];
-        qbSnap.forEach(d => {
-            const q = { id: d.id, ...d.data() };
-            if (usedBankIds.has(q.id) || usedTexts.has(q.text)) {
-                window.simulasiBankData.push(q);
-            }
-        });
-        
-        const tbody = document.getElementById('agent-simulasi-body');
-        let html = '';
-        window.simulasiBankData.forEach((q, i) => {
-            html += `<tr class="hover:bg-slate-50">
-                <td class="px-4 py-3"><input type="checkbox" value="${i}" class="simulasi-cb w-4 h-4 text-indigo-600 rounded cursor-pointer" onchange="window.updateSimulasiCount()"></td>
-                <td class="px-4 py-3 font-semibold text-slate-800">${escapeHTML(q.text)}</td>
-                <td class="px-4 py-3 text-center">
-                    <span class="block text-xs font-bold text-indigo-600">${escapeHTML(q.category)}</span>
-                    <span class="text-[10px] text-amber-500 font-black">${q.points} Poin</span>
-                </td>
-            </tr>`;
-        });
-        if(window.simulasiBankData.length === 0) {
-            html = '<tr><td colspan="3" class="text-center py-6 text-slate-500 font-medium">Belum ada soal ujian yang tersedia untuk disimulasikan.</td></tr>';
-        }
-        tbody.innerHTML = html;
-        window.updateSimulasiCount();
-    } catch(e) { console.error(e); }
-    hideLoader();
-};
+        window.loadAgentSimulasiBank = async () => {
+            showLoader("Memuat Soal Tryout...");
+            try {
+                const qbSnap = await getDocs(collection(db, "questionBank"));
+                const qzSnap = await getDocs(collection(db, "quizzes"));
+                let usedBankIds = new Set();
+                let usedTexts = new Set();
+                
+                qzSnap.forEach(d => {
+                    const qz = d.data();
+                    if(qz.questions) {
+                        qz.questions.forEach(q => {
+                            if(q.bankId) usedBankIds.add(q.bankId);
+                            if(q.text) usedTexts.add(q.text);
+                        });
+                    }
+                });
 
-window.toggleAllSimulasi = (el) => {
-    document.querySelectorAll('.simulasi-cb').forEach(cb => cb.checked = el.checked);
-    window.updateSimulasiCount();
-};
+                window.simulasiBankData = [];
+                qbSnap.forEach(d => {
+                    const q = { id: d.id, ...d.data() };
+                    if (usedBankIds.has(q.id) || usedTexts.has(q.text)) {
+                        window.simulasiBankData.push(q);
+                    }
+                });
+                
+                const tbody = document.getElementById('agent-simulasi-body');
+                let html = '';
+                window.simulasiBankData.forEach((q, i) => {
+                    html += `<tr class="hover:bg-slate-50">
+                        <td class="px-4 py-3"><input type="checkbox" value="${i}" class="simulasi-cb w-4 h-4 text-indigo-600 rounded cursor-pointer" onchange="window.updateSimulasiCount()"></td>
+                        <td class="px-4 py-3 font-semibold text-slate-800">${escapeHTML(q.text)}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="block text-xs font-bold text-indigo-600">${escapeHTML(q.category)}</span>
+                            <span class="text-[10px] text-amber-500 font-black">${q.points} Poin</span>
+                        </td>
+                    </tr>`;
+                });
+                if(window.simulasiBankData.length === 0) {
+                    html = '<tr><td colspan="3" class="text-center py-6 text-slate-500 font-medium">Belum ada soal ujian yang tersedia untuk disimulasikan.</td></tr>';
+                }
+                tbody.innerHTML = html;
+                window.updateSimulasiCount();
+            } catch(e) { console.error(e); }
+            hideLoader();
+        };
 
-window.updateSimulasiCount = () => {
-    const cnt = document.querySelectorAll('.simulasi-cb:checked').length;
-    document.getElementById('simulasi-selected-count').innerText = `${cnt} Soal Terpilih`;
-};
+        window.toggleAllSimulasi = (el) => {
+            document.querySelectorAll('.simulasi-cb').forEach(cb => cb.checked = el.checked);
+            window.updateSimulasiCount();
+        };
 
-window.mulaiSimulasiKustom = () => {
-    const cbs = document.querySelectorAll('.simulasi-cb:checked');
-    if(cbs.length === 0) return alert("Pilih minimal 1 soal untuk melakukan simulasi tryout!");
-    
-    const selectedQ = [];
-    cbs.forEach(cb => selectedQ.push(window.simulasiBankData[cb.value]));
-    
-    activeQuizData = {
-        id: 'simulasi_custom_' + Date.now(),
-        title: 'Tryout Simulasi (Kustom)',
-        category: 'Simulasi',
-        sessionStartTime: Date.now(),
-        questions: selectedQ,
-        questionMap: selectedQ.map((q, idx) => ({ ...q, originalIndex: idx })),
-        isSimulation: true
-    };
+        window.updateSimulasiCount = () => {
+            const cnt = document.querySelectorAll('.simulasi-cb:checked').length;
+            document.getElementById('simulasi-selected-count').innerText = `${cnt} Soal Terpilih`;
+        };
 
-    document.getElementById('quiz-interface').classList.remove('hidden');
-    document.getElementById('main-content').scrollTo(0,0);
-    document.getElementById('main-content').classList.add('overflow-hidden');
-    document.getElementById('active-quiz-title').innerText = activeQuizData.title;
-    document.getElementById('active-quiz-subtitle').innerText = "MODE TRYOUT: TIDAK MASUK LEADERBOARD";
-    document.getElementById('active-quiz-subtitle').className = "text-sm font-black text-amber-600 uppercase tracking-widest bg-amber-100 px-3 py-1 rounded-md border border-amber-200 inline-block";
+        window.mulaiSimulasiKustom = () => {
+            const cbs = document.querySelectorAll('.simulasi-cb:checked');
+            if(cbs.length === 0) return alert("Pilih minimal 1 soal untuk melakukan simulasi tryout!");
+            
+            const selectedQ = [];
+            cbs.forEach(cb => selectedQ.push(window.simulasiBankData[cb.value]));
+            
+            activeQuizData = {
+                id: 'simulasi_custom_' + Date.now(),
+                title: 'Tryout Simulasi (Kustom)',
+                category: 'Simulasi',
+                sessionStartTime: Date.now(),
+                questions: selectedQ,
+                questionMap: selectedQ.map((q, idx) => ({ ...q, originalIndex: idx })),
+                isSimulation: true
+            };
 
-    let htmlString = '';
-    activeQuizData.questionMap.forEach((q, renderIndex) => {
-        const i = q.originalIndex;
-        htmlString += `
-        <div class="bg-white p-6 sm:p-10 rounded-[2rem] border-2 border-slate-100 shadow-xl mb-8 relative">
-            <p class="font-black text-xl sm:text-2xl text-slate-800 mb-8"><span class="text-indigo-400 mr-2">Q${renderIndex+1}.</span> ${escapeHTML(q.text)}</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                ${['A','B','C','D'].map(opt => `
-                <label class="cursor-pointer group relative">
-                    <input type="radio" name="q-${i}" value="${opt}" onchange="window.saveTempAnswer('${activeQuizData.id}', ${i}, '${opt}', true)" class="peer sr-only">
-                    <div class="h-full flex items-center p-5 rounded-2xl bg-white border-2 border-slate-200 text-slate-700 font-bold text-lg shadow-sm transition-all peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-600 hover:-translate-y-1 hover:border-indigo-400">
-                        <div class="w-10 h-10 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center mr-4 peer-checked:bg-indigo-600 peer-checked:text-white shrink-0">${opt}</div>
-                        <span class="break-words flex-1">${escapeHTML(q.options[opt])}</span>
+            document.getElementById('quiz-interface').classList.remove('hidden');
+            document.getElementById('main-content').scrollTo(0,0);
+            document.getElementById('main-content').classList.add('overflow-hidden');
+            document.getElementById('active-quiz-title').innerText = activeQuizData.title;
+            document.getElementById('active-quiz-subtitle').innerText = "MODE TRYOUT: TIDAK MASUK LEADERBOARD";
+            document.getElementById('active-quiz-subtitle').className = "text-sm font-black text-amber-600 uppercase tracking-widest bg-amber-100 px-3 py-1 rounded-md border border-amber-200 inline-block";
+
+            let htmlString = '';
+            activeQuizData.questionMap.forEach((q, renderIndex) => {
+                const i = q.originalIndex;
+                htmlString += `
+                <div class="bg-white p-6 sm:p-10 rounded-[2rem] border-2 border-slate-100 shadow-xl mb-8 relative">
+                    <p class="font-black text-xl sm:text-2xl text-slate-800 mb-8"><span class="text-indigo-400 mr-2">Q${renderIndex+1}.</span> ${escapeHTML(q.text)}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        ${['A','B','C','D'].map(opt => `
+                        <label class="cursor-pointer group relative">
+                            <input type="radio" name="q-${i}" value="${opt}" onchange="window.saveTempAnswer('${activeQuizData.id}', ${i}, '${opt}', true)" class="peer sr-only">
+                            <div class="h-full flex items-center p-5 rounded-2xl bg-white border-2 border-slate-200 text-slate-700 font-bold text-lg shadow-sm transition-all peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-600 hover:-translate-y-1 hover:border-indigo-400">
+                                <div class="w-10 h-10 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center mr-4 peer-checked:bg-indigo-600 peer-checked:text-white shrink-0">${opt}</div>
+                                <span class="break-words flex-1">${escapeHTML(q.options[opt])}</span>
+                            </div>
+                        </label>`).join('')}
                     </div>
-                </label>`).join('')}
-            </div>
-        </div>`;
-    });
-    document.getElementById('quiz-questions-form').innerHTML = htmlString;
-    
-    const disp = document.getElementById('timer-display');
-    let rem = 60 * 60;
-    const upd = () => { let m = Math.floor(rem / 60).toString().padStart(2, '0'); let s = (rem % 60).toString().padStart(2, '0'); disp.innerText = `${m}:${s}`; };
-    upd();
-    if(window.timerInterval) clearInterval(window.timerInterval);
-    window.timerInterval = setInterval(() => { rem--; upd(); if(rem<=0) { clearInterval(window.timerInterval); window.submitQuiz(true); } }, 1000);
-};
-	</script>
+                </div>`;
+            });
+            document.getElementById('quiz-questions-form').innerHTML = htmlString;
+            
+            const disp = document.getElementById('timer-display');
+            let rem = 60 * 60;
+            const upd = () => { let m = Math.floor(rem / 60).toString().padStart(2, '0'); let s = (rem % 60).toString().padStart(2, '0'); disp.innerText = `${m}:${s}`; };
+            upd();
+            if(window.timerInterval) clearInterval(window.timerInterval);
+            window.timerInterval = setInterval(() => { rem--; upd(); if(rem<=0) { clearInterval(window.timerInterval); window.submitQuiz(true); } }, 1000);
+        };
+    </script>
 </body>
 </html>
