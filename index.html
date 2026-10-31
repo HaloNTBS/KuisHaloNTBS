@@ -2670,27 +2670,25 @@
                         if (isSubmitted) doneActive++;
                     }
 
-                    let bl, bc, cc, act, simBtn = "";
+                    let bl, bc, cc, act = "";
 
                     if (isSubmitted) { 
                         bl = "Sudah Dikerjakan"; bc = "bg-slate-200 text-slate-700"; cc = "opacity-80 border-slate-300"; 
-                        simBtn = `<button onclick="window.startQuiz('${d.id}', '${escapeHTML(qz.title)}', ${qz.duration}, true)" class="w-full mt-3 py-2 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition shadow-sm">Coba Ulang (Simulasi)</button>`;
                     } else if (now < s) { 
-                        bl = "Belum Mulai"; bc = "bg-amber-100 text-amber-700"; cc = "opacity-80 cursor-not-allowed border-amber-300"; act = ""; 
+                        bl = "Belum Mulai"; bc = "bg-amber-100 text-amber-700"; cc = "opacity-80 cursor-not-allowed border-amber-300"; 
                     } else if (now > e) { 
-                        bl = "Ditutup"; bc = "bg-rose-100 text-rose-700"; cc = "opacity-60 cursor-not-allowed border-rose-300"; act = ""; 
+                        bl = "Ditutup"; bc = "bg-rose-100 text-rose-700"; cc = "opacity-60 cursor-not-allowed border-rose-300"; 
                     } else { 
                         bl = "Kerjakan Kuis"; bc = "bg-indigo-100 text-indigo-700"; cc = "border-indigo-500 shadow-md hover:-translate-y-2 hover:shadow-xl transition-all"; 
                         act = `<button onclick="window.startQuiz('${d.id}', '${escapeHTML(qz.title)}', ${qz.duration}, false)" class="w-full mt-4 py-2.5 rounded-xl text-sm font-black text-white bg-indigo-500 hover:bg-indigo-400 border-b-4 border-indigo-700 active:border-b-0 active:translate-y-1 transition shadow-sm">Mulai Ujian</button>`; 
-                        simBtn = `<button onclick="window.startQuiz('${d.id}', '${escapeHTML(qz.title)}', ${qz.duration}, true)" class="w-full mt-2 py-2 rounded-xl text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 transition shadow-sm">Tryout Mode (Simulasi)</button>`;
                     }
+                    
                     htmlString += `
                     <div class="glass p-6 sm:p-8 rounded-[2rem] border-t-8 ${cc}">
                         <div class="mb-4"><span class="text-xs font-black px-3 py-1.5 rounded-lg ${bc}">${bl}</span></div>
                         <h3 class="text-xl font-black text-slate-800 tracking-tight leading-tight">${qz.title}</h3>
                         <p class="mt-4 text-sm font-bold text-slate-500">${qz.questions.length} Soal • ${qz.duration} Menit</p>
-                        ${act || ''}
-                        ${simBtn}
+                        ${act}
                     </div>`;
                 });
                 container.innerHTML = htmlString;
