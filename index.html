@@ -36,6 +36,10 @@
         .submenu-open { max-height: 500px; opacity: 1; }
         @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .badge-card { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        
+        /* Supervisor Access Control Styles */
+        body.is-supervisor .sv-hidden { display: none !important; }
+        body.is-supervisor .sv-expand { grid-column: span 3 / span 3 !important; }
     </style>
 </head>
 <body class="text-slate-800 antialiased h-screen w-screen overflow-hidden flex flex-col">
@@ -137,7 +141,7 @@
                         <i class="fa-solid fa-house w-5 text-center"></i> <span>Dashboard</span>
                     </button>
                     <button onclick="window.switchAdminTab('users')" id="tab-btn-admin-users" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-users-gear w-5 text-center"></i> <span>Manajemen Agen</span>
+                        <i class="fa-solid fa-users-gear w-5 text-center"></i> <span>Manajemen User</span>
                     </button>
                     
                     <div class="pt-1">
@@ -289,27 +293,35 @@
                     </div>
 
                     <div id="admin-tab-users" class="admin-tab-content hidden space-y-6">
-                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Manajemen Agen</h2>
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Manajemen User & Hak Akses</h2>
                         <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                            <div class="xl:col-span-1 glass p-5 sm:p-8 rounded-[2rem] shadow-sm h-fit">
-                                <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-user-plus mr-2 text-indigo-500"></i>Registrasi Agen</h3>
-                                <form onsubmit="window.createAgent(event)" class="space-y-4">
-                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Lengkap</label><input type="text" id="agent-fullname" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200"></div>
-                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Username Akun</label><input type="text" id="agent-username" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200"></div>
-                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label><input type="text" id="agent-password" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200"></div>
+                            <div id="user-reg-panel" class="xl:col-span-1 glass p-5 sm:p-8 rounded-[2rem] shadow-sm h-fit sv-hidden">
+                                <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-user-plus mr-2 text-indigo-500"></i>Registrasi User Baru</h3>
+                                <form onsubmit="window.createUser(event)" class="space-y-4">
+                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Lengkap</label><input type="text" id="reg-fullname" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200"></div>
+                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Username Akun</label><input type="text" id="reg-username" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200"></div>
+                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label><input type="text" id="reg-password" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200"></div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Role & Hak Akses</label>
+                                        <select id="reg-role" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white focus:ring-2 focus:ring-indigo-200 font-bold text-slate-700">
+                                            <option value="agent">Agen (Peserta Ujian)</option>
+                                            <option value="supervisor">Supervisor (View Only)</option>
+                                            <option value="admin">Administrator (Full Access)</option>
+                                        </select>
+                                    </div>
                                     <button type="submit" class="w-full flex justify-center items-center py-3.5 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 hover:border-indigo-600 active:border-b-0 active:translate-y-1 transition-all shadow-md mt-2">
                                         <i class="fa-solid fa-save mr-2"></i> Simpan Data
                                     </button>
                                 </form>
                             </div>
-                            <div class="xl:col-span-2 glass p-5 sm:p-8 rounded-[2rem] shadow-sm">
-                                <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-address-book mr-2 text-indigo-500"></i>Daftar Agen Aktif</h3>
+                            <div id="user-table-panel" class="xl:col-span-2 glass p-5 sm:p-8 rounded-[2rem] shadow-sm sv-expand">
+                                <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-address-book mr-2 text-indigo-500"></i>Daftar User Sistem Aktif</h3>
                                 <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
                                     <table class="min-w-full divide-y divide-slate-200">
                                         <thead class="bg-slate-50">
                                             <tr>
                                                 <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Nama Lengkap</th>
-                                                <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Username</th>
+                                                <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Username & Role</th>
                                                 <th class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Aksi</th>
                                             </tr>
                                         </thead>
@@ -342,17 +354,17 @@
                                         <i class="fa-solid fa-chevron-down text-xs"></i>
                                     </div>
                                 </div>
-                                <button onclick="window.downloadQBTemplateCSV()" class="flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 shadow-sm transition">
+                                <button onclick="window.downloadQBTemplateCSV()" class="sv-hidden flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 shadow-sm transition">
                                     <i class="fa-solid fa-download mr-2"></i> Template
                                 </button>
-                                <label class="flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 shadow-md cursor-pointer transition mb-0">
+                                <label class="sv-hidden flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 shadow-md cursor-pointer transition mb-0">
                                     <i class="fa-solid fa-file-import mr-2"></i> Import CSV
                                     <input type="file" id="import-qb-csv-file" accept=".csv" class="hidden" onchange="window.processImportQBCSV()">
                                 </label>
-                                <button onclick="window.openQBModal()" class="flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 shadow-md transition">
+                                <button onclick="window.openQBModal()" class="sv-hidden flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 shadow-md transition">
                                     <i class="fa-solid fa-plus mr-2"></i> Tambah Manual
                                 </button>
-                                <button onclick="window.deleteSelectedBankQuestions()" class="flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-black text-white bg-rose-500 border-b-4 border-rose-700 hover:bg-rose-400 shadow-md transition">
+                                <button onclick="window.deleteSelectedBankQuestions()" class="sv-hidden flex-1 sm:flex-none flex justify-center items-center py-3 px-4 rounded-xl text-sm font-black text-white bg-rose-500 border-b-4 border-rose-700 hover:bg-rose-400 shadow-md transition">
                                     <i class="fa-solid fa-trash mr-2"></i> Hapus Terpilih
                                 </button>
                             </div>
@@ -364,7 +376,7 @@
                                         <tr>
                                             <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase w-16 whitespace-nowrap">
                                                 <div class="flex items-center space-x-2">
-                                                    <input type="checkbox" id="qb-select-all" onchange="window.toggleAllBankQuestions(this)" class="w-4 h-4 text-indigo-600 rounded cursor-pointer">
+                                                    <input type="checkbox" id="qb-select-all" onchange="window.toggleAllBankQuestions(this)" class="w-4 h-4 text-indigo-600 rounded cursor-pointer sv-hidden">
                                                     <span>No.</span>
                                                 </div>
                                             </th>
@@ -384,10 +396,10 @@
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                             <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Manajemen Kuis</h2>
                             <div class="flex gap-2 w-full sm:w-auto">
-                                <button onclick="window.switchAdminTab('import-quiz')" class="flex-1 sm:flex-none flex justify-center items-center py-3 px-5 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 shadow-md">
+                                <button onclick="window.switchAdminTab('import-quiz')" class="sv-hidden flex-1 sm:flex-none flex justify-center items-center py-3 px-5 rounded-xl text-sm font-black text-white bg-emerald-500 border-b-4 border-emerald-700 hover:bg-emerald-400 shadow-md">
                                     <i class="fa-solid fa-file-csv mr-2"></i> Import CSV
                                 </button>
-                                <button onclick="window.prepareCreateQuiz()" class="flex-1 sm:flex-none flex justify-center items-center py-3 px-5 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 shadow-md">
+                                <button onclick="window.prepareCreateQuiz()" class="sv-hidden flex-1 sm:flex-none flex justify-center items-center py-3 px-5 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 shadow-md">
                                     <i class="fa-solid fa-plus mr-2"></i> Buat Kuis
                                 </button>
                             </div>
@@ -682,7 +694,7 @@
                                         <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                                     </label>
                                 </div>
-                                <button type="submit" class="w-full flex justify-center items-center py-4 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 shadow-md mt-4">
+                                <button type="submit" class="sv-hidden w-full flex justify-center items-center py-4 px-4 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 shadow-md mt-4">
                                     <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Simpan Pengaturan Sistem
                                 </button>
                             </form>
@@ -690,10 +702,10 @@
                     </div>
 
                     <div id="admin-tab-profile" class="admin-tab-content hidden space-y-6">
-                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Profil Administrator</h2>
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Profil Akses</h2>
                         <div class="glass p-6 sm:p-10 rounded-[2rem] shadow-sm max-w-2xl">
                             <form onsubmit="window.updateProfile(event)" class="space-y-5">
-                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Administrator</label><input type="text" id="profile-fullname" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white font-bold shadow-sm focus:ring-2 focus:ring-indigo-200"></div>
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Pengguna</label><input type="text" id="profile-fullname" required class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white font-bold shadow-sm focus:ring-2 focus:ring-indigo-200"></div>
                                 <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nomor Handphone</label><input type="tel" id="profile-phone" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white shadow-sm focus:ring-2 focus:ring-indigo-200 font-semibold"></div>
                                 <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Alamat Email</label><input type="email" id="profile-email" class="w-full rounded-xl border-slate-200 px-4 py-3 bg-white shadow-sm focus:ring-2 focus:ring-indigo-200 font-semibold"></div>
                                 
@@ -1080,7 +1092,7 @@
 
         window.handleMobileNavClick = (action) => {
             if (!currentUser) return;
-            if (currentUser.role === 'admin') {
+            if (currentUser.role === 'admin' || currentUser.role === 'supervisor') {
                 if (action === 'dashboard') window.switchAdminTab('overview');
                 else if (action === 'assessment') window.switchAdminTab('quizzes');
                 else if (action === 'leaderboard') window.switchAdminTab('leaderboard');
@@ -1379,6 +1391,7 @@
             if(inactivityTimer) clearTimeout(inactivityTimer);
             currentUser = null; 
             localStorage.removeItem('currentUser'); 
+            document.body.classList.remove('is-supervisor');
             document.getElementById('app-layout').classList.add('hidden'); 
             const overlay = document.getElementById('sidebar-overlay'); 
             if(overlay && !overlay.classList.contains('hidden')) window.toggleMobileSidebar(); 
@@ -1392,8 +1405,11 @@
             document.getElementById('nav-username-display').innerText = currentUser.fullName; 
             document.getElementById('sidebar-name-display').innerText = currentUser.fullName;
 
-            if (currentUser.role === 'admin') {
-                document.getElementById('sidebar-title').innerText = "Admin Panel"; 
+            if (currentUser.role === 'admin' || currentUser.role === 'supervisor') {
+                const isSv = currentUser.role === 'supervisor';
+                document.body.classList.toggle('is-supervisor', isSv);
+                
+                document.getElementById('sidebar-title').innerText = isSv ? "Supervisor Panel" : "Admin Panel"; 
                 document.getElementById('agent-menu').classList.add('hidden'); 
                 document.getElementById('agent-views').classList.add('hidden'); 
                 document.getElementById('admin-menu').classList.remove('hidden'); 
@@ -1403,18 +1419,29 @@
                 document.getElementById('profile-phone').value = currentUser.phone || ''; 
                 document.getElementById('profile-email').value = currentUser.email || '';
                 
+                document.getElementById('setting-passing-grade').disabled = isSv;
+                document.getElementById('setting-max-remedial').disabled = isSv;
+                document.getElementById('setting-random-question').disabled = isSv;
+                
+                if (isSv) {
+                    document.getElementById('user-table-panel').classList.replace('xl:col-span-2', 'xl:col-span-3');
+                } else {
+                    document.getElementById('user-table-panel').classList.replace('xl:col-span-3', 'xl:col-span-2');
+                }
+                
                 document.getElementById('setting-passing-grade').value = globalSettings.passingGrade;
                 document.getElementById('setting-max-remedial').value = globalSettings.maxRemedial;
                 document.getElementById('setting-random-question').checked = globalSettings.randomQuestions;
                 const rLabel = document.getElementById('label-admin-remedial'); 
                 if(rLabel) rLabel.innerText = "Batas Lulus: " + globalSettings.passingGrade + "%";
 
-                showLoader("Menyiapkan Dasbor Admin..."); 
+                showLoader("Menyiapkan Dasbor..."); 
                 try { 
                     await Promise.all([ loadAdminOverviewAndAnalytics(), loadAdminUsers(), loadAdminQuizzes(), loadQuestionBank() ]); 
                 } catch(e) {} 
                 hideLoader(); window.switchAdminTab('overview');
             } else {
+                document.body.classList.remove('is-supervisor');
                 document.getElementById('sidebar-title').innerText = "Ruang Agen"; 
                 document.getElementById('admin-menu').classList.add('hidden'); 
                 document.getElementById('admin-views').classList.add('hidden'); 
@@ -1435,12 +1462,12 @@
 
         window.updateProfile = async (e) => { 
             e.preventDefault(); 
-            const isAdm = currentUser.role === 'admin'; 
-            const fn = document.getElementById(isAdm ? 'profile-fullname' : 'agent-profile-fullname').value; 
-            const ph = document.getElementById(isAdm ? 'profile-phone' : 'agent-profile-phone').value; 
-            const em = document.getElementById(isAdm ? 'profile-email' : 'agent-profile-email').value; 
-            const np = document.getElementById(isAdm ? 'profile-new-password' : 'agent-profile-new-password').value; 
-            const cp = document.getElementById(isAdm ? 'profile-current-password' : 'agent-profile-current-password').value; 
+            const isStaff = currentUser.role === 'admin' || currentUser.role === 'supervisor'; 
+            const fn = document.getElementById(isStaff ? 'profile-fullname' : 'agent-profile-fullname').value; 
+            const ph = document.getElementById(isStaff ? 'profile-phone' : 'agent-profile-phone').value; 
+            const em = document.getElementById(isStaff ? 'profile-email' : 'agent-profile-email').value; 
+            const np = document.getElementById(isStaff ? 'profile-new-password' : 'agent-profile-new-password').value; 
+            const cp = document.getElementById(isStaff ? 'profile-current-password' : 'agent-profile-current-password').value; 
             
             let updateData = { fullName: fn, phone: ph, email: em }; 
             
@@ -1465,8 +1492,8 @@
                 document.getElementById('nav-username-display').innerText = fn; 
                 document.getElementById('sidebar-name-display').innerText = fn; 
                 
-                document.getElementById(isAdm ? 'profile-current-password' : 'agent-profile-current-password').value = "";
-                document.getElementById(isAdm ? 'profile-new-password' : 'agent-profile-new-password').value = "";
+                document.getElementById(isStaff ? 'profile-current-password' : 'agent-profile-current-password').value = "";
+                document.getElementById(isStaff ? 'profile-new-password' : 'agent-profile-new-password').value = "";
                 
                 hideLoader(); 
                 alert("Profil berhasil diperbarui!"); 
@@ -1612,7 +1639,6 @@
 
             let htmlString = '';
             displayData.forEach((q, index) => {
-                // Menghitung berapa kali soal dipakai
                 let usageCount = 0;
                 Object.values(allQuizzesMap).forEach(quiz => {
                     if(quiz.questions) {
@@ -1622,11 +1648,19 @@
                     }
                 });
 
+                let actionHtml = '-';
+                let checkboxHtml = '';
+                if (currentUser.role !== 'supervisor') {
+                    checkboxHtml = `<input type="checkbox" class="qb-del-checkbox w-4 h-4 text-indigo-600 rounded cursor-pointer shadow-sm" value="${q.id}">`;
+                    actionHtml = `<button onclick="window.editBankQuestion('${q.id}')" class="text-indigo-600 bg-indigo-50 p-2 rounded-lg mr-1 hover:bg-indigo-100 shadow-sm transition"><i class="fa-solid fa-pen"></i></button>
+                                  <button onclick="window.deleteBankQuestion('${q.id}')" class="text-rose-500 bg-rose-50 p-2 rounded-lg hover:bg-rose-100 shadow-sm transition"><i class="fa-solid fa-trash"></i></button>`;
+                }
+
                 htmlString += `
                 <tr class="hover:bg-slate-50 border-b border-slate-100 transition">
                     <td class="px-4 py-3">
                         <div class="flex items-center space-x-2">
-                            <input type="checkbox" class="qb-del-checkbox w-4 h-4 text-indigo-600 rounded cursor-pointer shadow-sm" value="${q.id}">
+                            ${checkboxHtml}
                             <span class="text-xs font-bold text-slate-500 w-5 text-right">${index + 1}.</span>
                         </div>
                     </td>
@@ -1646,8 +1680,7 @@
                         <span class="${usageCount > 0 ? 'bg-sky-100 text-sky-700 border-sky-200' : 'bg-slate-100 text-slate-500 border-slate-200'} border px-2 py-0.5 rounded block w-max mx-auto mt-1 text-[10px]"><i class="fa-solid fa-link mr-1"></i>Digunakan: ${usageCount}x</span>
                     </td>
                     <td class="px-4 py-3 text-right whitespace-nowrap">
-                        <button onclick="window.editBankQuestion('${q.id}')" class="text-indigo-600 bg-indigo-50 p-2 rounded-lg mr-1 hover:bg-indigo-100 shadow-sm transition"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="window.deleteBankQuestion('${q.id}')" class="text-rose-500 bg-rose-50 p-2 rounded-lg hover:bg-rose-100 shadow-sm transition"><i class="fa-solid fa-trash"></i></button>
+                        ${actionHtml}
                     </td>
                 </tr>`;
             });
@@ -1719,17 +1752,12 @@
             }
         };
 
-        // Fungsi menghitung total soal dan poin yang dipilih di modal Picker
         window.updatePickerSummary = () => {
             const checks = document.querySelectorAll('.picker-checkbox:checked');
-            let count = 0;
-            let score = 0;
+            let count = 0; let score = 0;
             checks.forEach(chk => {
                 const q = questionBankCache[parseInt(chk.value)];
-                if(q) {
-                    count++;
-                    score += parseInt(q.points) || 0;
-                }
+                if(q) { count++; score += parseInt(q.points) || 0; }
             });
             const cEl = document.getElementById('qb-picker-selected-count');
             const sEl = document.getElementById('qb-picker-selected-score');
@@ -1766,7 +1794,7 @@
                 </div>`;
             });
             listContainer.innerHTML = htmlString;
-            window.updatePickerSummary(); // Update 0 state form display
+            window.updatePickerSummary(); 
             document.getElementById('qb-picker-modal').classList.remove('hidden');
         };
 
@@ -1925,42 +1953,62 @@
             } catch(e) {} 
         }
 
+        window.createUser = async (e) => { 
+            e.preventDefault(); 
+            const fn = document.getElementById('reg-fullname').value; 
+            const un = document.getElementById('reg-username').value; 
+            const pw = document.getElementById('reg-password').value; 
+            const rl = document.getElementById('reg-role').value;
+            
+            showLoader("Menyimpan Data..."); 
+            const snap = await getDocs(query(collection(db, "users"), where("username", "==", un))); 
+            if(!snap.empty) { hideLoader(); return alert("Username tersebut sudah digunakan!"); } 
+            
+            await addDoc(collection(db, "users"), { fullName: fn, username: un, password: pw, role: rl }); 
+            e.target.reset(); await loadAdminUsers(); hideLoader(); alert("Berhasil menambahkan pengguna baru!"); 
+        };
+        
         async function loadAdminUsers() { 
             try { 
-                const snap = await getDocs(query(collection(db, "users"), where("role", "==", "agent"))); 
+                const snap = await getDocs(collection(db, "users")); 
                 const tbody = document.getElementById('agents-list-body'); 
                 const sel = document.getElementById('perf-agent-select'); 
                 
                 let htmlString = '';
                 let selHtml = '<option value="">Semua Agen</option>';
-                let c = 0; 
+                let countAgent = 0; 
                 
                 snap.forEach((d) => { 
-                    c++; const agent = d.data(); 
-                    htmlString += `<tr class="hover:bg-slate-50 border-b border-slate-100 last:border-0"><td class="px-4 py-4 text-sm font-bold">${agent.fullName}</td><td class="px-4 py-4 text-sm text-slate-500">${agent.username}</td><td class="px-4 py-4 text-right"><button onclick="window.deleteUser('${d.id}')" class="text-rose-500 hover:text-white hover:bg-rose-500 bg-rose-50 px-3 py-2 rounded-lg text-xs shadow-sm font-bold transition">Hapus</button></td></tr>`; 
-                    selHtml += `<option value="${agent.username}">${agent.fullName}</option>`; 
+                    const user = d.data(); 
+                    let roleBadge = '';
+                    
+                    if(user.role === 'admin') roleBadge = '<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-black ml-2">Admin</span>';
+                    else if(user.role === 'supervisor') roleBadge = '<span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-[10px] font-black ml-2">Supervisor</span>';
+                    else {
+                        roleBadge = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-black ml-2">Agen</span>';
+                        countAgent++; 
+                        selHtml += `<option value="${user.username}">${user.fullName}</option>`; 
+                    }
+
+                    let actionHtml = '-';
+                    if (currentUser.role !== 'supervisor' && d.id !== currentUser.id) {
+                        actionHtml = `<button onclick="window.deleteUser('${d.id}')" class="text-rose-500 hover:text-white hover:bg-rose-500 bg-rose-50 px-3 py-2 rounded-lg text-xs shadow-sm font-bold transition">Hapus</button>`;
+                    }
+                    
+                    htmlString += `<tr class="hover:bg-slate-50 border-b border-slate-100 last:border-0">
+                        <td class="px-4 py-4 text-sm font-bold">${user.fullName}</td>
+                        <td class="px-4 py-4 text-sm text-slate-500 flex items-center">${user.username} ${roleBadge}</td>
+                        <td class="px-4 py-4 text-right">${actionHtml}</td>
+                    </tr>`; 
                 }); 
                 tbody.innerHTML = htmlString;
                 sel.innerHTML = selHtml;
-                document.getElementById('stat-total-agents').innerText = c; 
+                document.getElementById('stat-total-agents').innerText = countAgent; 
             } catch(e) {} 
         }
         
-        window.createAgent = async (e) => { 
-            e.preventDefault(); 
-            const fn = document.getElementById('agent-fullname').value; 
-            const un = document.getElementById('agent-username').value; 
-            const pw = document.getElementById('agent-password').value; 
-            
-            showLoader("Menyimpan..."); 
-            const snap = await getDocs(query(collection(db, "users"), where("username", "==", un))); 
-            if(!snap.empty) { hideLoader(); return alert("Username digunakan!"); } 
-            await addDoc(collection(db, "users"), { fullName: fn, username: un, password: pw, role: 'agent' }); 
-            e.target.reset(); await loadAdminUsers(); hideLoader(); alert("Berhasil ditambahkan!"); 
-        };
-        
         window.deleteUser = async (id) => { 
-            if(confirm("Yakin menghapus agen ini?")) { showLoader(); await deleteDoc(doc(db, "users", id)); await loadAdminUsers(); hideLoader(); } 
+            if(confirm("Yakin ingin menghapus user ini secara permanen?")) { showLoader(); await deleteDoc(doc(db, "users", id)); await loadAdminUsers(); hideLoader(); } 
         };
 
         async function loadAdminQuizzes() { 
@@ -1979,6 +2027,12 @@
                     let totalPointsCalc = 0;
                     if(quiz.questions) quiz.questions.forEach(q => totalPointsCalc += (parseInt(q.points) || 0));
 
+                    let actionHtml = `<button onclick="window.viewQuizReport('${d.id}')" class="text-sky-600 bg-sky-50 p-2.5 rounded-xl hover:bg-sky-100 transition" title="Report"><i class="fa-solid fa-chart-column"></i></button>`;
+                    if(currentUser.role !== 'supervisor') {
+                        actionHtml += `<button onclick="window.editQuiz('${d.id}')" class="text-indigo-600 bg-indigo-50 p-2.5 rounded-xl hover:bg-indigo-100 transition ml-2"><i class="fa-solid fa-pen-to-square"></i></button>
+                                       <button onclick="window.deleteQuiz('${d.id}')" class="text-rose-500 bg-rose-50 p-2.5 rounded-xl hover:bg-rose-100 transition ml-2"><i class="fa-solid fa-trash"></i></button>`;
+                    }
+
                     htmlString += `
                     <tr class="hover:bg-slate-50 border-b border-slate-100 last:border-0">
                         <td class="px-4 py-4 text-sm font-black text-slate-800">${quiz.title}<br><span class="text-[10px] font-bold text-indigo-700 bg-indigo-100 px-2 py-1 rounded-md mt-2 inline-block">${quiz.questions.length} Soal</span></td>
@@ -1989,10 +2043,8 @@
                             <button onclick="window.exportSoalCSV('${d.id}')" class="text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition">CSV</button>
                         </td>
                         <td class="px-4 py-4 text-right">
-                            <div class="flex items-center justify-end space-x-2">
-                                <button onclick="window.viewQuizReport('${d.id}')" class="text-sky-600 bg-sky-50 p-2.5 rounded-xl hover:bg-sky-100 transition" title="Report"><i class="fa-solid fa-chart-column"></i></button>
-                                <button onclick="window.editQuiz('${d.id}')" class="text-indigo-600 bg-indigo-50 p-2.5 rounded-xl hover:bg-indigo-100 transition"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button onclick="window.deleteQuiz('${d.id}')" class="text-rose-500 bg-rose-50 p-2.5 rounded-xl hover:bg-rose-100 transition"><i class="fa-solid fa-trash"></i></button>
+                            <div class="flex items-center justify-end">
+                                ${actionHtml}
                             </div>
                         </td>
                     </tr>`; 
@@ -2334,7 +2386,13 @@
                 leaderboardResults.forEach((r, i) => {
                     const p = Math.round((r.score/r.totalPoints)*100); tp += p;
                     leaderboardDataForExport.push([i+1, r.agentFullName, r.quizTitle, r.createdAt, p+"%"]);
-                    leaderHtml += `<tr><td class="px-5 py-4 font-bold">${i+1}</td><td class="px-5 py-4 font-black">${r.agentFullName}</td><td class="px-5 py-4 text-sm font-semibold">${r.quizTitle}</td><td class="px-5 py-4 text-xs font-semibold">${new Date(r.createdAt).toLocaleDateString()}</td><td class="px-5 py-4 text-center"><span class="px-3 py-1 font-black rounded ${p>=globalSettings.passingGrade?'bg-emerald-50 text-emerald-600':'bg-rose-50 text-rose-600'}">${p}%</span></td><td class="px-5 py-4 text-right"><button onclick="window.deleteLeaderboardResult('${r.id}')" class="text-rose-500 font-bold hover:text-rose-700 transition">Hapus</button></td></tr>`;
+                    
+                    let actionHtml = '-';
+                    if (currentUser.role !== 'supervisor') {
+                        actionHtml = `<button onclick="window.deleteLeaderboardResult('${r.id}')" class="text-rose-500 font-bold hover:text-rose-700 transition">Hapus</button>`;
+                    }
+
+                    leaderHtml += `<tr><td class="px-5 py-4 font-bold">${i+1}</td><td class="px-5 py-4 font-black">${r.agentFullName}</td><td class="px-5 py-4 text-sm font-semibold">${r.quizTitle}</td><td class="px-5 py-4 text-xs font-semibold">${new Date(r.createdAt).toLocaleDateString()}</td><td class="px-5 py-4 text-center"><span class="px-3 py-1 font-black rounded ${p>=globalSettings.passingGrade?'bg-emerald-50 text-emerald-600':'bg-rose-50 text-rose-600'}">${p}%</span></td><td class="px-5 py-4 text-right">${actionHtml}</td></tr>`;
                 });
                 tbody.innerHTML = leaderHtml;
 
@@ -2353,7 +2411,11 @@
                             const lp = Math.round((latest.score / latest.totalPoints) * 100);
                             if (lp < globalSettings.passingGrade) {
                                 rCount++;
-                                remHtml += `<tr><td class="px-4 py-3 font-bold">${ag.fullName}</td><td class="px-4 py-3 font-semibold">${qz.title}</td><td class="px-4 py-3 text-center"><span class="text-rose-600 font-black">${lp}%</span></td><td class="px-4 py-3 text-center"><span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-bold">Remedial</span></td><td class="px-4 py-3 text-right"><button onclick="window.deleteLeaderboardResult('${latest.id}')" class="text-indigo-600 font-bold text-xs hover:text-indigo-800 transition">Retake</button></td></tr>`;
+                                let retakeHtml = '-';
+                                if (currentUser.role !== 'supervisor') {
+                                    retakeHtml = `<button onclick="window.deleteLeaderboardResult('${latest.id}')" class="text-indigo-600 font-bold text-xs hover:text-indigo-800 transition">Retake</button>`;
+                                }
+                                remHtml += `<tr><td class="px-4 py-3 font-bold">${ag.fullName}</td><td class="px-4 py-3 font-semibold">${qz.title}</td><td class="px-4 py-3 text-center"><span class="text-rose-600 font-black">${lp}%</span></td><td class="px-4 py-3 text-center"><span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-bold">Remedial</span></td><td class="px-4 py-3 text-right">${retakeHtml}</td></tr>`;
                             }
                         }
                     });
