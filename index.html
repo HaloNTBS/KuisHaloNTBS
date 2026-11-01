@@ -379,6 +379,27 @@
         
         
         
+        
+        /* === FIX KUIS TERSEDIA KOSONG + MOBILE SUB MENUS V15.1 === */
+        #available-quizzes { min-height: 200px; }
+        #available-quizzes:empty::before {
+            content: "Memuat kuis... Jika kosong, cek Firebase collection 'quizzes' dan pastikan ada kuis dengan status aktif";
+            display: block;
+            text-align: center;
+            padding: 2rem;
+            color: #94A3B8;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        @media (max-width: 640px) {
+            #agent-tab-quizzes h2 { font-size: 1.25rem !important; }
+            #available-quizzes { grid-template-columns: 1fr !important; }
+            #badges-container { grid-template-columns: 1fr !important; gap: 1rem !important; }
+            #agent-tab-history .glass, #agent-tab-leaderboard .glass { padding: 1rem !important; border-radius: 1rem !important; }
+            #agent-tab-history table, #agent-tab-leaderboard table { font-size: 11px; }
+            #agent-tab-history th, #agent-tab-leaderboard th { padding: 0.5rem !important; font-size: 10px !important; }
+        }
+
         /* === ALL SUB MENUS MOBILE RAPI V15 === */
         @media (max-width: 640px) {
             .agent-tab-content { padding: 0 !important; }
@@ -516,7 +537,7 @@
 </head>
 <canvas id="confetti-canvas" class="hidden fixed inset-0 pointer-events-none z-[9999]"></canvas>
 <canvas id="confetti-canvas-quiz" class="hidden fixed inset-0 pointer-events-none z-[9999]"></canvas>
-<body class="text-slate-800 antialiased h-screen w-screen overflow-hidden flex flex-col">
+<body> class="text-slate-800 antialiased h-screen w-screen overflow-hidden flex flex-col">
 
     <!-- Global Loader -->
     <div id="global-loader" class="hidden fixed inset-0 z-[999] bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity">
@@ -1393,7 +1414,7 @@
                 </div>
 
                 <!-- ============================ AGENT VIEWS ============================ -->
-                <div id="agent-views" class="hidden">
+                <div><div id="agent-views" class="hidden">
                     
                                         <div><div id="agent-tab-dashboard" class="agent-tab-content space-y-6 sm:space-y-8">
                         <!-- Humanized No-Capek Card + Weather + Live -->
@@ -1556,8 +1577,16 @@
                     </div>
 
                     </div>
-                    <div id="agent-tab-quizzes" class="agent-tab-content hidden space-y-5 sm:space-y-6">
-</div></div>
+                                        <div id="agent-tab-quizzes" class="agent-tab-content hidden space-y-5 sm:space-y-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6 border-b border-slate-200 pb-4">
+                            <div><h2 class="text-xl sm:text-3xl font-black text-slate-800 tracking-tight">Kuis Tersedia</h2><p class="text-xs sm:text-sm text-slate-500 mt-1 font-semibold">Pilih kuis aktif di bawah ini untuk memulai atau mencoba simulasi.</p></div>
+                            <button onclick="window.refreshAgentData()" class="flex justify-center items-center py-2.5 px-4 rounded-xl text-xs sm:text-sm font-black text-[#0F7A5A] bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-all shadow-sm min-h-[44px] w-full sm:w-auto">
+                                <i class="fa-solid fa-rotate-right mr-2"></i>Refresh
+                            </button>
+                        </div>
+                        <div id="available-quizzes" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                    </div>
+
                     <div id="agent-tab-assessment-remedial" class="agent-tab-content hidden space-y-5 sm:space-y-6">
                         <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Tugas Remedial Saya</h2>
                         <div class="glass p-5 rounded-[2rem] shadow-sm">
@@ -1745,7 +1774,10 @@
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
+</div>
+</div>
+</main>
         </div>
 
         <!-- MOBILE BOTTOM NAVIGATION BAR -->
@@ -5575,19 +5607,19 @@ timerInterval = setInterval(() => {
                 <p class="text-[10px] text-slate-400 text-center mt-4 font-medium">💡 Tip: Data yang dihapus tidak bisa dikembalikan. Pastikan sudah benar.</p>
             </div>
         </div>
-    </div>
+    
 
 
-    <span id="agent-dash-avg-duration" class="hidden"></span>
-<span id="agent-dash-trend-count" class="hidden"></span>
-<span id="agent-dash-remedial" class="hidden"></span>
-<span id="available-quizzes" class="hidden"></span>
-<span id="agent-dash-trend-desc" class="hidden"></span>
+    
 <span id="agent-dash-lulus" class="hidden"></span>
-<span id="agent-dash-table-count" class="hidden"></span>
 <span id="agentDashTrendChart" class="hidden"></span>
-<span id="completion-bar" class="hidden"></span>
-<span id="completion-percentage" class="hidden"></span>
+<span id="agent-dash-remedial" class="hidden"></span>
 <span id="completion-text" class="hidden"></span>
+<span id="agent-dash-avg-duration" class="hidden"></span>
+<span id="agent-dash-table-count" class="hidden"></span>
+<span id="completion-bar" class="hidden"></span>
+<span id="agent-dash-trend-count" class="hidden"></span>
+<span id="agent-dash-trend-desc" class="hidden"></span>
+<span id="completion-percentage" class="hidden"></span>
 </body>
 </html>
