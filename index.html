@@ -2860,26 +2860,22 @@
         window.deleteSelectedBankQuestions = async () => {
             const checks = document.querySelectorAll('.qb-del-checkbox:checked');
             if(checks.length === 0) return alert("Pilih setidaknya satu soal dengan mencentang kotak di sebelahnya.");
-            
-            if(confirm(`Anda yakin ingin menghapus ${checks.length} soal terpilih secara permanen?`)) {
-                showLoader("Menghapus soal terpilih...");
-                try {
-                    const deletePromises = [];
-                    checks.forEach(c => {
-                        deletePromises.push(deleteDoc(doc(db, "questionBank", c.value)));
-                    });
-                    
-                    await Promise.all(deletePromises);
-                    
-                    document.getElementById('qb-select-all').checked = false;
-                    await loadQuestionBank();
+            window.showDeleteConfirm(
+                `Hapus ${checks.length} Soal Terpilih?`,
+                `${checks.length} soal akan dihapus permanen dari Bank Soal. Pastikan sudah benar.`,
+                async () => {
+                    showLoader("Menghapus soal terpilih...");
+                    try {
+                        const deletePromises = [];
+                        checks.forEach(c => {
+                            deletePromises.push(deleteDoc(doc(db, "questionBank", c.value)));
+                        });
+                        await Promise.all(deletePromises);
+                        await loadQuestionBank();
+                    } catch(e){ console.error(e); alert("Gagal menghapus beberapa soal: " + e.message); }
                     hideLoader();
-                    alert(`${checks.length} Soal berhasil dihapus.`);
-                } catch(err) {
-                    hideLoader();
-                    alert("Gagal menghapus beberapa soal: " + err.message);
                 }
-            }
+            );
         };
 
         window.editBankQuestion = (id) => {
@@ -2899,12 +2895,15 @@
         };
 
         window.deleteBankQuestion = async (id) => {
-            if(confirm("Hapus soal ini dari Bank Soal?")) {
-                showLoader();
-                await deleteDoc(doc(db, "questionBank", id));
-                await loadQuestionBank();
-                hideLoader();
-            }
+            window.showDeleteConfirm(
+                'Hapus Soal dari Bank?',
+                'Soal ini akan hilang dari Bank Soal. Kuis yang sudah memakai soal ini tetap aman.',
+                async () => {
+                    showLoader();
+                    try { await deleteDoc(doc(db, "questionBank", id)); await loadQuestionBank(); } catch(e){}
+                    hideLoader();
+                }
+            );
         };
 
         window.updatePickerSummary = () => {
@@ -3210,8 +3209,16 @@
             } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); } 
         }
         
-        window.deleteUser = async (id) => { 
-            if(confirm("Yakin ingin menghapus user ini secara permanen?")) { showLoader(); await deleteDoc(doc(db, "users", id)); await loadAdminUsers(); hideLoader(); } 
+        window.deleteUser = async (id) => {
+            window.showDeleteConfirm(
+                'Hapus User Permanen?',
+                'User akan dihapus dari sistem dan tidak bisa login lagi. Aksi ini tidak bisa dibatalkan.',
+                async () => {
+                    showLoader();
+                    try { await deleteDoc(doc(db, "users", id)); await loadAdminUsers(); } catch(e){ console.error(e); }
+                    hideLoader();
+                }
+            );
         };
 
         async function loadAdminQuizzes() { 
@@ -3583,7 +3590,20 @@
             } 
         };
         
-        window.deleteQuiz = async (id) => { if(confirm("Yakin ingin menghapus kuis ini secara permanen?")){ await deleteDoc(doc(db,"quizzes",id)); await loadAdminQuizzes(); } };
+        window.deleteQuiz = async (id) => {
+            window.showDeleteConfirm(
+                'Hapus Kuis Permanen?',
+                'Kuis ini akan hilang dari daftar Agen. Nilai yang sudah ada tetap aman. Yakin ingin menghapus?',
+                async () => {
+                    showLoader("Menghapus kuis...");
+                    try {
+                        await deleteDoc(doc(db,"quizzes",id));
+                        await loadAdminQuizzes();
+                    } catch(e){ console.error(e); alert("Gagal menghapus: " + e.message); }
+                    hideLoader();
+                }
+            );
+        };
 
         async function loadAdminOverviewAndAnalytics() {
             try {
@@ -3786,7 +3806,17 @@
         };
         // --- END NEW DASHBOARD WIDGETS ---
 
-        window.deleteLeaderboardResult = async (id) => { if(confirm("Hapus nilai agar Agen bisa melakukan Retake?")) { showLoader(); await deleteDoc(doc(db,"results",id)); await loadAdminOverviewAndAnalytics(); hideLoader(); } };
+        window.deleteLeaderboardResult = async (id) => {
+            window.showDeleteConfirm(
+                'Hapus Nilai untuk Retake?',
+                'Nilai Agen akan dihapus agar bisa mengerjakan ulang kuis. Yakin?',
+                async () => {
+                    showLoader();
+                    try { await deleteDoc(doc(db,"results",id)); await loadAdminOverviewAndAnalytics(); } catch(e){}
+                    hideLoader();
+                }
+            );
+        };
         
         window.exportLeaderboardCSV = () => { 
             if(leaderboardDataForExport.length === 0) return alert("Belum ada data leaderboard untuk di-export.");
@@ -5587,122 +5617,5 @@ timerInterval = setInterval(() => {
     </div>
 
 
-    <script>
-        // Override delete functions with beautiful modal - V10
-        document.addEventListener('DOMContentLoaded', () => {
-            // Store db reference when available
-            setTimeout(() => {
-                // Patch delete functions
-                const originalDeleteQuiz = window.deleteQuiz;
-                window._originalDeleteQuiz = window.deleteQuiz;
-
-                window.deleteQuiz = async (id) => {
-                    window.showDeleteConfirm(
-                        'Hapus Kuis Permanen?',
-                        'Kuis ini akan hilang dari daftar Agen. Nilai yang sudah ada tetap aman. Yakin ingin menghapus?',
-                        async () => {
-                            if(typeof showLoader === 'function') showLoader("Menghapus kuis...");
-                            try {
-                                // Use firestore directly
-                                const mod = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-                                // db is in module scope, we need to get it from window if stored
-                                if(window._dbInstance) {
-                                    await mod.deleteDoc(mod.doc(window._dbInstance, "quizzes", id));
-                                } else {
-                                    // Fallback: call original if it still has logic
-                                    if(window._originalDeleteQuiz && window._originalDeleteQuiz !== window.deleteQuiz) {
-                                        // Temporarily restore to avoid loop
-                                        const orig = window._originalDeleteQuiz;
-                                        window.deleteQuiz = orig;
-                                        await orig(id);
-                                        window.deleteQuiz = arguments.callee;
-                                        return;
-                                    }
-                                }
-                                if(window.loadAdminQuizzes) await window.loadAdminQuizzes();
-                            } catch(e) {
-                                console.error(e);
-                                // Try original as last resort
-                                try {
-                                    if(window._originalDeleteQuiz && window._originalDeleteQuiz !== window.deleteQuiz) {
-                                        const orig = window._originalDeleteQuiz;
-                                        window.deleteQuiz = orig;
-                                        await orig(id);
-                                        window.deleteQuiz = async (id2) => {
-                                            window.showDeleteConfirm('Hapus Kuis Permanen?', 'Yakin?', async () => {
-                                                showLoader();
-                                                try { await orig(id2); } catch(err){} hideLoader();
-                                            });
-                                        };
-                                    }
-                                } catch(err){}
-                            }
-                            if(typeof hideLoader === 'function') hideLoader();
-                        }
-                    );
-                };
-
-                // User delete
-                const origDeleteUser = window.deleteUser;
-                window.deleteUser = async (id) => {
-                    window.showDeleteConfirm(
-                        'Hapus User Permanen?',
-                        'User akan dihapus dari sistem dan tidak bisa login lagi. Aksi ini tidak bisa dibatalkan.',
-                        async () => {
-                            if(typeof showLoader === 'function') showLoader();
-                            try { await origDeleteUser(id); } catch(e){ console.error(e); }
-                            if(typeof hideLoader === 'function') hideLoader();
-                        }
-                    );
-                };
-
-                // Bank question delete
-                const origDeleteBankQ = window.deleteBankQuestion;
-                window.deleteBankQuestion = async (id) => {
-                    window.showDeleteConfirm(
-                        'Hapus Soal dari Bank?',
-                        'Soal ini akan hilang dari Bank Soal. Kuis yang sudah memakai soal ini tetap aman.',
-                        async () => {
-                            if(typeof showLoader === 'function') showLoader();
-                            try { await origDeleteBankQ(id); } catch(e){}
-                            if(typeof hideLoader === 'function') hideLoader();
-                        }
-                    );
-                };
-
-                // Leaderboard delete (retake)
-                const origDeleteResult = window.deleteLeaderboardResult;
-                window.deleteLeaderboardResult = async (id) => {
-                    window.showDeleteConfirm(
-                        'Hapus Nilai untuk Retake?',
-                        'Nilai Agen akan dihapus agar bisa mengerjakan ulang kuis. Yakin?',
-                        async () => {
-                            if(typeof showLoader === 'function') showLoader();
-                            try { await origDeleteResult(id); } catch(e){}
-                            if(typeof hideLoader === 'function') hideLoader();
-                        }
-                    );
-                };
-
-                // Bulk delete
-                const origDeleteSelected = window.deleteSelectedBankQuestions;
-                window.deleteSelectedBankQuestions = async () => {
-                    const checks = document.querySelectorAll('.qb-del-checkbox:checked');
-                    if(checks.length === 0) return alert("Pilih setidaknya satu soal dengan mencentang kotak di sebelahnya.");
-                    window.showDeleteConfirm(
-                        `Hapus ${checks.length} Soal Terpilih?`,
-                        `${checks.length} soal akan dihapus permanen dari Bank Soal. Pastikan sudah benar.`,
-                        async () => {
-                            if(typeof showLoader === 'function') showLoader("Menghapus soal terpilih...");
-                            try { await origDeleteSelected(); } catch(e){}
-                            if(typeof hideLoader === 'function') hideLoader();
-                        }
-                    );
-                };
-
-            }, 1500);
-        });
-    </script>
-
-</body>
+    </body>
 </html>
