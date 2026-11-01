@@ -144,8 +144,8 @@
         .blur-3xl, .blur-\[100px\] { pointer-events: none; max-width: 100vw; overflow: hidden; }
 
     
-        /* No-Capek Minimal */
-        .no-capek-card { background: linear-gradient(135deg, #0F7A5A 0%, #065F46 100%); }
+        /* No-Capek Comfortable Light Default + Soft Dark Optional */
+        .no-capek-card { background: linear-gradient(135deg, #0F7A5A 0%, #065F46 100%); box-shadow: 0 10px 30px rgba(15,122,90,0.25); }
         .progress-ring { transform: rotate(-90deg); }
         .progress-ring-circle { transition: stroke-dashoffset 0.8s ease; }
         .calm-timer { background: rgba(15,122,90,0.1) !important; border: 1px solid rgba(15,122,90,0.2) !important; color: #0F7A5A !important; font-weight: 800 !important; }
@@ -154,10 +154,24 @@
         .question-dot.current { background: white; color: #0F7A5A; border: 2px solid #0F7A5A; box-shadow: 0 0 0 4px rgba(15,122,90,0.15); }
         .question-dot.empty { background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; }
         #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
-        .dark body { background-color: #0f172a; }
-        .dark .glass { background: rgba(30,41,59,0.8) !important; }
-        .dark .bg-white { background-color: #1e293b !important; }
-        .dark .text-slate-800 { color: #f1f5f9 !important; }
+        /* Soft Dark - lebih nyaman, tidak hitam pekat */
+        .dark { color-scheme: dark; }
+        .dark body { background-color: #f1f5f9 !important; } /* tetap terang biar tidak silau, hanya card yang agak gelap */
+        .dark #app { background-color: #f8fafc !important; }
+        .dark #app-main { background-color: #f8fafc !important; }
+        .dark .glass { background: rgba(255,255,255,0.95) !important; border-color: rgba(226,232,240,0.8) !important; }
+        .dark .no-capek-card { background: linear-gradient(135deg, #0F7A5A 0%, #065F46 100%) !important; }
+        .dark .bg-white { background-color: #ffffff !important; }
+        .dark .text-slate-800 { color: #1e293b !important; }
+        .dark .text-slate-600 { color: #475569 !important; }
+        .dark .text-slate-500 { color: #64748b !important; }
+        /* Dark mode sebenarnya: kalau user paksa dark, pakai versi soft dark */
+        .dark.dark-real body { background-color: #0f172a !important; }
+        .dark.dark-real .glass { background: rgba(30,41,59,0.9) !important; border-color: rgba(51,65,85,0.5) !important; }
+        .dark.dark-real .bg-white { background-color: #1e293b !important; }
+        .dark.dark-real .text-slate-800 { color: #f1f5f9 !important; }
+        .dark.dark-real .text-slate-600 { color: #cbd5e1 !important; }
+        .dark.dark-real .text-slate-500 { color: #94a3b8 !important; }
 
         </style>
 </head>
@@ -4932,20 +4946,24 @@ timerInterval = setInterval(() => {
 
         window.toggleDarkMode = () => {
             const isDark = document.documentElement.classList.toggle('dark');
+            // Toggle juga dark-real untuk dark yang sebenarnya
+            if(isDark) {
+                document.documentElement.classList.add('dark-real');
+            } else {
+                document.documentElement.classList.remove('dark-real');
+            }
             localStorage.setItem('noCapekDark', isDark ? '1' : '0');
             const icon = document.querySelector('#dark-mode-toggle i');
             if(icon) icon.className = isDark ? 'fa-solid fa-sun text-sm' : 'fa-solid fa-moon text-sm';
         };
         (() => {
             const saved = localStorage.getItem('noCapekDark');
-            const hour = new Date().getHours();
-            const shouldDark = saved ? saved === '1' : (hour >= 18 || hour < 6);
-            if(shouldDark) {
+            if(saved === '1') {
                 document.documentElement.classList.add('dark');
                 setTimeout(()=>{ const icon=document.querySelector('#dark-mode-toggle i'); if(icon) icon.className='fa-solid fa-sun text-sm'; },100);
             }
         })();
-        window.updateAgentProgressRing = (done, total) => {
+        window.updateAgentProgressRing = (done, total, avgScore, badgeCount) => {
             const ring = document.getElementById('agent-progress-ring');
             const pctEl = document.getElementById('agent-progress-pct');
             const titleEl = document.getElementById('agent-focus-title');
@@ -4963,16 +4981,24 @@ timerInterval = setInterval(() => {
             if(titleEl) titleEl.innerText = `${done} dari ${total} Kuis Selesai`;
             if(greetingName && currentUser) greetingName.innerText = (currentUser.fullName || 'Agen').split(' ')[0];
             try {
-                const avgElOld = document.getElementById('agent-dash-avg-score');
-                const badgesElOld = document.getElementById('agent-dash-badges');
-                const avg = avgElOld ? avgElOld.innerText : '95%';
-                const badges = badgesElOld ? badgesElOld.innerText : '0';
+                // Pakai data real dari parameter, bukan dari hidden span yang 0
+                let avg = avgScore || '0%';
+                let badges = badgeCount || '0';
+                // Fallback kalau tidak ada parameter, baca dari DOM yang sudah ada
+                if(!avgScore) {
+                    const avgElOld = document.getElementById('agent-dash-avg-score');
+                    if(avgElOld && avgElOld.innerText && avgElOld.innerText !== '0%') avg = avgElOld.innerText;
+                }
+                if(!badgeCount) {
+                    const badgesElOld = document.getElementById('agent-dash-badges');
+                    if(badgesElOld && badgesElOld.innerText) badges = badgesElOld.innerText;
+                }
                 if(subEl) subEl.innerText = `Rata-rata ${avg} • ${badges} lencana • Tetap semangat!`;
                 if(avgEl) avgEl.innerText = avg + ' Avg';
                 if(badgesInline) badgesInline.innerText = badges + ' Lencana';
             } catch(e){}
             if(ctaBtn) {
-                if(done >= total && total>0) {
+                if(done >= total && total>0 && done>0) {
                     ctaBtn.innerHTML = '<span>Lihat Pencapaian</span><i class="fa-solid fa-trophy"></i>';
                     ctaBtn.onclick = () => window.switchAgentTab('badges');
                 } else {
@@ -4986,8 +5012,14 @@ timerInterval = setInterval(() => {
             if(origRenderDashboardChart) origRenderDashboardChart(history);
             try {
                 const totalQuizzes = allQuizzesMap ? Object.keys(allQuizzesMap).length : 0;
-                window.updateAgentProgressRing(history.length, totalQuizzes || 2);
-            } catch(e){}
+                // Hitung avg real dari history
+                let totalScore = 0;
+                history.forEach(h => { totalScore += (h.score || 0); });
+                const avg = history.length > 0 ? Math.round(totalScore / history.length) + '%' : '0%';
+                const badgeEl = document.getElementById('agent-dash-badges');
+                const badgeCount = badgeEl ? badgeEl.innerText : '0';
+                window.updateAgentProgressRing(history.length, totalQuizzes || history.length || 2, avg, badgeCount);
+            } catch(e){ console.warn('Ring update failed', e); }
         };
         window.renderQuizDots = (total, answeredSet, currentIdx) => {
             const dotsContainer = document.getElementById('quiz-dots');
