@@ -40,6 +40,17 @@
         /* Supervisor Access Control Styles */
         body.is-supervisor .sv-hidden { display: none !important; }
         body.is-supervisor .sv-expand { grid-column: span 3 / span 3 !important; }
+    
+        /* Super Stable Additions */
+        @media print {
+            #app-sidebar, header, #global-loader, #login-screen, #qb-picker-modal, #qb-preview-modal, #review-modal, #quiz-report-modal, #quiz-bank-picker-modal { display: none !important; }
+            #main-content { margin:0 !important; padding:0 !important; }
+            body { background: white !important; }
+        }
+        .no-select { user-select: none; }
+        /* Prevent double tap zoom on mobile for buttons */
+        button { touch-action: manipulation; }
+
     </style>
 </head>
 <body class="text-slate-800 antialiased h-screen w-screen overflow-hidden flex flex-col">
@@ -634,7 +645,7 @@
                     <div id="admin-tab-reports-performance" class="admin-tab-content hidden space-y-6">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                             <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Performance Report</h2>
-                            <button onclick="window.print()" class="flex justify-center items-center py-2.5 px-5 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 shadow-md">
+                            <button onclick="window.printPerformanceReport()" class="flex justify-center items-center py-2.5 px-5 rounded-xl text-sm font-black text-white bg-indigo-500 border-b-4 border-indigo-700 hover:bg-indigo-400 shadow-md">
                                 <i class="fa-solid fa-print mr-2"></i>Cetak
                             </button>
                         </div>
@@ -1133,6 +1144,41 @@
         window.pendingQuizzesCount = 0;
 
         let inactivityTimer = null;
+
+        // --- SUPER STABLE HARDENING ---
+
+        window.addEventListener('error', (e) => { console.error('[Global Error]', e.error); });
+        window.addEventListener('unhandledrejection', (e) => { console.error('[Unhandled Rejection]', e.reason); e.preventDefault(); alert('Terjadi kesalahan sistem: ' + (e.reason?.message || e.reason)); });
+
+        let isSavingQuiz = false;
+        let isSubmittingQuiz = false;
+        let isLoggingIn = false;
+
+        function debounce(fn, delay){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); }; }
+        function safeGet(id) { 
+            const el = document.getElementById(id); 
+            if(!el) console.warn('[SuperStable] Element not found:', id);
+            return el;
+        }
+        function safeSetHTML(id, html) {
+            const el = safeGet(id);
+            if(el) el.innerHTML = html;
+        }
+
+        window.printPerformanceReport = () => {
+            // Add print class for clean print
+            document.body.classList.add('printing-report');
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => document.body.classList.remove('printing-report'), 500);
+            }, 100);
+        };
+
+        // Enhanced logout cleanup
+        const _originalLogout = window.logout;
+        // Will be overridden later after definition, but we prepare wrapper
+        // --- END SUPER STABLE HARDENING ---
+
         const INACTIVITY_LIMIT = 5 * 60 * 1000; 
 
         function resetInactivityTimer() {
@@ -1502,8 +1548,7 @@
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
-        window.handleLogin = async (e) => {
-            e.preventDefault(); 
+        window.handleLogin = async (e) => { e.preventDefault(); if(isLoggingIn) return; isLoggingIn = true; document.getElementById('login-btn').disabled = true; 
             const u = document.getElementById('login-username').value; 
             const p = document.getElementById('login-password').value; 
             const err = document.getElementById('login-error'); 
@@ -1546,14 +1591,17 @@
                     window.updateUserPresence("Online");
                     hideLoader(); routeUser();
                     resetInactivityTimer();
+                    isLoggingIn = false; const lb2=document.getElementById('login-btn'); if(lb2) lb2.disabled=false;
                 } else { 
                     hideLoader(); 
                     err.classList.add('hidden'); 
                     err.innerText = "Username atau Password salah.";
                     err.classList.remove('hidden'); 
+                    isLoggingIn = false; const lb3=document.getElementById('login-btn'); if(lb3) lb3.disabled=false;
                 }
             } catch (error) { 
-                hideLoader(); 
+                hideLoader();
+                isLoggingIn = false; const lb4=document.getElementById('login-btn'); if(lb4) lb4.disabled=false; 
                 err.innerText = "Gagal menghubungkan ke database."; 
                 err.classList.remove('hidden'); 
             }
@@ -1562,6 +1610,14 @@
         window.logout = () => { 
             if(timerInterval) clearInterval(timerInterval); 
             if(inactivityTimer) clearTimeout(inactivityTimer);
+            timerInterval = null;
+            // Super stable: destroy all chart instances
+            try { if(adminChartInstance) { adminChartInstance.destroy(); adminChartInstance=null; } } catch(e){}
+            try { if(adminComparisonChartInstance) { adminComparisonChartInstance.destroy(); adminComparisonChartInstance=null; } } catch(e){}
+            try { if(agentChartInstance) { agentChartInstance.destroy(); agentChartInstance=null; } } catch(e){}
+            try { if(skillRadarInstance) { skillRadarInstance.destroy(); skillRadarInstance=null; } } catch(e){}
+            isSavingQuiz=false; isSubmittingQuiz=false; isLoggingIn=false;
+
             window.updateUserPresence("Offline");
             currentUser = null; 
             localStorage.removeItem('currentUser'); 
@@ -2458,13 +2514,13 @@
                     </select>
                     <input type="number" class="q-points p-3 border rounded-xl w-full sm:w-32 font-bold focus:ring-2 focus:ring-indigo-200" placeholder="Poin" value="${pointsVal}" min="1" oninput="window.calculateTotalScore()" required>
                 </div>
+            </div>
             `; 
             document.getElementById('questions-container').insertAdjacentHTML('beforeend', html); 
             window.calculateTotalScore();
         };
 
-        window.saveQuiz = async (e) => { 
-            e.preventDefault(); 
+        window.saveQuiz = async (e) => { e.preventDefault(); if(isSavingQuiz) return alert('Masih menyimpan, tunggu sebentar...'); isSavingQuiz = true; const btn=e.target.querySelector('button[type=submit]'); if(btn) btn.disabled=true; 
             const id = document.getElementById('edit-quiz-id').value; 
             const title = document.getElementById('quiz-title').value.trim();
             const startTime = document.getElementById('quiz-start-time').value;
@@ -2521,9 +2577,9 @@
             try { 
                 if(id) { await updateDoc(doc(db, "quizzes", id), data); } 
                 else { await addDoc(collection(db, "quizzes"), { createdAt: new Date().toISOString(), ...data }); } 
-                window.cancelQuizForm(); await loadAdminQuizzes(); hideLoader(); 
+                window.cancelQuizForm(); await loadAdminQuizzes(); hideLoader(); isSavingQuiz=false; const btn2=document.querySelector('#quiz-form-view button[type=submit]'); if(btn2) btn2.disabled=false;
                 alert("Kuis berhasil diterbitkan dan disimpan!");
-            } catch(err) { hideLoader(); alert("Gagal menyimpan kuis ke database: " + err.message); } 
+            } catch(err) { hideLoader(); isSavingQuiz=false; const btn3=document.querySelector('#quiz-form-view button[type=submit]'); if(btn3) btn3.disabled=false; alert("Gagal menyimpan kuis ke database: " + err.message); } 
         };
 
         window.editQuiz = (id) => { 
@@ -3008,6 +3064,8 @@
         function startTimer(rem) { if (timerInterval) clearInterval(timerInterval); let t = rem; const disp = document.getElementById('timer-display'); const upd = () => { let m = Math.floor(t / 60).toString().padStart(2, '0'); let s = (t % 60).toString().padStart(2, '0'); disp.innerText = `${m}:${s}`; }; upd(); timerInterval = setInterval(() => { t--; upd(); if (t <= 0) { clearInterval(timerInterval); alert("Waktu Habis!"); window.submitQuiz(true); } }, 1000); }
 
         window.submitQuiz = async (auto = false) => {
+            if(isSubmittingQuiz) return; isSubmittingQuiz = true; showLoader('Mengirim Jawaban...');
+
             if(!auto && !confirm("Yakin ingin mengirim jawaban sekarang? Setelah dikirim, jawaban tidak dapat diubah kembali.")) return;
             if(timerInterval) clearInterval(timerInterval); showLoader("Memproses Jawaban...");
             const timeT = Math.floor((Date.now() - activeQuizData.sessionStartTime) / 1000);
