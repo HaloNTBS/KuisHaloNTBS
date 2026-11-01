@@ -2861,7 +2861,9 @@
             const checks = document.querySelectorAll('.qb-del-checkbox:checked');
             if(checks.length === 0) return alert("Pilih setidaknya satu soal dengan mencentang kotak di sebelahnya.");
             
-            if(confirm(`Anda yakin ingin menghapus ${checks.length} soal terpilih secara permanen?`)) {
+            {
+                showLoader("Menghapus soal terpilih...");
+                try {
                 showLoader("Menghapus soal terpilih...");
                 try {
                     const deletePromises = [];
@@ -2899,12 +2901,10 @@
         };
 
         window.deleteBankQuestion = async (id) => {
-            if(confirm("Hapus soal ini dari Bank Soal?")) {
-                showLoader();
-                await deleteDoc(doc(db, "questionBank", id));
-                await loadQuestionBank();
-                hideLoader();
-            }
+            showLoader();
+            await deleteDoc(doc(db, "questionBank", id));
+            await loadQuestionBank();
+            hideLoader();
         };
 
         window.updatePickerSummary = () => {
@@ -3211,7 +3211,7 @@
         }
         
         window.deleteUser = async (id) => { 
-            if(confirm("Yakin ingin menghapus user ini secara permanen?")) { showLoader(); await deleteDoc(doc(db, "users", id)); await loadAdminUsers(); hideLoader(); } 
+            showLoader(); await deleteDoc(doc(db, "users", id)); await loadAdminUsers(); hideLoader();
         };
 
         async function loadAdminQuizzes() { 
@@ -3583,7 +3583,7 @@
             } 
         };
         
-        window.deleteQuiz = async (id) => { if(confirm("Yakin ingin menghapus kuis ini secara permanen?")){ await deleteDoc(doc(db,"quizzes",id)); await loadAdminQuizzes(); } };
+        window.deleteQuiz = async (id) => { await deleteDoc(doc(db,"quizzes",id)); await loadAdminQuizzes(); };
 
         async function loadAdminOverviewAndAnalytics() {
             try {
@@ -3786,7 +3786,7 @@
         };
         // --- END NEW DASHBOARD WIDGETS ---
 
-        window.deleteLeaderboardResult = async (id) => { if(confirm("Hapus nilai agar Agen bisa melakukan Retake?")) { showLoader(); await deleteDoc(doc(db,"results",id)); await loadAdminOverviewAndAnalytics(); hideLoader(); } };
+        window.deleteLeaderboardResult = async (id) => { showLoader(); await deleteDoc(doc(db,"results",id)); await loadAdminOverviewAndAnalytics(); hideLoader(); };
         
         window.exportLeaderboardCSV = () => { 
             if(leaderboardDataForExport.length === 0) return alert("Belum ada data leaderboard untuk di-export.");
