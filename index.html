@@ -1276,81 +1276,70 @@
             URL.revokeObjectURL(url);
         };
 
-        function parseCSVRow(row) {
-            const cols = [];
-            let current = '';
-            let inQuotes = false;
-            for (let i = 0; i < row.length; i++) {
-                const char = row[i];
-                if (char === '"' && row[i+1] === '"') { current += '"'; i++; }
-                else if (char === '"') { inQuotes = !inQuotes; }
-                else if (char === ',' && !inQuotes) { cols.push(current.trim()); current = ''; }
-                else { current += char; }
+        function parseCSV(text) {
+            const rows = [];
+            let row = [], value = '', inQuotes = false;
+            const input = String(text || '').replace(/^\uFEFF/, '');
+            for (let i = 0; i < input.length; i++) {
+                const ch = input[i];
+                if (ch === '"') {
+                    if (inQuotes && input[i + 1] === '"') { value += '"'; i++; }
+                    else { inQuotes = !inQuotes; }
+                } else if (ch === ',' && !inQuotes) {
+                    row.push(value.trim()); value = '';
+                } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+                    if (ch === '\r' && input[i + 1] === '\n') i++;
+                    row.push(value.trim());
+                    if (row.some(cell => cell !== '')) rows.push(row);
+                    row = []; value = '';
+                } else {
+                    value += ch;
+                }
             }
-            cols.push(current.trim());
-            return cols;
+            if (inQuotes) throw new Error('CSV memiliki tanda kutip yang tidak berpasangan.');
+            row.push(value.trim());
+            if (row.some(cell => cell !== '')) rows.push(row);
+            return rows;
         }
 
         window.processImportCSV = () => {
             const fileInput = document.getElementById('import-csv-file');
-            if (!fileInput.files.length) return alert("Pilih file CSV terlebih dahulu!");
-            
-            const file = fileInput.files[0];
-const reader = new FileReader();
-
-// Tambahkan fungsi pembaca CSV yang aman dari karakter ganti baris (Enter)
-function parseCSV(text) {
-    let result = [], row = [], inQuotes = false, val = '';
-    for (let i = 0; i < text.length; i++) {
-        let char = text[i];
-        if (char === '"' && text[i+1] === '"') { val += '"'; i++; }
-        else if (char === '"') { inQuotes = !inQuotes; }
-        else if (char === ',' && !inQuotes) { row.push(val); val = ''; }
-        else if (char === '\n' && !inQuotes) { row.push(val); result.push(row); row = []; val = ''; }
-        else if (char !== '\r') { val += char; }
-    }
-    if (val || row.length > 0) { row.push(val); result.push(row); }
-    return result;
-}
-
-reader.onload = (e) => {
-    const text = e.target.result;
-    
-    // Gunakan parseCSV untuk memecah baris dan kolom secara akurat
-    const rows = parseCSV(text).filter(row => row.length > 0 && row.some(col => col.trim() !== ''));
-    
-    window.switchAdminTab('quizzes');
-    window.prepareCreateQuiz();
-    document.getElementById('questions-container').innerHTML = ""; 
-    qc = 0;
-                
-                let successCount = 0;
-                for (let i = 1; i < rows.length; i++) {
-                    const cols = parseCSVRow(rows[i]);
-                    if (cols.length >= 6) {
-                        const questionData = {
+            if (!fileInput || !fileInput.files || !fileInput.files.length) return alert('Pilih file CSV terlebih dahulu!');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const rows = parseCSV(e.target.result);
+                    if (rows.length < 2) throw new Error('File CSV belum berisi data soal.');
+                    window.switchAdminTab('quizzes');
+                    window.prepareCreateQuiz();
+                    document.getElementById('questions-container').innerHTML = '';
+                    qc = 0;
+                    let successCount = 0;
+                    for (let i = 1; i < rows.length; i++) {
+                        const cols = rows[i];
+                        if (cols.length < 6 || cols.slice(0, 6).some(v => !v)) continue;
+                        const correct = String(cols[5] || 'A').trim().toUpperCase();
+                        const points = cols[6] === undefined || cols[6] === '' ? 10 : Number.parseInt(cols[6], 10);
+                        if (!['A','B','C','D'].includes(correct) || !Number.isFinite(points) || points < 1) continue;
+                        window.addQuestionField({
                             text: cols[0],
                             options: { A: cols[1], B: cols[2], C: cols[3], D: cols[4] },
-                            // Validasi kunci jawaban: dibersihkan dan dipastikan huruf kapital
-                            correct: cols[5] ? cols[5].toUpperCase().trim() : 'A',
-                            points: cols[6] ? parseInt(cols[6]) : 10
-                        };
-                        window.addQuestionField(questionData);
+                            correct,
+                            points
+                        });
                         successCount++;
                     }
-                }
-                
-                if (successCount > 0) {
-                    alert(`Import ${successCount} soal berhasil! Silakan lengkapi Judul, Jadwal, lalu klik Terbitkan Kuis.`);
-                } else {
-                    alert("Gagal membaca soal. Pastikan format file sesuai dengan template CSV.");
-                    window.addQuestionField(); 
-                }
-                fileInput.value = ''; 
+                    if (successCount) alert(`Import ${successCount} soal berhasil. Silakan lengkapi judul, jadwal, dan durasi sebelum menyimpan kuis.`);
+                    else { alert('Tidak ada baris soal valid. Periksa kembali format CSV.'); window.addQuestionField(); }
+                } catch (err) {
+                    console.error('Import kuis CSV gagal:', err);
+                    alert('Gagal membaca CSV: ' + err.message);
+                } finally { fileInput.value = ''; }
             };
-            reader.readAsText(file);
+            reader.onerror = () => { alert('File CSV tidak dapat dibaca.'); fileInput.value = ''; };
+            reader.readAsText(fileInput.files[0], 'UTF-8');
         };
-        
+
         window.downloadQBTemplateCSV = () => {
             const csv = "Kategori,Pertanyaan,Opsi A,Opsi B,Opsi C,Opsi D,Kunci (A/B/C/D),Poin\nProduct Knowledge,Apa ibukota Provinsi NTB?,Jakarta,Bandung,Mataram,Bima,C,10\nSOP Penanganan,Berapa batas waktu SLA komplain?,1 Hari,2 Hari,5 Hari,14 Hari,D,10";
             const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
@@ -1361,40 +1350,40 @@ reader.onload = (e) => {
 
         window.processImportQBCSV = () => {
             const fileInput = document.getElementById('import-qb-csv-file');
-            if (!fileInput.files.length) return;
-            
-            const file = fileInput.files[0];
+            if (!fileInput || !fileInput.files || !fileInput.files.length) return alert('Pilih file CSV terlebih dahulu.');
             const reader = new FileReader();
             reader.onload = (e) => {
-                const text = e.target.result;
-                const rows = text.split('\n').filter(row => row.trim() !== '');
-                
-                window.tempImportData = [];
-                for (let i = 1; i < rows.length; i++) {
-                    const cols = parseCSVRow(rows[i]);
-                    if (cols.length >= 7) {
+                try {
+                    const rows = parseCSV(e.target.result);
+                    if (rows.length < 2) throw new Error('File CSV belum berisi data soal.');
+                    window.tempImportData = [];
+                    for (let i = 1; i < rows.length; i++) {
+                        const cols = rows[i];
+                        if (cols.length < 7 || cols.slice(0, 7).some(v => !v)) continue;
+                        const correct = String(cols[6] || 'A').trim().toUpperCase();
+                        const points = cols[7] === undefined || cols[7] === '' ? 10 : Number.parseInt(cols[7], 10);
+                        if (!['A','B','C','D'].includes(correct) || !Number.isFinite(points) || points < 1) continue;
                         window.tempImportData.push({
-                            category: cols[0].trim() || 'Product Knowledge',
-                            text: cols[1].trim(),
-                            options: { A: cols[2].trim(), B: cols[3].trim(), C: cols[4].trim(), D: cols[5].trim() },
-                            // Validasi kunci jawaban: dibersihkan dan dipastikan huruf kapital
-                            correct: cols[6] ? cols[6].toUpperCase().trim() : 'A',
-                            points: cols[7] ? parseInt(cols[7]) : 10,
+                            category: cols[0] || 'Product Knowledge',
+                            text: cols[1],
+                            options: { A: cols[2], B: cols[3], C: cols[4], D: cols[5] },
+                            correct,
+                            points,
                             createdAt: new Date().toISOString()
                         });
                     }
-                }
-                
-                if (window.tempImportData.length > 0) {
-                    window.renderImportPreview();
-                    document.getElementById('global-preview-points').value = '';
-                    document.getElementById('qb-preview-modal').classList.remove('hidden');
-                } else {
-                    alert("Gagal membaca soal. Pastikan format file sesuai dengan template Bank Soal CSV.");
-                }
-                fileInput.value = ''; 
+                    if (window.tempImportData.length) {
+                        window.renderImportPreview();
+                        document.getElementById('global-preview-points').value = '';
+                        document.getElementById('qb-preview-modal').classList.remove('hidden');
+                    } else alert('Tidak ada baris soal valid. Pastikan CSV memiliki 8 kolom sesuai template.');
+                } catch (err) {
+                    console.error('Import bank soal CSV gagal:', err);
+                    alert('Gagal membaca CSV: ' + err.message);
+                } finally { fileInput.value = ''; }
             };
-            reader.readAsText(file);
+            reader.onerror = () => { alert('File CSV tidak dapat dibaca.'); fileInput.value = ''; };
+            reader.readAsText(fileInput.files[0], 'UTF-8');
         };
 
         window.closePreviewModal = () => {
@@ -1452,11 +1441,12 @@ reader.onload = (e) => {
                     importPromises.push(addDoc(collection(db, "questionBank"), data));
                 });
                 
+                const importedCount = window.tempImportData.length;
                 await Promise.all(importPromises);
                 window.closePreviewModal();
                 await loadQuestionBank();
                 hideLoader();
-                alert(`Sukses! ${window.tempImportData.length} soal berhasil di-import dan disimpan permanen ke Bank Soal.`);
+                alert(`Sukses! ${importedCount} soal berhasil di-import dan disimpan permanen ke Bank Soal.`);
             } catch(err) {
                 hideLoader();
                 alert("Terjadi kesalahan saat menyimpan ke database: " + err.message);
@@ -1491,7 +1481,7 @@ reader.onload = (e) => {
 
         window.updateUserPresence = async (status) => {
             if(currentUser && currentUser.id) {
-                try { await updateDoc(doc(db, "users", currentUser.id), { presence: status }); } catch(e){}
+                try { await updateDoc(doc(db, "users", currentUser.id), { presence: status }); } catch(e){ console.error("Operasi gagal:", e); }
             }
         };
 
@@ -1523,28 +1513,35 @@ reader.onload = (e) => {
             try {
                 await loadGlobalSettings();
                 const hashedPassword = await hashPassword(p);
-                const q = query(collection(db, "users"), where("username", "==", u), where("password", "==", hashedPassword)); 
+                const q = query(collection(db, "users"), where("username", "==", u));
                 const snap = await getDocs(q);
-                
-                if (!snap.empty) { 
-                    const docRef = snap.docs[0]; 
-                    const ud = docRef.data(); 
-                    currentUser = { id: docRef.id, ...ud }; 
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser)); 
-                    hideLoader(); 
-                    routeUser(); 
+                let authenticatedDoc = null;
+                for (const userDoc of snap.docs) {
+                    const storedPassword = String(userDoc.data().password || '');
+                    if (storedPassword === hashedPassword || storedPassword === p) {
+                        authenticatedDoc = userDoc;
+                        if (storedPassword === p) await updateDoc(doc(db, "users", userDoc.id), { password: hashedPassword });
+                        break;
+                    }
+                }
+                if (authenticatedDoc) {
+                    const ud = { ...authenticatedDoc.data(), password: hashedPassword };
+                    currentUser = { id: authenticatedDoc.id, ...ud };
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    hideLoader();
+                    routeUser();
                     resetInactivityTimer();
-                } 
+                }
                 else if (u === 'admin' && p === 'admin123') {
                     const adminQ = query(collection(db, "users"), where("username", "==", "admin")); 
                     const adminSnap = await getDocs(adminQ); let adminId = '';
                     if(adminSnap.empty) { 
-                        const newDoc = await addDoc(collection(db, "users"), { fullName: 'System Administrator', username: 'admin', password: 'admin123', role: 'admin', phone: '', email: 'admin@bankntbsyariah.co.id' }); 
+                        const newDoc = await addDoc(collection(db, "users"), { fullName: 'System Administrator', username: 'admin', password: await hashPassword('admin123'), role: 'admin', phone: '', email: 'admin@bankntbsyariah.co.id' }); 
                         adminId = newDoc.id; 
                     } else { 
                         adminId = adminSnap.docs[0].id; 
                     }
-                    currentUser = { id: adminId, username: 'admin', fullName: 'System Administrator', password: 'admin123', role: 'admin', phone: '', email: 'admin@bankntbsyariah.co.id' }; 
+                    currentUser = { id: adminId, username: 'admin', fullName: 'System Administrator', password: await hashPassword('admin123'), role: 'admin', phone: '', email: 'admin@bankntbsyariah.co.id' }; 
                     localStorage.setItem('currentUser', JSON.stringify(currentUser)); 
                     window.updateUserPresence("Online");
                     hideLoader(); routeUser();
@@ -1658,10 +1655,11 @@ reader.onload = (e) => {
                 if(cp.trim() === "") {
                     return alert("Masukkan Password Saat Ini untuk memverifikasi perubahan password!");
                 }
-                if(cp !== currentUser.password) {
+                const currentHash = await hashPassword(cp);
+                if(currentHash !== currentUser.password && cp !== currentUser.password) {
                     return alert("Password Saat Ini yang dimasukkan tidak cocok!");
                 }
-                updateData.password = np.trim(); 
+                updateData.password = await hashPassword(np.trim()); 
             } 
             
             showLoader("Menyimpan..."); 
@@ -1669,7 +1667,7 @@ reader.onload = (e) => {
                 if(currentUser.id) await updateDoc(doc(db, "users", currentUser.id), updateData); 
                 
                 currentUser.fullName = fn; currentUser.phone = ph; currentUser.email = em; 
-                if(np.trim() !== "") currentUser.password = np.trim(); 
+                if(np.trim() !== "") currentUser.password = updateData.password; 
                 
                 localStorage.setItem('currentUser', JSON.stringify(currentUser)); 
                 document.getElementById('nav-username-display').innerText = fn; 
@@ -2346,7 +2344,7 @@ reader.onload = (e) => {
                 }); 
                 tbody.innerHTML = reportRowsHtml;
                 renderItemAnalysis(qz, currentReportResults); 
-            } catch(e){} 
+            } catch(e){ console.error("Operasi gagal:", e); } 
             hideLoader(); 
         };
         
@@ -2476,7 +2474,8 @@ reader.onload = (e) => {
 
             if (!title) { return alert("Judul kuis wajib diisi!"); }
             if (!startTime || !endTime) { return alert("Waktu Mulai dan Waktu Akhir akses kuis wajib diisi!"); }
-            if (!duration || parseInt(duration) <= 0) { return alert("Durasi pengerjaan kuis (menit) harus valid!"); }
+            if (new Date(endTime).getTime() <= new Date(startTime).getTime()) { return alert("Waktu akhir kuis harus lebih besar daripada waktu mulai."); }
+            if (!duration || parseInt(duration, 10) <= 0) { return alert("Durasi pengerjaan kuis (menit) harus valid!"); }
 
             const totalScore = window.calculateTotalScore();
             if (totalScore !== 100) {
@@ -2497,11 +2496,11 @@ reader.onload = (e) => {
                 const optD = b.querySelector('.q-opt-d').value.trim();
                 // Validasi kunci jawaban: memastikan kapital dan bersih dari spasi
                 const correct = b.querySelector('.q-correct').value.toUpperCase().trim();
-                const points = parseInt(b.querySelector('.q-points').value) || 10;
+                const points = parseInt(b.querySelector('.q-points').value, 10);
                 const bankId = b.querySelector('.q-bank-id').value;
 
-                if (!text || !optA || !optB || !optC || !optD) {
-                    alert(`Soal nomor ${index + 1} belum lengkap (pertanyaan atau pilihan opsi ada yang kosong).`);
+                if (!text || !optA || !optB || !optC || !optD || !['A','B','C','D'].includes(correct) || !Number.isFinite(points) || points < 1) {
+                    alert(`Soal nomor ${index + 1} belum lengkap atau memiliki kunci/poin yang tidak valid.`);
                     isValidQuestions = false; return;
                 }
                 q.push({ text: text, options: { A: optA, B: optB, C: optC, D: optD }, correct: correct, points: points, bankId: bankId }); 
@@ -2787,7 +2786,7 @@ reader.onload = (e) => {
                 document.getElementById('agent-dash-avg-score').innerText = h.length>0?Math.round(ts/h.length)+"%":"0%"; 
                 agentChartDataCache = [...h].reverse(); 
                 if(!document.getElementById('agent-tab-history').classList.contains('hidden')) { renderAgentChart(); renderSkillRadar(h); }
-            } catch(e){}
+            } catch(e){ console.error("Operasi gagal:", e); }
         }
 
         window.openHistoryReview = async (quizId, resultId) => {
@@ -2869,7 +2868,7 @@ reader.onload = (e) => {
                     htmlString += `<tr class="${me?'bg-indigo-50 border-l-[6px] border-indigo-600':''}"><td class="px-5 py-4 font-black">${i+1}</td><td class="px-5 py-4 font-bold">${r.agentFullName} ${me?'(Anda)':''}</td><td class="px-5 py-4 text-sm font-semibold">${r.quizTitle}</td><td class="px-5 py-4 text-center"><span class="px-3 py-1 font-black rounded ${p>=globalSettings.passingGrade?'text-emerald-600':'text-rose-600'}">${p}%</span></td></tr>`; 
                 });
                 tbody.innerHTML = htmlString;
-            } catch(e){}
+            } catch(e){ console.error("Operasi gagal:", e); }
         }
 
         async function renderBadges() {
@@ -2895,7 +2894,7 @@ reader.onload = (e) => {
                     <div class="glass p-6 sm:p-8 rounded-[2rem] shadow-sm ${fs>0?'bg-amber-50 badge-card':'opacity-40'}"><div class="w-16 h-16 bg-amber-500 text-white rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-md"><i class="fa-solid fa-bolt"></i></div><h4 class="font-black text-xl tracking-tight">Speed Demon</h4><p class="text-sm font-semibold text-slate-500 mt-1">${fs>0?'🏆 Aktif':'🔒 Lulus < 2 Menit'}</p></div>
                     <div class="glass p-6 sm:p-8 rounded-[2rem] shadow-sm ${hs?'bg-rose-50 badge-card':'opacity-40'}"><div class="w-16 h-16 bg-rose-500 text-white rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-md"><i class="fa-solid fa-fire"></i></div><h4 class="font-black text-xl tracking-tight">Streak Master</h4><p class="text-sm font-semibold text-slate-500 mt-1">${hs?'🏆 Aktif':'🔒 3x Lulus Beruntun'}</p></div>
                 `;
-            } catch(e){}
+            } catch(e){ console.error("Operasi gagal:", e); }
         }
 
         window.refreshAgentData = async () => { showLoader(); await Promise.all([loadGlobalSettings(), loadQuizzesForAgent(), loadAgentHistoryAndTrend(), loadAgentLeaderboard()]); hideLoader(); loadNotifications(); };
@@ -3006,7 +3005,7 @@ reader.onload = (e) => {
             } 
         };
 
-        function startTimer(rem) { let t = rem; const disp = document.getElementById('timer-display'); const upd = () => { let m = Math.floor(t / 60).toString().padStart(2, '0'); let s = (t % 60).toString().padStart(2, '0'); disp.innerText = `${m}:${s}`; }; upd(); timerInterval = setInterval(() => { t--; upd(); if (t <= 0) { clearInterval(timerInterval); alert("Waktu Habis!"); window.submitQuiz(true); } }, 1000); }
+        function startTimer(rem) { if (timerInterval) clearInterval(timerInterval); let t = rem; const disp = document.getElementById('timer-display'); const upd = () => { let m = Math.floor(t / 60).toString().padStart(2, '0'); let s = (t % 60).toString().padStart(2, '0'); disp.innerText = `${m}:${s}`; }; upd(); timerInterval = setInterval(() => { t--; upd(); if (t <= 0) { clearInterval(timerInterval); alert("Waktu Habis!"); window.submitQuiz(true); } }, 1000); }
 
         window.submitQuiz = async (auto = false) => {
             if(!auto && !confirm("Yakin ingin mengirim jawaban sekarang? Setelah dikirim, jawaban tidak dapat diubah kembali.")) return;
@@ -3021,6 +3020,7 @@ reader.onload = (e) => {
                 aArr.push(ans); 
                 if (ans === q.correct) { s += q.points; c++; } 
             });
+            if (tp <= 0) { hideLoader(); return alert("Total poin soal tidak valid. Hubungi administrator."); }
             const p = Math.round((s / tp) * 100);
 
             activeQuizData.lastAnswers = aArr;
@@ -3029,7 +3029,12 @@ reader.onload = (e) => {
                 try { 
                     await addDoc(collection(db, "results"), { quizId: activeQuizData.id, quizTitle: activeQuizData.title, category: activeQuizData.category, agentUsername: currentUser.username, agentFullName: currentUser.fullName, agentEmail: currentUser.email || '', score: s, totalPoints: tp, durationSec: timeT, answers: aArr, createdAt: new Date().toISOString() }); if (!activeQuizData.isSimulation) window.updateUserPresence("Online");
                     localStorage.removeItem(`ongoing_quiz_${currentUser.username}_${activeQuizData.id}`); 
-                } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); }
+                } catch (e) {
+                    console.error("Gagal menyimpan hasil ujian:", e);
+                    hideLoader();
+                    alert("Hasil ujian belum berhasil disimpan. Periksa koneksi, lalu coba kirim kembali. Jawaban Anda tetap tersedia di layar.");
+                    return;
+                }
             }
             
             document.getElementById('results-modal-title').innerText = activeQuizData.isSimulation ? "Simulasi Selesai!" : "Kuis Selesai!";
