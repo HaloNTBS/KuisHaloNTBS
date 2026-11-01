@@ -851,14 +851,20 @@
                     </div>
 
                     <div id="admin-tab-gamification-achievement" class="admin-tab-content hidden space-y-6">
-                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-6 tracking-tight">Master Lencana Pencapaian</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-emerald-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-flag-checkered"></i></div><div><h4 class="font-black text-slate-800">First Blood</h4><p class="text-xs text-slate-500 font-semibold">Selesaikan kuis perdana</p></div></div>
-                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-emerald-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-star"></i></div><div><h4 class="font-black text-slate-800">Flawless (Perfect)</h4><p class="text-xs text-slate-500 font-semibold">Skor kuis 100% penuh</p></div></div>
-                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-amber-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-amber-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-bolt"></i></div><div><h4 class="font-black text-slate-800">Speed Demon</h4><p class="text-xs text-slate-500 font-semibold">Lulus dalam &lt; 2 menit</p></div></div>
-                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-rose-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-rose-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-fire"></i></div><div><h4 class="font-black text-slate-800">Streak Master</h4><p class="text-xs text-slate-500 font-semibold">3x berturut-turut lulus</p></div></div>
-                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-sky-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-sky-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-cloud-sun"></i></div><div><h4 class="font-black text-slate-800">Early Bird</h4><p class="text-xs text-slate-500 font-semibold">Selesai kuis pagi (&lt; 8 AM)</p></div></div>
-                            <div class="glass p-5 rounded-[2rem] flex items-center space-x-4 shadow-sm bg-purple-50/50 hover:-translate-y-1 transition-transform"><div class="w-14 h-14 bg-purple-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md"><i class="fa-solid fa-moon"></i></div><div><h4 class="font-black text-slate-800">Night Owl</h4><p class="text-xs text-slate-500 font-semibold">Selesai kuis malam (&gt; 8 PM)</p></div></div>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                            <div>
+                                <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Master Lencana Pencapaian</h2>
+                                <p class="text-sm text-slate-500 font-semibold mt-1">Daftar 48 lencana yang bisa didapatkan agen. Tersimpan di Firebase <code>userBadges</code>.</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[11px] font-black bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-full" id="admin-badge-count">48 Lencana</span>
+                                <button onclick="window.renderAdminBadges()" class="text-xs font-black text-[#0F7A5A] bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full hover:bg-emerald-100"><i class="fa-solid fa-rotate mr-1"></i>Refresh</button>
+                            </div>
+                        </div>
+                        <div id="admin-badges-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+                        <div class="glass p-4 rounded-2xl border border-slate-200 bg-slate-50/50 mt-6">
+                            <h4 class="text-xs font-black uppercase text-slate-600 mb-2"><i class="fa-solid fa-info-circle mr-1"></i>Info Penyimpanan Firebase</h4>
+                            <p class="text-[11px] text-slate-500 leading-relaxed">Semua lencana didefinisikan di <code>BADGE_DEFINITIONS</code> (48). Ketika agen memenuhi ketentuan, sistem otomatis membuat dokumen di collection <code>userBadges</code> dengan <code>badgeId</code>. Lencana lama (2 kuis sebelum fitur) akan otomatis retroaktif saat agen membuka Dashboard atau tab Lencana.</p>
                         </div>
                     </div>
 
@@ -2215,6 +2221,9 @@
                 window.renderQuestionBankTable();
             }
             
+                        if(tabName === 'gamification-achievement') {
+                setTimeout(() => { if(window.renderAdminBadges) window.renderAdminBadges(); }, 50);
+            }
             if(window.innerWidth < 768) { 
                 const sb = document.getElementById('app-sidebar'); 
                 if(sb && !sb.classList.contains('-translate-x-full')) window.toggleMobileSidebar(); 
@@ -4159,6 +4168,57 @@
                 if(container) container.innerHTML = `<p class="text-center py-10 text-rose-500 font-bold">Gagal memuat lencana: ${e.message}</p>`;
             }
         }
+
+
+        async function renderAdminBadges() {
+            try {
+                const container = document.getElementById('admin-badges-container');
+                const countEl = document.getElementById('admin-badge-count');
+                if(!container) return;
+                if(typeof BADGE_DEFINITIONS === 'undefined' || BADGE_DEFINITIONS.length===0) {
+                    container.innerHTML = '<p class="col-span-full text-center py-10 text-slate-400">Definisi lencana tidak ditemukan</p>';
+                    return;
+                }
+                if(countEl) countEl.innerText = BADGE_DEFINITIONS.length + ' Lencana';
+
+                // Get stats: how many users have each badge
+                let badgeStats = {};
+                try {
+                    const snap = await getDocs(collection(db, "userBadges"));
+                    snap.forEach(d => {
+                        const bid = d.data().badgeId;
+                        badgeStats[bid] = (badgeStats[bid] || 0) + 1;
+                    });
+                } catch(e) { console.warn('Gagal load badge stats', e); }
+
+                let html = '';
+                BADGE_DEFINITIONS.forEach(badge => {
+                    const tierStyle = getTierStyle(badge.tier);
+                    const earnedCount = badgeStats[badge.id] || 0;
+                    html += `
+                    <div class="glass p-4 rounded-2xl shadow-sm border-2 ${tierStyle.border} ${tierStyle.bg} hover:scale-[1.02] transition-all">
+                        <div class="flex items-start justify-between mb-2.5">
+                            <div class="w-10 h-10 rounded-xl bg-[#0F7A5A] text-white flex items-center justify-center text-lg shadow">
+                                <i class="fa-solid ${badge.icon}"></i>
+                            </div>
+                            <span class="text-[10px] font-black px-2 py-1 rounded-full ${tierStyle.badge}">${badge.tier}</span>
+                        </div>
+                        <h4 class="font-black text-[13px] text-slate-800 leading-tight">${badge.id}. ${badge.name}</h4>
+                        <p class="text-[11px] font-semibold text-slate-500 mt-1 leading-snug">${badge.desc}</p>
+                        <div class="mt-2.5 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-500"><i class="fa-solid fa-users mr-1"></i>${earnedCount} agen</span>
+                            <span class="text-[10px] font-black text-[#0F7A5A] bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">ID:${badge.id}</span>
+                        </div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            } catch(e) {
+                console.error('renderAdminBadges error', e);
+                const container = document.getElementById('admin-badges-container');
+                if(container) container.innerHTML = `<p class="text-center py-10 text-rose-500 font-bold">Gagal: ${e.message}</p>`;
+            }
+        }
+        window.renderAdminBadges = renderAdminBadges;
 
         // Retroactive badge check on dashboard load
         window.checkAndSyncBadgesRetroactive = async () => {
