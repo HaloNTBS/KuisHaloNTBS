@@ -859,7 +859,7 @@
                             <div class="flex items-center gap-2 flex-wrap">
                                 <span class="text-[11px] font-black bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-full" id="admin-badge-count">48 Lencana</span>
                                 <button onclick="window.renderAdminBadges()" class="text-xs font-black text-[#0F7A5A] bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full hover:bg-emerald-100"><i class="fa-solid fa-rotate mr-1"></i>Refresh</button>
-                                <button onclick="window.syncAllAgentBadgesRetroactive()" id="btn-migrate-badges" class="text-xs font-black text-white bg-[#0F7A5A] px-4 py-1.5 rounded-full hover:bg-[#065F46] shadow-md"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Sync Semua Agen (Retroaktif)</button>
+                                <button onclick="window.syncAllAgentBadgesRetroactive()" id="btn-migrate-badges" class="admin-only text-xs font-black text-white bg-[#0F7A5A] px-4 py-1.5 rounded-full hover:bg-[#065F46] shadow-md"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Hitung Ulang Badge (Admin)</button>
                             </div>
                         </div>
                         <div id="admin-badge-migration-log" class="hidden glass p-4 rounded-2xl border border-emerald-200 bg-emerald-50/50 text-xs font-semibold text-slate-700"></div>
@@ -4192,6 +4192,12 @@
 
         async function renderAdminBadges() {
             try {
+                // Hanya admin yang boleh lihat tombol sync
+                const migrateBtn = document.getElementById('btn-migrate-badges');
+                if(migrateBtn) {
+                    if(currentUser && currentUser.role === 'admin') migrateBtn.classList.remove('hidden');
+                    else migrateBtn.classList.add('hidden');
+                }
                 const container = document.getElementById('admin-badges-container');
                 const countEl = document.getElementById('admin-badge-count');
                 if(!container) return;
