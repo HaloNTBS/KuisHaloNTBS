@@ -14,17 +14,51 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js">
         /* === UI EXPERT V9 - Humanize + Journey + Micro-interactions === */
         window.setMood = (mood) => {
+            console.log('Mood clicked:', mood);
             localStorage.setItem('agentMood', mood);
             document.querySelectorAll('.mood-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.mood === mood);
+                btn.classList.remove('active');
+                if(btn.dataset.mood === mood) btn.classList.add('active');
             });
             const messages = {
                 happy: "Keren! Pertahankan semangatmu hari ini! 🔥",
                 neutral: "Semangat! Pelan-pelan tapi pasti ya 🙂",
                 tired: "Wajar capek, istirahat dulu 5 menit ya. Kamu hebat! 🌙"
             };
-            const mot = document.getElementById('motivational-text');
-            if(mot && messages[mood]) mot.innerText = messages[mood];
+            const motContainer = document.getElementById('motivational-text');
+            const motSpan = motContainer ? motContainer.querySelector('#motivational-main-text') : null;
+            const target = motSpan || motContainer;
+            if(target && messages[mood]) {
+                target.innerText = messages[mood];
+                target.classList.add('badge-pop');
+                setTimeout(() => target.classList.remove('badge-pop'), 600);
+            }
+    
+        // Sync KPI badges and streak to both locations
+        const origUpdateHumanized = window.updateHumanizedHeader;
+        window.updateHumanizedHeader = () => {
+            if(origUpdateHumanized) origUpdateHumanized();
+            // Sync KPI duplicates
+            const badgesInline = document.getElementById('agent-dash-badges-inline');
+            const badgesInlineKpi = document.getElementById('agent-dash-badges-inline-kpi');
+            const streakText = document.getElementById('streak-text');
+            const streakTextKpi = document.getElementById('streak-text-kpi');
+            if(badgesInline && badgesInlineKpi) badgesInlineKpi.innerText = badgesInline.innerText;
+            if(streakText && streakTextKpi) streakTextKpi.innerText = streakText.innerText;
+        };
+
+        // Toast feedback
+            if(typeof showToast === 'function') {
+                const emoji = mood === 'happy' ? '😊' : mood === 'neutral' ? '😐' : '😩';
+                showToast(`${emoji} Mood ${mood} disimpan! ${messages[mood]}`, 'success');
+            } else {
+                // Fallback alert for visibility
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-5 right-5 bg-slate-800 text-white px-5 py-3 rounded-xl text-sm font-bold shadow-2xl z-[9999] toast-in';
+                toast.innerText = `${mood === 'happy' ? '😊' : mood === 'neutral' ? '😐' : '😩'} Mood disimpan!`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2500);
+            }
         };
 
         window.updateHumanizedHeader = () => {
@@ -59,7 +93,11 @@
 
                 // Load saved mood
                 const savedMood = localStorage.getItem('agentMood');
-                if(savedMood) window.setMood(savedMood);
+                if(savedMood) {
+                    document.querySelectorAll('.mood-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.mood === savedMood);
+                    });
+                }
 
                 // Streak calculation
                 const streakEl = document.getElementById('streak-text');
@@ -89,46 +127,7 @@
             } catch(e){ console.warn('Humanize header failed', e); }
         };
 
-        window.renderJourneyMap = (done, total) => {
-            try {
-                const pct = total > 0 ? done / total : 0;
-                let completedSteps = 0;
-                if(pct >= 0.25) completedSteps = 1;
-                if(pct >= 0.5) completedSteps = 2;
-                if(pct >= 0.75) completedSteps = 3;
-                if(pct >= 1) completedSteps = 4;
-
-                // Update nodes
-                for(let i=1; i<=4; i++) {
-                    const node = document.getElementById(`journey-node-${i}`);
-                    const status = document.getElementById(`journey-status-${i}`);
-                    if(!node || !status) continue;
-                    if(i <= completedSteps) {
-                        node.className = 'journey-node completed';
-                        status.innerText = '✓ Selesai';
-                        status.className = 'inline-flex mt-2 text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-100';
-                    } else if(i === completedSteps + 1) {
-                        node.className = 'journey-node current';
-                        status.innerText = '● Sedang Jalan';
-                        status.className = 'inline-flex mt-2 text-[10px] font-bold bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-200';
-                    } else {
-                        node.className = 'journey-node locked';
-                        status.innerText = '🔒 Terkunci';
-                        status.className = 'inline-flex mt-2 text-[10px] font-bold bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full border border-slate-200';
-                    }
-                }
-
-                const progressText = document.getElementById('journey-progress-text');
-                if(progressText) progressText.innerText = `${completedSteps}/4 Level`;
-
-                // Pulse progress ring if >=80%
-                const ringSvg = document.getElementById('progress-ring-svg');
-                if(ringSvg) {
-                    if(pct >= 0.8) ringSvg.classList.add('pulse');
-                    else ringSvg.classList.remove('pulse');
-                }
-            } catch(e){ console.warn('Journey map failed', e); }
-        };
+        window.renderJourneyMap = (done, total) => { /* Removed Duolingo style per user request */ console.log("Journey map removed"); };
 
         window.scrollToJourney = () => {
             document.querySelector('.journey-card')?.scrollIntoView({behavior:'smooth', block:'center'});
@@ -139,7 +138,7 @@
         window.updateAgentProgressRing = (done, total, avgScore, badgeCount) => {
             if(origUpdateRingV9) origUpdateRingV9(done, total, avgScore, badgeCount);
             window.updateHumanizedHeader();
-            window.renderJourneyMap(done, total);
+            // Journey map removed per user request - using clean KPI
         };
 
         // Empty State Illustration - override loadQuizzesForAgent empty handling
@@ -378,6 +377,71 @@
         .journey-card, .no-capek-card { margin-bottom: 2rem; }
 
         
+        
+        /* === MOBILE RAPI V13 - Anti Mepet === */
+        html, body { overflow-x: hidden; max-width: 100vw; }
+        * { -webkit-tap-highlight-color: transparent; }
+        
+        @media (max-width: 640px) {
+            /* Prevent horizontal scroll from decorative blobs */
+            .no-capek-card .absolute.w-96, .no-capek-card .absolute.w-64 { display: none !important; }
+            
+            /* Humanize header - stack nicely */
+            .humanize-avatar { width: 48px !important; height: 48px !important; font-size: 18px !important; border-radius: 14px !important; }
+            #weather-mini-card { min-width: 100% !important; width: 100%; justify-content: space-between; }
+            #weather-mini-card .weather-icon { font-size: 1.5rem !important; }
+            
+            /* KPI cards - no mepet */
+            .grid { gap: 1rem !important; }
+            .bg-white.rounded-\[1\.75rem\] { padding: 1.25rem !important; border-radius: 1.25rem !important; }
+            
+            /* No-capek card */
+            .no-capek-card { border-radius: 1.5rem !important; padding: 1.25rem !important; }
+            .no-capek-card .weather-bg-pagi, .weather-bg-siang, .weather-bg-sore, .weather-bg-malam { opacity: 0.5; }
+            
+            /* Mood buttons bigger touch target */
+            .mood-btn { width: 44px !important; height: 44px !important; font-size: 20px !important; }
+            
+            /* Live badge smaller on mobile */
+            .live-badge { font-size: 8px !important; padding: 3px 8px !important; }
+            
+            /* Prevent text 10px being unreadable */
+            .text-\[10px\] { font-size: 11px !important; line-height: 1.4 !important; }
+            .text-\[11px\] { font-size: 11.5px !important; }
+            
+            /* Main content bottom padding for bottom nav */
+            #main-content { padding-bottom: 6rem !important; padding-left: 1rem !important; padding-right: 1rem !important; }
+            
+            /* Buttons min 44px */
+            button { min-height: 44px; }
+            button.py-2, button.py-2\.5 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+            
+            /* Tables - add horizontal scroll hint */
+            .overflow-x-auto { -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+            .overflow-x-auto table { min-width: 600px; }
+            
+            /* Empty illustration */
+            .empty-illustration { padding: 1.5rem !important; border-radius: 1.5rem !important; }
+            
+            /* Delete modal - full width with margin */
+            #custom-delete-modal { padding: 1rem !important; }
+            #custom-delete-modal > div { border-radius: 1.25rem !important; max-width: 100% !important; }
+        }
+
+        /* Extra small screens < 375px */
+        @media (max-width: 375px) {
+            .text-xl { font-size: 1.125rem !important; }
+            .text-2xl { font-size: 1.25rem !important; }
+            .text-3xl { font-size: 1.5rem !important; }
+            #weather-mini-card { flex-direction: row !important; gap: 0.75rem !important; }
+        }
+
+        /* Ensure no mepet asal - consistent spacing */
+        .space-y-8 > * + * { margin-top: 1.5rem !important; }
+        @media (min-width: 640px) {
+            .space-y-8 > * + * { margin-top: 2rem !important; }
+        }
+
         /* === REAL-TIME + WEATHER V11 === */
         .live-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; display: inline-block; position: relative; }
         .live-dot::after { content: ''; position: absolute; inset: 0; background: #10B981; border-radius: 50%; animation: live-ping 1.5s cubic-bezier(0,0,0.2,1) infinite; }
@@ -747,7 +811,7 @@
                 <div id="admin-views" class="hidden">
                     
                     <div id="admin-tab-overview" class="admin-tab-content space-y-6">
-                        <div class="flex flex-col lg:flex-row justify-between items-start gap-4 mb-6">
+                        <div class="flex flex-col lg:flex-row justify-between items-start gap-5 sm:gap-4 mb-6">
                         <div class="flex-1">
                             <h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
                                 Dashboard Utama
@@ -1319,25 +1383,25 @@
                         <div class="absolute bottom-0 left-0 w-64 h-64 bg-emerald-300/20 rounded-full blur-3xl -ml-20 -mb-20"></div>
                         <div class="relative">
                             <!-- Top Row: Avatar + Greeting + Live Clock + Weather V11 -->
-                            <div class="flex flex-col lg:flex-row items-start justify-between gap-4 mb-6">
+                            <div class="flex flex-col lg:flex-row items-start justify-between gap-5 sm:gap-4 mb-6">
                                 <div class="flex items-center gap-4">
                                     <div class="humanize-avatar" id="agent-avatar">A</div>
                                     <div>
-                                        <p class="text-[11px] font-bold uppercase tracking-widest opacity-80 flex items-center gap-2">
+                                        <p class="text-[11px] font-bold uppercase tracking-widest opacity-80 flex flex-wrap items-center gap-2">
                                             <span class="live-badge"><span class="live-dot"></span>LIVE</span>
                                             <span id="greeting-time-icon">🌤️</span> <span id="greeting-time-text">Pagi</span> • <span id="current-date-text">Hari ini</span>
                                             <span class="opacity-60">•</span> <span id="live-clock" class="live-clock font-mono">00:00:00</span>
                                         </p>
                                         <h2 class="text-xl sm:text-2xl font-black leading-tight mt-1">Assalamualaikum, <span id="agent-greeting-name">Agen</span>! <span id="greeting-emoji">✨</span></h2>
-                                        <p class="text-[13px] font-semibold opacity-90 mt-1 flex items-center gap-2" id="motivational-text">
-                                            <span>Siap jadi yang terbaik hari ini? ✨</span>
+                                        <p class="text-[13px] font-semibold opacity-90 mt-1 flex items-center gap-2" id="motivational-text" class="flex flex-wrap items-center gap-2">
+                                            <span id="motivational-main-text">Siap jadi yang terbaik hari ini? ✨</span>
                                             <span id="weather-inline" class="bg-white/20 px-2 py-0.5 rounded-full text-[11px]">🌤️ 28°C Denpasar</span>
                                         </p>
                                     </div>
                                 </div>
                                 <div class="flex flex-col sm:flex-row items-center gap-3">
                                     <!-- Weather Mini Card -->
-                                    <div id="weather-mini-card" class="weather-card pagi rounded-2xl p-3 text-white shadow-lg flex items-center gap-3 min-w-[180px]">
+                                    <div id="weather-mini-card" class="weather-card pagi rounded-2xl p-4 sm:p-3 text-white shadow-lg flex items-center gap-3 w-full sm:min-w-[180px] sm:w-auto">
                                         <div class="weather-icon text-2xl" id="weather-icon">🌤️</div>
                                         <div>
                                             <p class="text-[10px] font-bold uppercase tracking-wide opacity-90" id="weather-condition">Cerah Pagi</p>
@@ -1358,7 +1422,7 @@
                             </div>
 
                             <!-- Bottom Row: Progress Ring + Journey Summary -->
-                            <div class="flex flex-col lg:flex-row items-center gap-6 bg-white/10 backdrop-blur rounded-[1.5rem] p-5 border border-white/15">
+                            <div class="flex flex-col lg:flex-row items-center gap-5 sm:gap-6 bg-white/10 backdrop-blur rounded-[1.5rem] p-4 sm:p-5 border border-white/15">
                                 <div class="relative w-28 h-28 flex-shrink-0">
                                     <svg class="progress-ring w-28 h-28" id="progress-ring-svg">
                                         <circle cx="56" cy="56" r="46" stroke="rgba(255,255,255,0.2)" stroke-width="8" fill="none"/>
@@ -1378,7 +1442,7 @@
                                         <span class="bg-white/20 backdrop-blur px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-fire text-[11px]"></i><span id="streak-text">0 Hari Streak</span></span>
                                     </div>
                                 </div>
-                                <button id="agent-cta-btn" onclick="window.switchAgentTab('quizzes')" class="w-full lg:w-auto bg-white text-[#0F7A5A] font-black px-6 py-3 rounded-xl shadow-lg hover:bg-slate-50 transition flex items-center justify-center gap-2 text-sm">
+                                <button id="agent-cta-btn" onclick="window.switchAgentTab('quizzes')" class="w-full lg:w-auto bg-white text-[#0F7A5A] font-black px-6 py-3.5 sm:py-3 rounded-xl shadow-lg hover:bg-slate-50 transition flex items-center justify-center gap-2 text-sm min-h-[48px]">
                                     <span>Lanjutkan Belajar</span><i class="fa-solid fa-arrow-right"></i>
                                 </button>
                             </div>
@@ -1396,84 +1460,48 @@
                             </button>
                         </div>
 
-                        <!-- Learning Journey Map - UI Expert V9 -->
-                        <div class="journey-card rounded-[2rem] p-6 sm:p-8 shadow-sm mb-6">
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8">
-                                <div>
-                                    <h3 class="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2"><i class="fa-solid fa-map text-[#0F7A5A]"></i> Peta Perjalanan Halo</h3>
-                                    <p class="text-xs font-semibold text-slate-500 mt-1">Belajar seperti game, bukan ujian. Selesaikan jalurmu!</p>
+                                                <!-- KPI Cards - Clean & Tidak Ramai V12 -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-6 sm:mb-8">
+                            <div class="bg-white rounded-[1.75rem] p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center">
+                                        <i class="fa-solid fa-file-circle-check text-indigo-600 text-xl"></i>
+                                    </div>
+                                    <span class="text-[11px] font-bold bg-slate-50 border border-slate-200 px-3 py-1 rounded-full text-slate-600" id="kpi-progress-badge">0/0</span>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full" id="journey-progress-text">0/4 Level</span>
-                                    <button onclick="window.scrollToJourney()" class="text-[11px] font-black text-slate-500 hover:text-[#0F7A5A]">Lihat Jalur <i class="fa-solid fa-chevron-right ml-1"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="journey-path">
-                                <div class="journey-line hidden md:block"></div>
-                                <div class="journey-line md:hidden"></div>
-                                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-4 relative">
-                                    <!-- Step 1: Dasar Syariah -->
-                                    <div class="journey-step text-center" data-step="1">
-                                        <div class="flex flex-col items-center">
-                                            <div class="journey-node completed" id="journey-node-1"><i class="fa-solid fa-book-open"></i></div>
-                                            <div class="mt-3">
-                                                <h4 class="text-[13px] font-black text-slate-800">Dasar Syariah</h4>
-                                                <p class="text-[11px] font-semibold text-slate-500 mt-0.5">Akad & Prinsip</p>
-                                                <span class="inline-flex mt-2 text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-100" id="journey-status-1">✓ Selesai</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Step 2: Produk Tabungan -->
-                                    <div class="journey-step text-center" data-step="2">
-                                        <div class="flex flex-col items-center">
-                                            <div class="journey-node current" id="journey-node-2"><i class="fa-solid fa-piggy-bank"></i></div>
-                                            <div class="mt-3">
-                                                <h4 class="text-[13px] font-black text-slate-800">Produk Tabungan</h4>
-                                                <p class="text-[11px] font-semibold text-slate-500 mt-0.5">Wadiah & Mudharabah</p>
-                                                <span class="inline-flex mt-2 text-[10px] font-bold bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-200" id="journey-status-2">● Sedang Jalan</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Step 3: Handling Komplain -->
-                                    <div class="journey-step text-center" data-step="3">
-                                        <div class="flex flex-col items-center">
-                                            <div class="journey-node locked" id="journey-node-3"><i class="fa-solid fa-headset"></i></div>
-                                            <div class="mt-3">
-                                                <h4 class="text-[13px] font-black text-slate-400">Handling Komplain</h4>
-                                                <p class="text-[11px] font-semibold text-slate-400 mt-0.5">Empati & Solusi</p>
-                                                <span class="inline-flex mt-2 text-[10px] font-bold bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full border border-slate-200" id="journey-status-3">🔒 Terkunci</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Step 4: Expert -->
-                                    <div class="journey-step text-center" data-step="4">
-                                        <div class="flex flex-col items-center">
-                                            <div class="journey-node locked" id="journey-node-4"><i class="fa-solid fa-crown"></i></div>
-                                            <div class="mt-3">
-                                                <h4 class="text-[13px] font-black text-slate-400">Expert Halo</h4>
-                                                <p class="text-[11px] font-semibold text-slate-400 mt-0.5">Champion NTBS</p>
-                                                <span class="inline-flex mt-2 text-[10px] font-bold bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full border border-slate-200" id="journey-status-4">🔒 Terkunci</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Kuis Selesai</p>
+                                <h3 class="text-3xl font-black text-slate-800 mt-1" id="agent-dash-total-done">0</h3>
+                                <p class="text-[12px] font-semibold text-slate-500 mt-2" id="agent-dash-progress-text">0 dari 0 Kuis</p>
+                                <div class="mt-4 w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                    <div id="kpi-progress-bar" class="h-2 bg-indigo-500 rounded-full transition-all duration-700" style="width: 0%"></div>
                                 </div>
                             </div>
-
-                            <!-- Hidden old KPI for compatibility -->
-                            <div class="hidden">
-                                <div id="agent-dash-total-done">0</div>
-                                <div id="agent-dash-progress-text">0 dari 0 Kuis</div>
-                                <div id="agent-dash-avg-score">0%</div>
-                                <div id="agent-dash-avg-label">Belum ada data</div>
-                                <div id="agent-dash-highest">0%</div>
-                                <div id="agent-dash-highest-title">-</div>
-                                <div id="agent-dash-badges">0</div>
+                            <div class="bg-white rounded-[1.75rem] p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                                        <i class="fa-solid fa-award text-emerald-600 text-xl"></i>
+                                    </div>
+                                    <span class="text-[11px] font-bold bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full text-emerald-700" id="agent-dash-avg-label">Belum ada data</span>
+                                </div>
+                                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Rata-rata Nilai</p>
+                                <h3 class="text-3xl font-black text-slate-800 mt-1" id="agent-dash-avg-score">0%</h3>
+                                <p class="text-[12px] font-semibold text-slate-500 mt-2">Skor tertinggi <span id="agent-dash-highest" class="font-black text-slate-800">0%</span> • <span id="agent-dash-highest-title">-</span></p>
+                            </div>
+                            <div class="bg-white rounded-[1.75rem] p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center">
+                                        <i class="fa-solid fa-medal text-amber-600 text-xl"></i>
+                                    </div>
+                                    <span class="text-[11px] font-bold bg-amber-50 border border-amber-200 px-3 py-1 rounded-full text-amber-700" id="streak-badge">0 Hari</span>
+                                </div>
+                                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Lencana & Streak</p>
+                                <h3 class="text-3xl font-black text-slate-800 mt-1" id="agent-dash-badges">0</h3>
+                                <p class="text-[12px] font-semibold text-slate-500 mt-2"><span id="agent-dash-badges-inline-kpi">0 Lencana</span> • <span id="streak-text-kpi">0 Hari Streak</span></p>
                             </div>
                         </div>
 
-                        <!-- Tren + Kepatuhan -->
                         <!-- Tren + Kepatuhan - Less Crowded V10 -->
+
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             <div class="lg:col-span-2 glass p-6 rounded-[1.75rem] shadow-sm">
                                 <div class="flex justify-between items-center mb-5">
@@ -5676,10 +5704,5 @@ timerInterval = setInterval(() => {
         });
     </script>
 
-<span id="admin-weather-cond" class="hidden"></span>
-<span id="admin-weather-card" class="hidden"></span>
-<span id="admin-weather-icon" class="hidden"></span>
-<span id="admin-weather-temp" class="hidden"></span>
-<span id="admin-weather-inline" class="hidden"></span>
 </body>
 </html>
