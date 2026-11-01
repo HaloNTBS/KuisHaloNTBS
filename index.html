@@ -3577,8 +3577,20 @@
                 if(!document.getElementById('agent-tab-history').classList.contains('hidden')) { renderAgentChart(); renderSkillRadar(h); }
                 // Always render dashboard chart if element exists
                 if(document.getElementById('agentDashTrendChart')) { renderAgentDashboardChart(h); }
-                // Retroactive badge sync for existing 2 quizzes
-                if(window.checkAndSyncBadgesRetroactive) window.checkAndSyncBadgesRetroactive();
+                // Retroactive badge sync for existing 2 quizzes - update badge count di dashboard
+                // Badge count utama sudah di-set di atas dari evaluasi lokal, sync hanya untuk simpan ke Firebase
+                if(window.checkAndSyncBadgesRetroactive) {
+                    window.checkAndSyncBadgesRetroactive().then(res => {
+                        // Jangan timpa dengan 0
+                        if(res && res.all && res.all.length > 0) {
+                            const el = document.getElementById('agent-dash-badges');
+                            if(el) {
+                                const cur = parseInt(el.innerText || '0');
+                                if(res.all.length > cur) el.innerText = res.all.length;
+                            }
+                        }
+                    }).catch(()=>{});
+                }
             } catch(e){ console.error("Operasi gagal:", e); }
         }
 
@@ -4121,8 +4133,14 @@
                 container.innerHTML = '<div class="col-span-full text-center py-12"><i class="fa-solid fa-spinner fa-spin text-2xl text-[#0F7A5A]"></i><p class="text-sm font-bold text-slate-500 mt-3">Memuat lencana dari Firebase...</p></div>';
                 
                 const earnedIds = await evaluateBadgesForUser(currentUser.username);
-                const syncResult = await syncBadgesToFirebase(currentUser.username, earnedIds);
-                const allEarned = syncResult.all;
+                let syncResult;
+                try {
+                    syncResult = await syncBadgesToFirebase(currentUser.username, earnedIds);
+                } catch(syncErr) {
+                    console.warn('[Badges] Sync failed, tampilkan hasil evaluasi lokal saja', syncErr);
+                    syncResult = {all: earnedIds, new: [], existing: []};
+                }
+                const allEarned = syncResult.all && syncResult.all.length > 0 ? syncResult.all : earnedIds;
 
                 // Update dash badge count
                 const dashBadgeEl = document.getElementById('agent-dash-badges');
@@ -4289,9 +4307,34 @@
             try {
                 if(!currentUser || !currentUser.username) return;
                 const earned = await evaluateBadgesForUser(currentUser.username);
-                await syncBadgesToFirebase(currentUser.username, earned);
-                console.log('[Badges] Retroactive sync done for', currentUser.username, earned.length, 'badges');
-            } catch(e){ console.warn('Retroactive badge sync failed', e); }
+                let syncRes;
+                try {
+                    syncRes = await syncBadgesToFirebase(currentUser.username, earned);
+                } catch(syncErr) {
+                    console.warn('[Badges] Sync to Firebase failed (mungkin rules), pakai hasil evaluasi lokal', syncErr);
+                    syncRes = {all: earned, new: [], existing: []};
+                }
+                const totalBadges = syncRes && syncRes.all ? syncRes.all.length : earned.length;
+                // Update dashboard badge count langsung - jangan timpa dengan 0 kalau sudah ada
+                const dashBadgeEl = document.getElementById('agent-dash-badges');
+                if(dashBadgeEl) {
+                    const currentVal = parseInt(dashBadgeEl.innerText || '0');
+                    // Kalau totalBadges 0 tapi currentVal sudah >0, jangan timpa
+                    if(totalBadges > 0 || currentVal === 0) {
+                        dashBadgeEl.innerText = totalBadges > 0 ? totalBadges : earned.length;
+                    }
+                }
+                console.log('[Badges] Retroactive sync done for', currentUser.username, totalBadges, 'badges', syncRes, 'earned local', earned.length);
+                return syncRes;
+            } catch(e){ 
+                console.warn('Retroactive badge sync failed', e);
+                // Fallback: tetap tampilkan badge dari evaluasi lokal
+                try {
+                    const earnedFallback = await evaluateBadgesForUser(currentUser.username);
+                    const el = document.getElementById('agent-dash-badges');
+                    if(el && earnedFallback.length > 0) el.innerText = earnedFallback.length;
+                } catch(e2){}
+            }
         };
 
 
