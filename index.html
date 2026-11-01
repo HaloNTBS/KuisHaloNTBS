@@ -121,11 +121,9 @@
             }
         }
         /* Make submit button sticky on mobile */
-        #quiz-interface button[onclick="window.submitQuiz()"] {
-            position: sticky;
-            bottom: 20px;
-            z-index: 10;
-            box-shadow: 0 8px 32px rgba(15,122,90,0.4);
+        /* Tombol kirim tidak floating - di paling bawah saja */
+        #quiz-interface {
+            padding-bottom: 40px !important;
         }
 
         /* Islamic subtle pattern */
@@ -198,7 +196,7 @@
 
             <div class="relative z-10 flex items-center justify-between text-emerald-100/60 text-[11px] font-semibold">
                 <span>© 2026 Bank NTB Syariah. All rights reserved.</span>
-                <span class="flex items-center space-x-2"><i class="fa-solid fa-headset"></i><span>Helpdesk: 0877-6593-7333</span></span>
+                <span class="flex items-center space-x-2"><i class="fa-solid fa-headset"></i><span>Helpdesk IT: 0811-xxxx-xxxx</span></span>
             </div>
         </div>
 
@@ -216,7 +214,7 @@
 
                 <div class="mb-8">
                     <h2 class="text-[28px] font-black text-slate-900 tracking-tight">Masuk Sistem</h2>
-                    <p class="text-slate-500 mt-2 text-[14px] font-medium">Gunakan akun Call Center Anda untuk melanjutkan.</p>
+                    <p class="text-slate-500 mt-2 text-[14px] font-medium">Gunakan akun Halo NTBS Anda untuk melanjutkan.</p>
                 </div>
                 
                 <form id="login-form" onsubmit="window.handleLogin(event)" class="space-y-5">
@@ -259,11 +257,11 @@
                 </form>
 
                 <div class="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Bantuan?</p>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Butuh bantuan?</p>
                     <div class="flex items-center space-x-3 text-[11px] font-bold text-slate-500">
-                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-phone text-emerald-600"></i><span>087765937333</span></span>
+                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-phone text-emerald-600"></i><span>0811-xxxx</span></span>
                         <span class="w-px h-3 bg-slate-200"></span>
-                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-envelope text-emerald-600"></i><span>an.nahwan@bankntbsyariah.co.id</span></span>
+                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-envelope text-emerald-600"></i><span>it@bankntbsyariah.co.id</span></span>
                     </div>
                 </div>
             </div>
@@ -1110,30 +1108,38 @@
 
                     <!-- QUIZ INTERFACE -->
                     <div id="quiz-interface" class="hidden absolute inset-0 bg-[#f0f4f8] z-50 overflow-y-auto p-4 sm:p-6 lg:p-8">
-                        <div class="max-w-5xl mx-auto w-full relative pb-16 pt-2">
-                            <div class="sticky top-0 z-30 bg-[#f0f4f8]/90 backdrop-blur-xl -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center mb-2 border-b border-slate-200/50">
-
-                                <button type="button" onclick="if(confirm('Yakin keluar dari simulasi? Jawaban tidak akan disimpan.')) { document.getElementById('quiz-interface').classList.add('hidden'); document.body.classList.remove('quiz-focus'); document.getElementById('main-content').classList.remove('overflow-hidden'); if(timerInterval) clearInterval(timerInterval); }" class="flex items-center space-x-2 px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50">
-                                    <i class="fa-solid fa-arrow-left"></i><span class="hidden sm:inline">Keluar</span>
-                                </button>
-                                <div class="bg-white/90 backdrop-blur-md px-4 sm:px-6 py-2.5 rounded-full shadow-lg flex items-center space-x-3 border-2 border-slate-100">
-                                    <i class="fa-solid fa-stopwatch text-rose-500 text-xl sm:text-2xl animate-pulse"></i>
-                                    <div class="flex flex-col">
-                                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Sisa Waktu</span>
-                                        <span id="timer-display" class="text-xl sm:text-2xl font-black text-rose-600 tabular-nums leading-none tracking-tight">00:00</span>
+                        <div class="max-w-5xl mx-auto w-full relative pb-10 pt-4">
+                            <!-- Clean header - non sticky, tidak menghalangi soal -->
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                                <div class="flex items-center space-x-3 bg-white px-4 py-3 rounded-2xl border border-slate-200 shadow-sm">
+                                    <div class="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center">
+                                        <i class="fa-solid fa-stopwatch text-rose-500 text-lg"></i>
                                     </div>
+                                    <div>
+                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Sisa Waktu</p>
+                                        <p id="timer-display" class="text-xl font-black text-slate-800 tabular-nums leading-none">00:00</p>
+                                    </div>
+                                </div>
+                                <div class="text-left sm:text-right">
+                                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Mode Ujian</p>
+                                    <p class="text-sm font-black text-[#0F7A5A]">Jawab semua soal untuk mengirim</p>
                                 </div>
                             </div>
                             
-                            <div class="bg-white rounded-2xl border border-slate-200 p-4 mb-6 shadow-sm">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-[11px] font-black text-slate-500 uppercase tracking-widest">Progress Menjawab</span>
-                                    <span id="quiz-progress-text" class="text-[12px] font-black text-[#0F7A5A]">0 / 0 Soal Terjawab</span>
+                            <!-- Progress simple - tidak menghalangi -->
+                            <div class="bg-white rounded-xl border border-slate-200 p-3 mb-6 flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
+                                        <i class="fa-solid fa-list-check text-[#0F7A5A] text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p id="quiz-progress-text" class="text-[13px] font-black text-slate-800">0 / 0 Soal Terjawab</p>
+                                        <div class="w-32 bg-slate-100 rounded-full h-1.5 mt-1 overflow-hidden">
+                                            <div id="quiz-progress-bar" class="h-full transition-all duration-500 rounded-full bg-[#0F7A5A]" style="width:0%"></div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                                    <div id="quiz-progress-bar" class="h-full transition-all duration-500 rounded-full bg-[#0F7A5A]" style="width:0%"></div>
-                                </div>
-                                <p class="text-[11px] font-medium text-slate-500 mt-2"><i class="fa-solid fa-circle-info mr-1"></i> Jawaban tidak bisa dikirim sebelum semua soal terjawab. <span id="quiz-answered-counter" class="font-bold text-slate-700">0 dari 0</span></p>
+                                <span id="quiz-answered-counter" class="text-[11px] font-bold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-full border">0 dari 0</span>
                             </div>
 
                             <div class="mb-10 text-center">
@@ -1146,11 +1152,14 @@
 
                             <div id="quiz-questions-form" class="space-y-8"></div>
                             
-                            <div class="mt-12 w-full max-w-md mx-auto sticky bottom-4 z-20 bg-[#f0f4f8]/80 backdrop-blur-md p-2 rounded-3xl">
-                                <button id="btn-submit-quiz" type="button" onclick="window.submitQuiz()" class="w-full flex justify-center items-center py-5 sm:py-6 px-4 rounded-2xl text-lg sm:text-xl font-black text-white bg-[#0F7A5A] hover:bg-[#065F46] active:scale-[0.98] border-b-4 border-[#065F46] shadow-[0_8px_24px_rgba(15,122,90,0.35)] transition-all">
-                                    <i class="fa-solid fa-paper-plane mr-3"></i> KIRIM JAWABAN
-                                </button>
-                                <p class="text-center text-[11px] font-bold text-slate-500 mt-2">Pastikan semua soal sudah terisi sebelum mengirim</p>
+                            <!-- Tombol kirim di paling bawah, tidak floating -->
+                            <div class="mt-16 pt-8 border-t border-slate-200">
+                                <div class="max-w-md mx-auto text-center">
+                                    <button id="btn-submit-quiz" type="button" onclick="window.submitQuiz()" class="w-full flex justify-center items-center py-4 px-6 rounded-xl text-[15px] font-black text-white bg-[#0F7A5A] hover:bg-[#065F46] active:scale-[0.98] shadow-[0_4px_14px_rgba(15,122,90,0.25)] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale">
+                                        <i class="fa-solid fa-paper-plane mr-2"></i> KIRIM JAWABAN
+                                    </button>
+                                    <p class="text-[11px] font-medium text-slate-500 mt-3">Pastikan semua soal sudah terjawab sebelum mengirim</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3430,14 +3439,12 @@
             if(btn) {
                 if(answered < total) {
                     btn.disabled = true;
-                    btn.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
-                    btn.classList.remove('hover:bg-[#065F46]', 'shadow-[0_8px_24px_rgba(15,122,90,0.35)]');
+                    btn.classList.add('opacity-60', 'cursor-not-allowed');
                     btn.innerHTML = `<i class="fa-solid fa-lock mr-2"></i> JAWAB SEMUA SOAL DULU (${answered}/${total})`;
                 } else {
                     btn.disabled = false;
-                    btn.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale');
-                    btn.classList.add('hover:bg-[#065F46]', 'shadow-[0_8px_24px_rgba(15,122,90,0.35)]');
-                    btn.innerHTML = `<i class="fa-solid fa-paper-plane mr-3"></i> KIRIM JAWABAN`;
+                    btn.classList.remove('opacity-60', 'cursor-not-allowed');
+                    btn.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> KIRIM JAWABAN`;
                 }
             }
         };
