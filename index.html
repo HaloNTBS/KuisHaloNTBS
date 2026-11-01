@@ -92,6 +92,19 @@
         .islamic-pattern {
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
+    
+        /* FIX MOBILE OVERFLOW - Prevent horizontal scroll on login */
+        html, body { overflow-x: hidden; max-width: 100vw; }
+        #login-screen { overflow-x: hidden; max-width: 100vw; }
+        #login-screen * { max-width: 100%; box-sizing: border-box; }
+        #login-screen .absolute { max-width: 100vw; }
+        @media (max-width: 1023px) {
+            #login-screen { flex-direction: column; }
+            #login-screen > div:last-child { width: 100% !important; max-width: 100vw !important; }
+        }
+        /* Fix blob overflow */
+        .blur-3xl, .blur-\[100px\] { pointer-events: none; max-width: 100vw; overflow: hidden; }
+
     </style>
 </head>
 <body class="text-slate-800 antialiased h-screen w-screen overflow-hidden flex flex-col">
@@ -104,12 +117,12 @@
 
     <!-- LOGIN SCREEN -->
         <!-- LOGIN SCREEN PREMIUM SPLIT -->
-    <div id="login-screen" class="absolute inset-0 z-50 flex bg-white overflow-hidden">
+    <div id="login-screen" class="absolute inset-0 z-50 flex bg-white overflow-hidden overflow-x-hidden max-w-[100vw]">
         <!-- Left Branding - Hidden on mobile -->
         <div class="hidden lg:flex w-[52%] bg-[#0F7A5A] relative overflow-hidden flex-col justify-between p-10 islamic-pattern">
             <!-- Decorative blobs -->
-            <div class="absolute -top-24 -left-24 w-[400px] h-[400px] bg-white/10 rounded-full blur-3xl"></div>
-            <div class="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-[#D4A017]/20 rounded-full blur-3xl"></div>
+            <div class="absolute -top-24 -left-24 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] bg-white/10 rounded-full blur-3xl max-w-[100vw] overflow-hidden"></div>
+            <div class="absolute -bottom-32 -right-32 w-[350px] h-[350px] sm:w-[500px] sm:h-[500px] bg-[#D4A017]/20 rounded-full blur-3xl max-w-[100vw] overflow-hidden"></div>
             
             <div class="relative z-10">
                 <div class="flex items-center space-x-3">
@@ -145,13 +158,13 @@
 
             <div class="relative z-10 flex items-center justify-between text-emerald-100/60 text-[11px] font-semibold">
                 <span>© 2026 Bank NTB Syariah. All rights reserved.</span>
-                <span class="flex items-center space-x-2"><i class="fa-solid fa-headset"></i><span>Helpdesk IT: 087765937333</span></span>
+                <span class="flex items-center space-x-2"><i class="fa-solid fa-headset"></i><span>Helpdesk IT: 0811-xxxx-xxxx</span></span>
             </div>
         </div>
 
         <!-- Right Form -->
-        <div class="flex-1 flex items-center justify-center p-6 sm:p-8 bg-[#FCFDF9] relative overflow-y-auto">
-            <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-50 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+        <div class="flex-1 flex items-center justify-center p-6 sm:p-8 bg-[#FCFDF9] relative overflow-y-auto overflow-x-hidden max-w-full w-full">
+            <div class="absolute top-0 right-0 w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] bg-emerald-50 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/4 sm:translate-x-1/3 pointer-events-none max-w-[100vw] overflow-hidden"></div>
             
             <div class="w-full max-w-[400px] relative z-10">
                 <!-- Mobile logo -->
@@ -173,7 +186,7 @@
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <i class="fa-solid fa-user text-slate-400 group-focus-within:text-[#0F7A5A] transition-colors"></i>
                             </div>
-                            <input type="text" id="login-username" required placeholder="cth: Zian" class="block w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 shadow-sm focus:border-[#0F7A5A] focus:ring-4 focus:ring-emerald-50 bg-white transition-all font-semibold text-[14px] outline-none">
+                            <input type="text" id="login-username" required placeholder="cth: zian.annahwan" class="block w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 shadow-sm focus:border-[#0F7A5A] focus:ring-4 focus:ring-emerald-50 bg-white transition-all font-semibold text-[14px] outline-none">
                         </div>
                     </div>
                     <div>
@@ -208,9 +221,9 @@
                 <div class="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
                     <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Butuh bantuan?</p>
                     <div class="flex items-center space-x-3 text-[11px] font-bold text-slate-500">
-                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-phone text-emerald-600"></i><span>087765937333</span></span>
+                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-phone text-emerald-600"></i><span>0811-xxxx</span></span>
                         <span class="w-px h-3 bg-slate-200"></span>
-                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-envelope text-emerald-600"></i><span>an.nahwan@bankntbsyariah.co.id</span></span>
+                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-envelope text-emerald-600"></i><span>it@bankntbsyariah.co.id</span></span>
                     </div>
                 </div>
             </div>
@@ -1731,6 +1744,8 @@
                 routeUser(); 
                 window.updateUserPresence("Online");
                 resetInactivityTimer();
+                const lbOnload = document.getElementById('login-btn');
+                if(lbOnload) lbOnload.disabled = false;
             } else { document.getElementById('login-screen').classList.remove('hidden'); }
         };
 
@@ -1767,6 +1782,9 @@
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     window.updateUserPresence("Online");
                     hideLoader();
+                    isLoggingIn = false;
+                    const lbSuccess = document.getElementById('login-btn');
+                    if(lbSuccess) lbSuccess.disabled = false;
                     routeUser();
                     resetInactivityTimer();
                 }
@@ -1819,7 +1837,12 @@
             const overlay = document.getElementById('sidebar-overlay'); 
             if(overlay && !overlay.classList.contains('hidden')) window.toggleMobileSidebar(); 
             document.getElementById('login-screen').classList.remove('hidden'); 
-            document.getElementById('login-form').reset(); 
+            document.getElementById('login-form').reset();
+            const loginBtn = document.getElementById('login-btn');
+            if(loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Masuk ke Dashboard <i class="fa-solid fa-arrow-right ml-2"></i>'; }
+            isLoggingIn = false;
+            const errEl = document.getElementById('login-error');
+            if(errEl) errEl.classList.add('hidden'); 
         };
 
         async function routeUser() {
