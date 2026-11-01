@@ -1186,13 +1186,21 @@
             }
         };
 
-        window.markNotifAsRead = () => {
+        window.markNotifAsRead = async () => {
+            // Sembunyikan badge merah
             document.getElementById('notif-badge').classList.add('hidden');
-            document.getElementById('notif-list').innerHTML = `
-                <div class="p-6 text-center">
-                    <i class="fa-solid fa-box-open text-3xl text-slate-300 mb-2"></i>
-                    <p class="text-sm font-bold text-slate-400">Semua notifikasi telah dibaca.</p>
-                </div>`;
+            
+            // Simpan status baca ke Firebase menggunakan hash notifikasi terakhir
+            if (currentUser && currentUser.id && window.currentNotifHash) {
+                try {
+                    await updateDoc(doc(db, "users", currentUser.id), { lastNotifHash: window.currentNotifHash });
+                    currentUser.lastNotifHash = window.currentNotifHash;
+                    // Sinkronisasi data sesi saat ini agar UI tidak perlu reload
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                } catch(e) {
+                    console.error("Gagal menyimpan status notifikasi ke Firebase", e);
+                }
+            }
         };
 
         window.toggleNotifications = () => {
@@ -1221,12 +1229,15 @@
                 }
             }
 
+           // Buat hash unik untuk mendeteksi apakah ada notifikasi yang benar-benar baru
+            window.currentNotifHash = JSON.stringify(notifs.map(n => n.title + n.desc));
+
             if (notifs.length === 0) {
-                notifList.innerHTML = '<div class="p-6 text-center text-sm font-bold text-slate-400">Tidak ada notifikasi baru.</div>';
+                notifList.innerHTML = '<div class="p-6 text-center text-sm font-bold text-slate-400">Tidak ada notifikasi aktif.</div>';
                 notifBadge.classList.add('hidden');
             } else {
                 notifList.innerHTML = notifs.map(n => `
-                    <div class="p-4 hover:bg-slate-50 transition cursor-pointer flex items-start space-x-3">
+                    <div class="p-4 hover:bg-slate-50 transition flex items-start space-x-3">
                         <div class="w-8 h-8 rounded-full bg-${n.color}-100 text-${n.color}-600 flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid ${n.icon}"></i></div>
                         <div>
                             <p class="text-sm font-bold text-slate-800">${n.title}</p>
@@ -1235,8 +1246,14 @@
                         </div>
                     </div>
                 `).join('');
-                notifBadge.innerText = notifs.length;
-                notifBadge.classList.remove('hidden');
+                
+                // Cek database: Jika hash beda dengan yang terakhir dibaca, munculkan badge baru
+                if (currentUser.lastNotifHash !== window.currentNotifHash) {
+                    notifBadge.innerText = notifs.length;
+                    notifBadge.classList.remove('hidden');
+                } else {
+                    notifBadge.classList.add('hidden'); // Data ada, tapi bukan pemberitahuan baru
+                }
             }
         }
         
@@ -2718,7 +2735,8 @@
                 h.forEach(r => {
                     const p = Math.round((r.score/r.totalPoints)*100);
                     ts += p;
-                    const reviewBtn = `<button onclick="window.openHistoryReview('${r.quizId}', '${r.id}')" class="text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-indigo-100 transition whitespace-nowrap"><i class="fa-solid fa-magnifying-glass mr-1"></i> Pembahasan</button>`;
+                    // Mengganti tombol pembahasan menjadi teks statis agar agen tidak bisa melihat jawaban ujian masa lalu
+                    const reviewBtn = `<span class="text-xs text-slate-400 font-bold bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100"><i class="fa-solid fa-lock mr-1"></i> Dikunci</span>`;
                     histHtml += `<tr><td class="px-5 py-4 font-bold">${r.quizTitle}</td><td class="px-5 py-4 text-sm font-semibold">${new Date(r.createdAt).toLocaleDateString()}</td><td class="px-5 py-4 text-center font-semibold">${formatDuration(r.durationSec)}</td><td class="px-5 py-4 text-center"><span class="px-3 py-1 font-black rounded ${p>=globalSettings.passingGrade?'bg-emerald-50 text-emerald-600':'bg-rose-50 text-rose-600'}">${p}%</span></td><td class="px-5 py-4 text-right">${reviewBtn}</td></tr>`;
                     
                     if (!quizLatestStatus[r.quizId] || new Date(r.createdAt) > new Date(quizLatestStatus[r.quizId].createdAt)) {
@@ -2991,6 +3009,17 @@
             
             document.getElementById('results-modal-title').innerText = activeQuizData.isSimulation ? "Simulasi Selesai!" : "Kuis Selesai!";
             document.getElementById('result-score').innerText = `${p}%`; document.getElementById('result-correct').innerText = c; document.getElementById('result-incorrect').innerText = activeQuizData.questions.length - c;
+            
+            // Logika Keamanan: Tombol pembahasan HANYA muncul jika ini adalah Simulasi
+            const btnReview = document.getElementById('btn-show-review');
+            if (btnReview) {
+                if (activeQuizData.isSimulation) {
+                    btnReview.classList.remove('hidden');
+                } else {
+                    btnReview.classList.add('hidden');
+                }
+            }
+            
             hideLoader(); document.getElementById('results-modal').classList.remove('hidden');
         };
 
