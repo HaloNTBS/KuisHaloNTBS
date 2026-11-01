@@ -151,13 +151,30 @@
                 const container = document.getElementById('available-quizzes');
                 if(container && container.innerHTML.trim() === '') {
                     container.innerHTML = `
-                        <div class="col-span-full empty-illustration rounded-[2rem] p-10 sm:p-16 text-center">
-                            <div class="w-24 h-24 mx-auto bg-white rounded-[1.5rem] shadow-sm flex items-center justify-center text-4xl float-anim">📞</div>
-                            <h3 class="mt-6 text-lg font-black text-slate-800">Belum ada tantangan hari ini</h3>
-                            <p class="mt-2 text-sm font-semibold text-slate-500 max-w-sm mx-auto">Istirahat dulu ya 🌙 — Supervisi belum publish kuis baru. Cek lagi nanti atau tanya di grup Halo!</p>
-                            <button onclick="window.refreshAgentData()" class="mt-5 bg-white border border-slate-200 px-5 py-2.5 rounded-xl text-xs font-black text-slate-700 hover:bg-slate-50 shadow-sm">
-                                <i class="fa-solid fa-rotate-right mr-2"></i>Refresh
-                            </button>
+                        <div class="col-span-full empty-illustration rounded-[2.5rem] p-8 sm:p-12 text-center border-2 border-dashed border-emerald-200 bg-gradient-to-b from-emerald-50/50 to-white">
+                            <div class="relative w-40 h-40 mx-auto">
+                                <div class="absolute inset-0 bg-emerald-100 rounded-full blur-2xl opacity-50"></div>
+                                <div class="relative w-full h-full bg-white rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-center justify-center float-anim">
+                                    <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg">
+                                        <i class="fa-solid fa-headset"></i>
+                                    </div>
+                                    <div class="mt-3 flex gap-1">
+                                        <span class="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"></span>
+                                        <span class="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style="animation-delay:0.2s"></span>
+                                        <span class="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style="animation-delay:0.4s"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="mt-6 text-xl font-black text-slate-800 tracking-tight">Belum ada tantangan hari ini</h3>
+                            <p class="mt-2 text-[13px] font-semibold text-slate-500 max-w-sm mx-auto leading-relaxed">Istirahat dulu ya 🌙 — Supervisi belum publish kuis baru. Manfaatkan waktu untuk review Pustaka Halo!</p>
+                            <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+                                <button onclick="window.refreshAgentData()" class="bg-[#0F7A5A] text-white px-6 py-2.5 rounded-xl text-xs font-black hover:bg-[#065F46] shadow-[0_4px_14px_rgba(15,122,90,0.25)] transition">
+                                    <i class="fa-solid fa-rotate-right mr-2"></i>Refresh
+                                </button>
+                                <button onclick="window.switchAgentTab('badges')" class="bg-white border border-slate-200 px-6 py-2.5 rounded-xl text-xs font-black text-slate-700 hover:bg-slate-50 shadow-sm transition">
+                                    <i class="fa-solid fa-trophy mr-2"></i>Lihat Lencana
+                                </button>
+                            </div>
                         </div>
                     `;
                 }
@@ -352,6 +369,14 @@
         .dark.dark-real .text-slate-500 { color: #94a3b8 !important; }
 
         
+        
+        /* V10 Less Crowded Dashboard */
+        .agent-tab-content { max-width: 1280px; margin: 0 auto; }
+        .agent-tab-content > * + * { margin-top: 2rem; }
+        .glass { backdrop-filter: blur(12px); }
+        /* Reduce visual noise */
+        .journey-card, .no-capek-card { margin-bottom: 2rem; }
+
         /* === UI EXPERT V9 ENHANCEMENTS === */
         /* Humanize Header */
         .humanize-avatar { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #fff, rgba(255,255,255,0.8)); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; color: #0F7A5A; box-shadow: 0 8px 20px rgba(0,0,0,0.12); border: 2px solid rgba(255,255,255,0.8); }
@@ -1248,7 +1273,7 @@
                 <!-- ============================ AGENT VIEWS ============================ -->
                 <div id="agent-views" class="hidden">
                     
-                    <div id="agent-tab-dashboard" class="agent-tab-content space-y-6">
+                    <div id="agent-tab-dashboard" class="agent-tab-content space-y-8">
                     <!-- Humanized No-Capek Focus Card - UI Expert V9 -->
                     <div class="no-capek-card rounded-[2.5rem] p-6 sm:p-8 text-white shadow-xl relative overflow-hidden mb-6 islamic-pattern">
                         <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
@@ -1261,7 +1286,7 @@
                                     <div>
                                         <p class="text-[11px] font-bold uppercase tracking-widest opacity-80 flex items-center gap-1.5"><span id="greeting-time-icon">🌤️</span> <span id="greeting-time-text">Pagi</span> • <span id="current-date-text">Hari ini</span></p>
                                         <h2 class="text-xl sm:text-2xl font-black leading-tight mt-1">Assalamualaikum, <span id="agent-greeting-name">Agen</span>! <span id="greeting-emoji">✨</span></h2>
-                                        <p class="text-[13px] font-semibold opacity-90 mt-1" id="motivational-text">Siap jadi pahlawan Halo hari ini?</p>
+                                        <p class="text-[13px] font-semibold opacity-90 mt-1" id="motivational-text">Siap jadi yang terbaik hari ini?</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-2 bg-white/15 backdrop-blur rounded-full px-3 py-2 border border-white/20">
@@ -1388,11 +1413,16 @@
                         </div>
 
                         <!-- Tren + Kepatuhan -->
-                        <!-- Tren + Kepatuhan -->
+                        <!-- Tren + Kepatuhan - Less Crowded V10 -->
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <div class="lg:col-span-2 glass p-5 rounded-2xl shadow-sm">
-                                <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-                                    <h3 class="text-[13px] font-black text-slate-800 uppercase tracking-wide"><i class="fa-solid fa-arrow-trend-up text-[#0F7A5A] mr-2"></i>Tren Nilai Saya</h3>
+                            <div class="lg:col-span-2 glass p-6 rounded-[1.75rem] shadow-sm">
+                                <div class="flex justify-between items-center mb-5">
+                                    <div>
+                                        <h3 class="text-[14px] font-black text-slate-800 tracking-tight flex items-center gap-2"><i class="fa-solid fa-arrow-trend-up text-[#0F7A5A]"></i>Tren Nilai Saya</h3>
+                                        <p class="text-[11px] text-slate-500 font-medium mt-1">Perkembanganmu minggu ini</p>
+                                    </div>
+                                    <span id="agent-dash-chart-count" class="text-[11px] font-bold bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-full">0 data</span>
+                                </div>
                                     <span class="text-[11px] font-bold text-slate-500 bg-slate-50 border px-2.5 py-1 rounded-full" id="agent-dash-trend-count">0 data</span>
                                 </div>
                                 <div class="w-full h-[240px] relative">
@@ -5357,5 +5387,150 @@ timerInterval = setInterval(() => {
 
         </script>
     <div id="toast-container" class="fixed bottom-4 right-4 z-[9999] space-y-2 pointer-events-none w-[320px]"></div>
+
+    <!-- Custom Delete Confirmation Modal - UI Expert V10 -->
+    <div><div id="custom-delete-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[9999] flex items-center justify-center p-4">
+        <div class="bg-white rounded-[1.75rem] p-0 max-w-sm w-full shadow-2xl overflow-hidden border border-slate-200 transform transition-all">
+            <div class="p-6 sm:p-7">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-600 text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 id="delete-modal-title" class="text-lg font-black text-slate-800 tracking-tight">Hapus Data?</h3>
+                        <p id="delete-modal-message" class="text-[13px] font-medium text-slate-600 mt-1.5 leading-relaxed">Apakah kamu yakin ingin menghapus data ini secara permanen? Tindakan ini tidak dapat dibatalkan.</p>
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-3">
+                    <button onclick="window.closeDeleteModal()" class="flex-1 py-3 rounded-xl text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+                        Batal
+                    </button>
+                    <button id="delete-modal-confirm-btn" class="flex-1 py-3 rounded-xl text-sm font-black bg-rose-600 text-white hover:bg-rose-700 shadow-[0_4px_14px_rgba(225,29,72,0.3)] transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-trash text-xs"></i> <span>Hapus</span>
+                    </button>
+                </div>
+                <p class="text-[10px] text-slate-400 text-center mt-4 font-medium">💡 Tip: Data yang dihapus tidak bisa dikembalikan. Pastikan sudah benar.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Override delete functions with beautiful modal - V10
+        document.addEventListener('DOMContentLoaded', () => {
+            // Store db reference when available
+            setTimeout(() => {
+                // Patch delete functions
+                const originalDeleteQuiz = window.deleteQuiz;
+                window._originalDeleteQuiz = window.deleteQuiz;
+
+                window.deleteQuiz = async (id) => {
+                    window.showDeleteConfirm(
+                        'Hapus Kuis Permanen?',
+                        'Kuis ini akan hilang dari daftar Agen. Nilai yang sudah ada tetap aman. Yakin ingin menghapus?',
+                        async () => {
+                            if(typeof showLoader === 'function') showLoader("Menghapus kuis...");
+                            try {
+                                // Use firestore directly
+                                const mod = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+                                // db is in module scope, we need to get it from window if stored
+                                if(window._dbInstance) {
+                                    await mod.deleteDoc(mod.doc(window._dbInstance, "quizzes", id));
+                                } else {
+                                    // Fallback: call original if it still has logic
+                                    if(window._originalDeleteQuiz && window._originalDeleteQuiz !== window.deleteQuiz) {
+                                        // Temporarily restore to avoid loop
+                                        const orig = window._originalDeleteQuiz;
+                                        window.deleteQuiz = orig;
+                                        await orig(id);
+                                        window.deleteQuiz = arguments.callee;
+                                        return;
+                                    }
+                                }
+                                if(window.loadAdminQuizzes) await window.loadAdminQuizzes();
+                            } catch(e) {
+                                console.error(e);
+                                // Try original as last resort
+                                try {
+                                    if(window._originalDeleteQuiz && window._originalDeleteQuiz !== window.deleteQuiz) {
+                                        const orig = window._originalDeleteQuiz;
+                                        window.deleteQuiz = orig;
+                                        await orig(id);
+                                        window.deleteQuiz = async (id2) => {
+                                            window.showDeleteConfirm('Hapus Kuis Permanen?', 'Yakin?', async () => {
+                                                showLoader();
+                                                try { await orig(id2); } catch(err){} hideLoader();
+                                            });
+                                        };
+                                    }
+                                } catch(err){}
+                            }
+                            if(typeof hideLoader === 'function') hideLoader();
+                        }
+                    );
+                };
+
+                // User delete
+                const origDeleteUser = window.deleteUser;
+                window.deleteUser = async (id) => {
+                    window.showDeleteConfirm(
+                        'Hapus User Permanen?',
+                        'User akan dihapus dari sistem dan tidak bisa login lagi. Aksi ini tidak bisa dibatalkan.',
+                        async () => {
+                            if(typeof showLoader === 'function') showLoader();
+                            try { await origDeleteUser(id); } catch(e){ console.error(e); }
+                            if(typeof hideLoader === 'function') hideLoader();
+                        }
+                    );
+                };
+
+                // Bank question delete
+                const origDeleteBankQ = window.deleteBankQuestion;
+                window.deleteBankQuestion = async (id) => {
+                    window.showDeleteConfirm(
+                        'Hapus Soal dari Bank?',
+                        'Soal ini akan hilang dari Bank Soal. Kuis yang sudah memakai soal ini tetap aman.',
+                        async () => {
+                            if(typeof showLoader === 'function') showLoader();
+                            try { await origDeleteBankQ(id); } catch(e){}
+                            if(typeof hideLoader === 'function') hideLoader();
+                        }
+                    );
+                };
+
+                // Leaderboard delete (retake)
+                const origDeleteResult = window.deleteLeaderboardResult;
+                window.deleteLeaderboardResult = async (id) => {
+                    window.showDeleteConfirm(
+                        'Hapus Nilai untuk Retake?',
+                        'Nilai Agen akan dihapus agar bisa mengerjakan ulang kuis. Yakin?',
+                        async () => {
+                            if(typeof showLoader === 'function') showLoader();
+                            try { await origDeleteResult(id); } catch(e){}
+                            if(typeof hideLoader === 'function') hideLoader();
+                        }
+                    );
+                };
+
+                // Bulk delete
+                const origDeleteSelected = window.deleteSelectedBankQuestions;
+                window.deleteSelectedBankQuestions = async () => {
+                    const checks = document.querySelectorAll('.qb-del-checkbox:checked');
+                    if(checks.length === 0) return alert("Pilih setidaknya satu soal dengan mencentang kotak di sebelahnya.");
+                    window.showDeleteConfirm(
+                        `Hapus ${checks.length} Soal Terpilih?`,
+                        `${checks.length} soal akan dihapus permanen dari Bank Soal. Pastikan sudah benar.`,
+                        async () => {
+                            if(typeof showLoader === 'function') showLoader("Menghapus soal terpilih...");
+                            try { await origDeleteSelected(); } catch(e){}
+                            if(typeof hideLoader === 'function') hideLoader();
+                        }
+                    );
+                };
+
+            }, 1500);
+        });
+    </script>
+
 </body>
 </html>
