@@ -1296,15 +1296,33 @@
             if (!fileInput.files.length) return alert("Pilih file CSV terlebih dahulu!");
             
             const file = fileInput.files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const text = e.target.result;
-                const rows = text.split('\n').filter(row => row.trim() !== '');
-                
-                window.switchAdminTab('quizzes');
-                window.prepareCreateQuiz();
-                document.getElementById('questions-container').innerHTML = ""; 
-                qc = 0; 
+const reader = new FileReader();
+
+// Tambahkan fungsi pembaca CSV yang aman dari karakter ganti baris (Enter)
+function parseCSV(text) {
+    let result = [], row = [], inQuotes = false, val = '';
+    for (let i = 0; i < text.length; i++) {
+        let char = text[i];
+        if (char === '"' && text[i+1] === '"') { val += '"'; i++; }
+        else if (char === '"') { inQuotes = !inQuotes; }
+        else if (char === ',' && !inQuotes) { row.push(val); val = ''; }
+        else if (char === '\n' && !inQuotes) { row.push(val); result.push(row); row = []; val = ''; }
+        else if (char !== '\r') { val += char; }
+    }
+    if (val || row.length > 0) { row.push(val); result.push(row); }
+    return result;
+}
+
+reader.onload = (e) => {
+    const text = e.target.result;
+    
+    // Gunakan parseCSV untuk memecah baris dan kolom secara akurat
+    const rows = parseCSV(text).filter(row => row.length > 0 && row.some(col => col.trim() !== ''));
+    
+    window.switchAdminTab('quizzes');
+    window.prepareCreateQuiz();
+    document.getElementById('questions-container').innerHTML = ""; 
+    qc = 0;
                 
                 let successCount = 0;
                 for (let i = 1; i < rows.length; i++) {
@@ -1488,6 +1506,12 @@
             } else { document.getElementById('login-screen').classList.remove('hidden'); }
         };
 
+        async function hashPassword(password) {
+    const msgBuffer = new TextEncoder().encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
         window.handleLogin = async (e) => {
             e.preventDefault(); 
             const u = document.getElementById('login-username').value; 
@@ -1498,7 +1522,8 @@
             
             try {
                 await loadGlobalSettings();
-                const q = query(collection(db, "users"), where("username", "==", u), where("password", "==", p)); 
+                const hashedPassword = await hashPassword(p);
+                const q = query(collection(db, "users"), where("username", "==", u), where("password", "==", hashedPassword)); 
                 const snap = await getDocs(q);
                 
                 if (!snap.empty) { 
@@ -1592,7 +1617,7 @@
                 showLoader("Menyiapkan Dasbor..."); 
                 try { 
                     await Promise.all([ loadAdminOverviewAndAnalytics(), loadAdminUsers(), loadAdminQuizzes(), loadQuestionBank() ]); 
-                } catch(e) {} 
+                } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); } 
                 hideLoader(); 
                 window.switchAdminTab('overview');
                 loadNotifications();
@@ -1611,7 +1636,7 @@
                 showLoader("Menyiapkan Ruang Agen..."); 
                 try { 
                     await Promise.all([ loadQuizzesForAgent(), loadAgentHistoryAndTrend(), loadAgentLeaderboard() ]); 
-                } catch(e) {} 
+                } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); } 
                 hideLoader(); 
                 window.switchAgentTab('dashboard');
                 loadNotifications();
@@ -1973,7 +1998,7 @@
         window.printAgentWorksheet = (agentUsername, quizId) => {
             const res = currentReportResults.find(r => r.agentUsername === agentUsername);
             const qz = currentReportQuiz;
-            if(!res || !qz || !window.jspdf) return alert("Data kertas kerja tidak ditemukan.");
+            if (!res || !qz) return alert("Data kertas kerja belum tersedia."); if (!window.jspdf) return alert("Modul generator PDF masih memuat atau terblokir oleh peramban."); return alert("Data kertas kerja tidak ditemukan.");
             
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'pt', 'a4');
@@ -2115,7 +2140,7 @@
                 let hist = []; 
                 snap.forEach(d => hist.push(d.data())); 
                 renderSkillRadar(hist); 
-            } catch(e) {} 
+            } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); } 
         }
 
         window.createUser = async (e) => { 
@@ -2181,7 +2206,7 @@
                 tbody.innerHTML = htmlString;
                 sel.innerHTML = selHtml;
                 document.getElementById('stat-total-agents').innerText = countAgent; 
-            } catch(e) {} 
+            } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); } 
         }
         
         window.deleteUser = async (id) => { 
@@ -2228,7 +2253,7 @@
                 }); 
                 tbody.innerHTML = htmlString;
                 document.getElementById('stat-total-quizzes').innerText = c; 
-            } catch(e) {} 
+            } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); } 
         }
 
         window.exportSoalCSV = (id) => { 
@@ -2605,7 +2630,7 @@
                 document.getElementById('stat-avg-score').innerText = results.length > 0 ? Math.round(tp/results.length) + "%" : "0%";
                 document.getElementById('stat-total-remedial').innerText = rCount;
                 if(!document.getElementById('admin-tab-reports-performance').classList.contains('hidden')) window.filterPerformanceReport();
-            } catch (e) {}
+            } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); }
         }
         
         window.deleteLeaderboardResult = async (id) => { if(confirm("Hapus nilai agar Agen bisa melakukan Retake?")) { showLoader(); await deleteDoc(doc(db,"results",id)); await loadAdminOverviewAndAnalytics(); hideLoader(); } };
@@ -2716,7 +2741,7 @@
                 document.getElementById('completion-text').innerText = `${doneActive} dari ${totalActive} Kuis Selesai`;
                 setTimeout(() => { document.getElementById('completion-bar').style.width = pct + '%'; }, 300);
 
-            } catch(e) {}
+            } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); }
         }
 
         async function loadAgentHistoryAndTrend() {
@@ -3004,7 +3029,7 @@
                 try { 
                     await addDoc(collection(db, "results"), { quizId: activeQuizData.id, quizTitle: activeQuizData.title, category: activeQuizData.category, agentUsername: currentUser.username, agentFullName: currentUser.fullName, agentEmail: currentUser.email || '', score: s, totalPoints: tp, durationSec: timeT, answers: aArr, createdAt: new Date().toISOString() }); if (!activeQuizData.isSimulation) window.updateUserPresence("Online");
                     localStorage.removeItem(`ongoing_quiz_${currentUser.username}_${activeQuizData.id}`); 
-                } catch (e) {}
+                } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); }
             }
             
             document.getElementById('results-modal-title').innerText = activeQuizData.isSimulation ? "Simulasi Selesai!" : "Kuis Selesai!";
@@ -3137,8 +3162,15 @@
             let rem = 60 * 60;
             const upd = () => { let m = Math.floor(rem / 60).toString().padStart(2, '0'); let s = (rem % 60).toString().padStart(2, '0'); disp.innerText = `${m}:${s}`; };
             upd();
-            if(window.timerInterval) clearInterval(window.timerInterval);
-            window.timerInterval = setInterval(() => { rem--; upd(); if(rem<=0) { clearInterval(window.timerInterval); window.submitQuiz(true); } }, 1000);
+            if (timerInterval) clearInterval(timerInterval);
+timerInterval = setInterval(() => {
+    rem--;
+    upd();
+    if (rem <= 0) {
+        clearInterval(timerInterval);
+        window.submitQuiz(true);
+    }
+}, 1000);
         };
     </script>
 </body>
