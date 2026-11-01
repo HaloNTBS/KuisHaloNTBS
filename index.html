@@ -357,6 +357,7 @@
                                             <tr>
                                                 <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Nama Lengkap</th>
                                                 <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Username & Role</th>
+                                                <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Terakhir Aktif</th>
                                                 <th class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Aksi</th>
                                             </tr>
                                         </thead>
@@ -1190,6 +1191,31 @@
             }, INACTIVITY_LIMIT);
         }
 
+        
+        // --- Presence Heartbeat & Auto-Offline ---
+        setInterval(() => {
+            if(currentUser && document.visibilityState === 'visible') {
+                window.updateUserPresence(document.hidden ? "Offline" : (activeQuizData ? "Sedang Ujian" : "Online"));
+            }
+        }, 60000); // update setiap 1 menit sebagai heartbeat
+
+        document.addEventListener('visibilitychange', () => {
+            if(!currentUser) return;
+            if(document.visibilityState === 'visible') {
+                window.updateUserPresence(activeQuizData ? "Sedang Ujian" : "Online");
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if(currentUser && currentUser.id) {
+                // best effort offline, tidak await karena unload
+                try { navigator.sendBeacon && navigator.sendBeacon; } catch(e){}
+                // Firestore tidak support sendBeacon, tapi kita coba update cepat
+                window.updateUserPresence("Offline");
+            }
+        });
+        // --- End Presence Heartbeat ---
+
         ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(evt => {
             window.addEventListener(evt, resetInactivityTimer, { passive: true });
         });
@@ -1527,7 +1553,13 @@
 
         window.updateUserPresence = async (status) => {
             if(currentUser && currentUser.id) {
-                try { await updateDoc(doc(db, "users", currentUser.id), { presence: status }); } catch(e){ console.error("Operasi gagal:", e); }
+                try { 
+                    await updateDoc(doc(db, "users", currentUser.id), { 
+                        presence: status,
+                        lastActive: new Date().toISOString(),
+                        lastPresenceUpdate: Date.now()
+                    }); 
+                } catch(e){ console.error("Gagal update presence:", e); }
             }
         };
 
@@ -1538,6 +1570,7 @@
                 await loadGlobalSettings(); 
                 currentUser = JSON.parse(savedUser); 
                 routeUser(); 
+                window.updateUserPresence("Online");
                 resetInactivityTimer();
             } else { document.getElementById('login-screen').classList.remove('hidden'); }
         };
@@ -1573,6 +1606,7 @@
                     const ud = { ...authenticatedDoc.data(), password: hashedPassword };
                     currentUser = { id: authenticatedDoc.id, ...ud };
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    window.updateUserPresence("Online");
                     hideLoader();
                     routeUser();
                     resetInactivityTimer();
@@ -2212,6 +2246,35 @@
             e.target.reset(); await loadAdminUsers(); hideLoader(); alert("Berhasil menambahkan pengguna baru!"); 
         };
         
+        
+        function formatLastActive(isoString) {
+            if(!isoString) return '<span class="text-slate-400 text-xs font-semibold">Belum pernah login</span>';
+            try {
+                const date = new Date(isoString);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffSec = Math.floor(diffMs / 1000);
+                const diffMin = Math.floor(diffSec / 60);
+                const diffHour = Math.floor(diffMin / 60);
+                const diffDay = Math.floor(diffHour / 24);
+
+                let rel = '';
+                if(diffSec < 60) rel = 'Baru saja';
+                else if(diffMin < 60) rel = `${diffMin} menit lalu`;
+                else if(diffHour < 24) rel = `${diffHour} jam lalu`;
+                else if(diffDay < 7) rel = `${diffDay} hari lalu`;
+                else rel = date.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+
+                const exact = date.toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+                const isRecent = diffMin < 5;
+                const dotClass = isRecent ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300';
+                
+                return `<div class="flex flex-col items-start"><span class="text-xs font-bold text-slate-700 flex items-center"><span class="w-2 h-2 rounded-full ${dotClass} mr-2"></span>${rel}</span><span class="text-[10px] text-slate-400 font-semibold mt-0.5" title="${isoString}">${exact}</span></div>`;
+            } catch(e) {
+                return '<span class="text-slate-400 text-xs">-</span>';
+            }
+        }
+
         async function loadAdminUsers() { 
             try { 
                 const snap = await getDocs(collection(db, "users")); 
@@ -2250,10 +2313,12 @@
                         pIcon += " animate-pulse text-amber-500";
                     }
                     let pBadge = `<div class="mt-1.5 flex items-center px-2 py-0.5 rounded text-[10px] font-black border shadow-sm w-max ${pBadgeClass}"><i class="fa-solid ${pIcon}"></i>${presence}</div>`;
+                    let lastActiveHtml = formatLastActive(user.lastActive || user.lastPresenceUpdate);
 
                     htmlString += `<tr class="hover:bg-slate-50 border-b border-slate-100 last:border-0">
                         <td class="px-4 py-4 text-sm font-bold">${user.fullName}</td>
                         <td class="px-4 py-4 text-sm text-slate-500 flex flex-col items-start"><div class="flex items-center">${user.username} ${roleBadge}</div>${pBadge}</td>
+                        <td class="px-4 py-4 text-sm">${lastActiveHtml}</td>
                         <td class="px-4 py-4 text-right">${actionHtml}</td>
                     </tr>`; 
                 }); 
