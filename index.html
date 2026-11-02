@@ -291,17 +291,7 @@
         }
         .animate-shake { animation: shake 0.4s ease; }
 
-                /* FIX LOGIN - HIDE NAVBAR DI LOGIN SCREEN */
-        #login-screen:not(.hidden) ~ #app-layout #mobile-bottom-nav,
-        body:has(#login-screen:not(.hidden)) #mobile-bottom-nav {
-            display: none !important;
-        }
-
-        /* FIX MOBILE QUIZ INTERFACE - INI PUNYA KAMU JANGAN DIHAPUS */
-        body.quiz-focus #mobile-bottom-nav { display: none !important; }
-        body.quiz-focus #app-sidebar { display: none !important; }
-        #quiz-interface {
-            /* FIX MOBILE QUIZ INTERFACE */
+        /* FIX MOBILE QUIZ INTERFACE */
         body.quiz-focus #mobile-bottom-nav { display: none !important; }
         body.quiz-focus #app-sidebar { display: none !important; }
         #quiz-interface {
