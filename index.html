@@ -4,14 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Call Center NTBS - Enterprise Training & Assessment</title>
+    <meta name="description" content="Pustaka Halo - Sistem Assessment & Gamifikasi Agen NTB Syariah. Dashboard admin dan agen dengan leaderboard, badges, dan laporan performance.">
+    <meta name="theme-color" content="#0F7A5A">
+    <meta name="color-scheme" content="light">
+    <meta property="og:title" content="Pustaka Halo - NTB Syariah">
+    <meta property="og:description" content="Sistem Assessment & Gamifikasi Agen NTB Syariah">
+    <meta property="og:type" content="website">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
     
     <!-- Font Plus Jakarta Sans untuk gaya modern ala Canva -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js" defer crossorigin="anonymous"></script>
     <script>
 /* === UI EXPERT V9 FIXED - Humanize + Journey + Micro-interactions + Safe Scope === */
 (function(){
@@ -23,7 +33,7 @@
 
   window.setMood = (mood) => {
     try {
-      console.log('Mood clicked:', mood);
+      // console.log removed for production
       safeLSSet('agentMood', mood);
       document.querySelectorAll('.mood-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.mood === mood);
@@ -216,7 +226,79 @@
 
         </script>
     
-        <style>.glass { 
+        <style>
+        /* === DESIGN TOKENS V10 - Production System === */
+        :root {
+            --ntbs-green: #0F7A5A;
+            --ntbs-green-dark: #065F46;
+            --ntbs-green-light: #ECFDF5;
+            --ntbs-gold: #D4A017;
+            --ntbs-gold-light: #FEF3C7;
+            --radius-card: 1.75rem;
+            --radius-btn: 0.75rem;
+            --radius-full: 9999px;
+            --shadow-card: 0 8px 32px rgba(15,122,90,0.06), 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-card-hover: 0 4px 12px rgba(15,122,90,0.08), 0 2px 6px rgba(0,0,0,0.05);
+            --z-sidebar: 30;
+            --z-header: 40;
+            --z-modal: 100;
+            --z-toast: 200;
+            --z-confetti: 300;
+            --z-loader: 400;
+            --content-max: 1280px;
+        }
+        /* Focus visible for keyboard navigation */
+        :focus-visible {
+            outline: 2px solid var(--ntbs-green);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .float-anim { animation: none !important; }
+        }
+        /* Safe area for iPhone */
+        #mobile-bottom-nav {
+            padding-bottom: env(safe-area-inset-bottom);
+            height: calc(4rem + env(safe-area-inset-bottom));
+        }
+        body {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        /* Skip link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--ntbs-green);
+            color: white;
+            padding: 8px;
+            z-index: 1000;
+            border-radius: 0 0 8px 0;
+        }
+        .skip-link:focus { top: 0; }
+        /* Improved button states */
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.3); }
+        /* Custom scrollbar better */
+        * { scrollbar-width: thin; scrollbar-color: #A7F3D0 transparent; }
+        
+.glass { 
             background: rgba(255, 255, 255, 0.85); 
             backdrop-filter: blur(16px); 
             -webkit-backdrop-filter: blur(16px); 
@@ -518,6 +600,8 @@
 <body class="text-slate-800 antialiased h-screen w-screen overflow-hidden flex flex-col">
     <canvas id="confetti-canvas" class="hidden fixed inset-0 pointer-events-none z-[9999]"></canvas>
     <canvas id="confetti-canvas-quiz" class="hidden fixed inset-0 pointer-events-none z-[9999]"></canvas>
+    <noscript><div style="position:fixed;inset:0;z-index:9999;background:#0F7A5A;color:white;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center"><div><h1 style="font-size:2rem;font-weight:900;margin-bottom:1rem">JavaScript Diperlukan</h1><p>Aktifkan JavaScript untuk menggunakan Pustaka Halo.</p></div></div></noscript>
+    <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
 
     <!-- Global Loader -->
     <div id="global-loader" class="hidden fixed inset-0 z-[999] bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity">
@@ -645,8 +729,7 @@
         <!-- Top Navbar -->
                 <header class="bg-white/90 backdrop-blur-xl border-b border-slate-200/80 p-3.5 flex justify-between items-center sticky top-0 z-20">
             <div class="flex items-center space-x-3">
-                <button type="button" onclick="window.toggleMobileSidebar()" class="md:hidden p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:bg-white">
-                    <i class="fa-solid fa-bars"></i>
+                <button type="button" onclick="window.toggleMobileSidebar()" class="md:hidden p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:bg-white" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i>
                 </button>
                 <div class="hidden md:flex items-center space-x-3">
                     <div class="w-8 h-8 bg-[#0F7A5A] rounded-lg flex items-center justify-center text-white shadow-sm">
@@ -704,8 +787,7 @@
             <aside id="app-sidebar" class="absolute md:static inset-y-0 left-0 w-64 h-full bg-white/95 backdrop-blur-md border-r border-slate-200 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col shadow-2xl md:shadow-none">
                 <div class="p-4 flex justify-between items-center md:hidden border-b border-slate-200">
                     <span class="font-bold text-slate-800">Menu Navigasi</span>
-                    <button type="button" onclick="window.toggleMobileSidebar()" class="text-slate-500 hover:text-rose-500 bg-slate-100 p-2 rounded-lg">
-                        <i class="fa-solid fa-times"></i>
+                    <button type="button" onclick="window.toggleMobileSidebar()" class="text-slate-500 hover:text-rose-500 bg-slate-100 p-2 rounded-lg" aria-label="Toggle menu"><i class="fa-solid fa-times"></i>
                     </button>
                 </div>
                 
@@ -1976,6 +2058,34 @@
         function safeLSGet(k,d=null){ try{ return localStorage.getItem(k) ?? d; }catch(e){ return d; } }
         function safeLSSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
         function safeLSRemove(k){ try{ localStorage.removeItem(k); }catch(e){} }
+        /* 
+         * SECURITY NOTE V10 - WAJIB SET DI FIREBASE CONSOLE:
+         * rules_version = '2';
+         * service cloud.firestore {
+         *   match /databases/{database}/documents {
+         *     match /users/{userId} { allow read, write: if request.auth != null && (request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'); }
+         *     match /quizzes/{quizId} { allow read: if request.auth != null; allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'; }
+         *     match /results/{resultId} { allow read: if request.auth != null; allow create: if request.auth != null; }
+         *     match /questionBank/{docId} { allow read, write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'; }
+         *   }
+         * }
+         * + Validasi totalPoints 100 via Cloud Functions
+         */
+
+        // Global error boundary V10
+        window.addEventListener('error', (e) => {
+            console.warn('Global error caught:', e.message);
+            try {
+                if(typeof window.showToast === 'function') {
+                    window.showToast('Terjadi kesalahan, coba refresh halaman', 'error');
+                }
+            } catch(_) {}
+        });
+        window.addEventListener('unhandledrejection', (e) => {
+            console.warn('Unhandled promise:', e.reason);
+            e.preventDefault();
+        });
+
         let globalSettings = { passingGrade: 70, maxRemedial: 2, randomQuestions: false };
         
         let adminChartInstance = null; let adminComparisonChartInstance = null; 
@@ -2584,7 +2694,7 @@
                     if(activeDash && loadAgentHistoryAndTrend) loadAgentHistoryAndTrend();
                     if(activeAdmin && window.loadAdminOverviewAndAnalytics) window.loadAdminOverviewAndAnalytics();
                 }, (err) => console.warn('Realtime error:', err));
-                console.log('Realtime leaderboard active');
+                // console.log removed for production
             } catch(e) { console.warn('Realtime setup failed', e); }
         };
         // === END REALTIME ===
@@ -4066,9 +4176,9 @@
 
         async function loadAgentHistoryAndTrend() {
             try {
-                console.log("[Dashboard] Fetching Firebase results for", currentUser.username);
+                // console.log removed for production
                 const snap = await getDocs(query(collection(db, "results"), where("agentUsername", "==", currentUser.username))); 
-                console.log("[Dashboard] Found " + snap.size + " results from Firebase (termasuk 2 kuis lama)"); 
+                // console.log removed for production"); 
                 let h = []; snap.forEach(d => h.push({id: d.id, ...d.data()})); h.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 const tbody = document.getElementById('agent-history-body');
@@ -4949,7 +5059,7 @@
                         dashBadgeEl.innerText = totalBadges > 0 ? totalBadges : earned.length;
                     }
                 }
-                console.log('[Badges] Retroactive sync done for', currentUser.username, totalBadges, 'badges', syncRes, 'earned local', earned.length);
+                // console.log removed for production
                 return syncRes;
             } catch(e){ 
                 console.warn('Retroactive badge sync failed', e);
@@ -5676,7 +5786,7 @@ timerInterval = setInterval(() => {
                         const data = await res.json();
                         if(data.current_weather) realTemp = Math.round(data.current_weather.temperature) + '°C';
                     }
-                } catch(e) { console.log('Weather fetch failed', e); }
+                } catch(e) { // console.log removed for production }
 
                 const miniCard = document.getElementById('weather-mini-card');
                 const iconEl = document.getElementById('weather-icon');
@@ -5725,7 +5835,7 @@ timerInterval = setInterval(() => {
         }, 800);
 
         </script>
-    <div id="toast-container" class="fixed bottom-4 right-4 z-[9999] space-y-2 pointer-events-none w-[320px]"></div>
+    <div id="toast-container" role="status" aria-live="polite" aria-atomic="true" class="fixed bottom-4 right-4 z-[9999] space-y-2 pointer-events-none w-[320px]"></div>
 
     <!-- Custom Delete Confirmation Modal - UI Expert V10 -->
     <div id="custom-delete-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[9999] flex items-center justify-center p-4">
