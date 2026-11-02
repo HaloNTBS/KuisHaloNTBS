@@ -9,10 +9,16 @@
     
     <!-- Font Plus Jakarta Sans untuk gaya modern ala Canva -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com">}}
+        )
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">}}
+        )
+        </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">}}
+        )
+        </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js">
         /* === UI EXPERT V9 - Humanize + Journey + Micro-interactions === */
         window.setMood = (mood) => {
@@ -207,6 +213,8 @@
         // Initialize humanized on load
         setTimeout(() => window.updateHumanizedHeader(), 500);
 
+        }}
+        )
         </script>
     
         <style>
@@ -508,40 +516,20 @@
         
 
         
-        /* === V22 NO-GLARE + DARK READABLE === */
-        :root {
-            --light-card: rgba(255,255,255,0.94);
-            --light-border: rgba(226,232,240,0.95);
-            --dark-bg: #0B1220;
-            --dark-card: rgba(17,24,39,0.84);
-            --dark-border: rgba(55,65,81,0.55);
-        }
-        .glass, .no-capek-card {
-            background: var(--light-card) !important;
-            backdrop-filter: blur(14px) saturate(1.1) !important;
-            -webkit-backdrop-filter: blur(14px) saturate(1.1) !important;
-            border: 1.5px solid var(--light-border) !important;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05) !important;
-        }
-        .no-capek-card { background: rgba(255,255,255,0.98) !important; }
-        .no-capek-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #064E3B, #0F7A5A); opacity: 0.85; }
-        .no-capek-card .humanize-avatar { background: linear-gradient(135deg, #064E3B, #0F7A5A) !important; color: white !important; border: 2px solid white; }
-        /* Light readable */
-        .no-capek-card h2, .text-slate-900 { color: #0F172A !important; }
+        
         .text-slate-800 { color: #1E293B !important; }
         .text-slate-600 { color: #475569 !important; }
         .text-slate-500 { color: #64748B !important; }
         #agent-greeting-name { color: #0F7A5A !important; }
 
-        /* TIME MALAM auto dark - no glare */
-        .time-malam body { background: #0B1220 !important; }
-        .time-malam .glass, .time-malam .no-capek-card { background: rgba(17,24,39,0.9) !important; border-color: rgba(55,65,81,0.5) !important; box-shadow: 0 8px 28px rgba(0,0,0,0.4) !important; }
-        .time-malam .no-capek-card h2, .time-malam .text-slate-900 { color: #F1F5F9 !important; }
-        .time-malam .text-slate-600 { color: #CBD5E1 !important; }
-        .time-malam .text-slate-500 { color: #94A3B8 !important; }
-        .time-malam #agent-greeting-name { color: #34D399 !important; }
-        .time-malam .bg-white { background: rgba(17,24,39,0.7) !important; }
-        .time-malam .border-slate-200 { border-color: rgba(55,65,81,0.4) !important; }
+        
+        
+        
+        
+        
+        
+        
+        
 
         /* DARK MODE 100% readable */
         .dark { color-scheme: dark; }
@@ -559,6 +547,55 @@
         .dark .bg-sky-50, .dark .bg-blue-50 { background: rgba(16,185,129,0.1) !important; border-color: rgba(16,185,129,0.2) !important; }
         .dark #weather-mini-card, .dark #weather-inline, .dark .mood-btn { background: rgba(30,41,59,0.75) !important; border-color: rgba(71,85,105,0.45) !important; color: #CBD5E1 !important; }
         .dark .live-badge { background: rgba(16,185,129,0.15) !important; border-color: rgba(16,185,129,0.3) !important; color: #6EE7B7 !important; }
+
+        
+        /* === V23 NO-GLARE + DARK READABLE MANUAL ONLY === */
+        :root {
+            --light-card: rgba(255,255,255,0.96);
+            --light-border: rgba(226,232,240,0.96);
+            --dark-bg: #0F172A;
+            --dark-card: rgba(15,23,42,0.88);
+            --dark-border: rgba(51,65,85,0.6);
+        }
+        body { background: #F8FAFC !important; }
+        .glass, .no-capek-card {
+            background: var(--light-card) !important;
+            backdrop-filter: blur(14px) !important;
+            -webkit-backdrop-filter: blur(14px) !important;
+            border: 1.5px solid var(--light-border) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05) !important;
+        }
+        .no-capek-card { background: #FFFFFF !important; box-shadow: 0 8px 28px rgba(0,0,0,0.06) !important; }
+        .no-capek-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #064E3B, #0F7A5A); opacity: 0.85; }
+        .no-capek-card .humanize-avatar { background: linear-gradient(135deg, #064E3B, #0F7A5A) !important; color: white !important; border: 2px solid white; box-shadow: 0 2px 8px rgba(6,78,59,0.15); }
+        .no-capek-card h2, .text-slate-900 { color: #0F172A !important; }
+        .text-slate-800 { color: #1E293B !important; }
+        .text-slate-600 { color: #475569 !important; }
+        .text-slate-500 { color: #64748B !important; }
+        #agent-greeting-name { color: #0F7A5A !important; }
+
+        /* DARK MODE - MANUAL ONLY, 100% TERBACA, NO SILAU */
+        .dark { color-scheme: dark; }
+        .dark body { background: #0F172A !important; color: #F1F5F9 !important; }
+        .dark .glass, .dark .no-capek-card { background: rgba(15,23,42,0.92) !important; border: 1px solid rgba(51,65,85,0.5) !important; box-shadow: 0 8px 28px rgba(0,0,0,0.5) !important; }
+        .dark .text-slate-900 { color: #F8FAFC !important; }
+        .dark .text-slate-800 { color: #F1F5F9 !important; }
+        .dark .text-slate-700 { color: #E2E8F0 !important; }
+        .dark .text-slate-600 { color: #CBD5E1 !important; }
+        .dark .text-slate-500 { color: #94A3B8 !important; }
+        .dark .text-slate-400 { color: #64748B !important; }
+        .dark #agent-greeting-name { color: #6EE7B7 !important; }
+        .dark .bg-white { background: rgba(15,23,42,0.75) !important; }
+        .dark .bg-slate-50 { background: rgba(15,23,42,0.6) !important; }
+        .dark .bg-slate-100 { background: rgba(30,41,59,0.6) !important; }
+        .dark .border-slate-200, .dark .border-slate-100 { border-color: rgba(51,65,85,0.4) !important; }
+        .dark .bg-sky-50, .dark .bg-blue-50, .dark .bg-emerald-50 { background: rgba(16,185,129,0.12) !important; border-color: rgba(16,185,129,0.25) !important; }
+        .dark #weather-mini-card, .dark #weather-inline, .dark .mood-btn { background: rgba(30,41,59,0.8) !important; border-color: rgba(71,85,105,0.5) !important; color: #CBD5E1 !important; }
+        .dark .live-badge { background: rgba(16,185,129,0.15) !important; border-color: rgba(16,185,129,0.3) !important; color: #6EE7B7 !important; }
+        .dark table { background: transparent !important; }
+        .dark thead { background: rgba(15,23,42,0.8) !important; }
+        .dark tbody tr { border-color: rgba(51,65,85,0.35) !important; }
+        .dark tbody tr:hover { background: rgba(30,41,59,0.6) !important; }
 
         </style>
 </head>
@@ -2513,38 +2550,8 @@
         })();
 
         
-        window.updateTimeBasedTheme = () => {
-            try {
-                const h = new Date().getHours();
-                const html = document.documentElement;
-                html.classList.remove('time-pagi','time-siang','time-sore','time-malam');
-                let cls = 'time-pagi';
-                if(h >= 5 && h < 11) cls = 'time-pagi';
-                else if(h >= 11 && h < 15) cls = 'time-siang';
-                else if(h >= 15 && h < 19) cls = 'time-sore';
-                else cls = 'time-malam';
-                html.classList.add(cls);
-            } catch(e) {}
-        };
-
         window.onload = async () => {
-            try { if(window.updateTimeBasedTheme) window.updateTimeBasedTheme(); } catch(e){}
-            setInterval(() => { try { if(window.updateTimeBasedTheme) window.updateTimeBasedTheme(); } catch(e){} }, 60000);
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) { 
-                showLoader("Mempersiapkan Lingkungan...");
-                await loadGlobalSettings(); 
-                currentUser = JSON.parse(savedUser); 
-                routeUser(); 
-                window.updateUserPresence("Online");
-                resetInactivityTimer();
-                try { if(window.setupRealtimeLeaderboard) setTimeout(() => window.setupRealtimeLeaderboard(), 1500); } catch(e){}
-                const lbOnload = document.getElementById('login-btn');
-                if(lbOnload) lbOnload.disabled = false;
-            } else { document.getElementById('login-screen').classList.remove('hidden'); }
-        };
-
-        async function hashPassword(password) {
+            try { if(async function hashPassword(password) {
     const msgBuffer = new TextEncoder().encode(password);
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -5780,6 +5787,8 @@ timerInterval = setInterval(() => {
             window.updateHumanizedHeader();
         }, 800);
 
+        }}
+        )
         </script>
     <div id="toast-container" class="fixed bottom-4 right-4 z-[9999] space-y-2 pointer-events-none w-[320px]"></div>
 
