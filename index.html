@@ -1565,8 +1565,8 @@
                             </div>
                         </div>
 
-                        <!-- Tabel Kuis Sudah Diikuti -->
-                        <div class="glass p-5 rounded-2xl shadow-sm">
+                        <!-- Tabel Kuis Sudah Diikuti - Hanya Dashboard -->
+                        <div id="dashboard-only-history" class="glass p-5 rounded-2xl shadow-sm">
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 border-b border-slate-100 pb-3">
                                 <h3 class="text-[13px] font-black text-slate-800 uppercase tracking-wide"><i class="fa-solid fa-table-list text-[#0F7A5A] mr-2"></i>Kuis yang Sudah Diikuti & Nilai</h3>
                                 <span class="text-[11px] font-bold text-slate-500 bg-slate-50 border px-2.5 py-1 rounded-full" id="agent-dash-table-count">0 Kuis</span>
@@ -1594,7 +1594,7 @@
                             </div>
                         </div>
 
-                        <div class="flex gap-3">
+                        <div id="dashboard-only-actions" class="flex gap-3">
                             <button onclick="window.switchAgentTab('quizzes'); window.toggleSubmenu('sub-agent-assessment', 'chev-agent-assessment')" class="flex justify-center items-center py-3.5 px-6 rounded-xl text-sm font-black text-white bg-[#0F7A5A] hover:bg-[#065F46] shadow-[0_4px_14px_rgba(15,122,90,0.25)] transition">
                                 <i class="fa-solid fa-play mr-2"></i> Mulai Kuis Sekarang
                             </button>
@@ -2725,10 +2725,22 @@
             } 
         };
 
-        window.switchAgentTab = (tabName) => { 
+                window.switchAgentTab = (tabName) => { 
             document.querySelectorAll('.agent-tab-content').forEach(el => el.classList.add('hidden')); 
             const targetEl = document.getElementById(`agent-tab-${tabName}`); 
-            if(targetEl) targetEl.classList.remove('hidden'); 
+            if(targetEl) targetEl.classList.remove('hidden');
+            // FIX: Tabel Kuis Sudah Diikuti cuma di dashboard
+            const onlyHistory = document.getElementById('dashboard-only-history');
+            const onlyActions = document.getElementById('dashboard-only-actions');
+            if (onlyHistory) onlyHistory.style.display = (tabName === 'dashboard') ? 'block' : 'none';
+            if (onlyActions) onlyActions.style.display = (tabName === 'dashboard') ? 'flex' : 'none';
+
+            document.querySelectorAll('[id^="tab-btn-agent-"]').forEach(btn => {
+            // FIX: Tabel Kuis Sudah Diikuti cuma di dashboard
+const onlyHistory = document.getElementById('dashboard-only-history');
+const onlyActions = document.getElementById('dashboard-only-actions');
+if (onlyHistory) onlyHistory.style.display = (tabName === 'dashboard') ? 'block' : 'none';
+if (onlyActions) onlyActions.style.display = (tabName === 'dashboard') ? 'flex' : 'none';
             
             document.querySelectorAll('[id^="tab-btn-agent-"]').forEach(btn => { 
                 if(btn.parentElement.id === 'agent-menu') btn.className = "w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50 transition-colors mt-1"; 
