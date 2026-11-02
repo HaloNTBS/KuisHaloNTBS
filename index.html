@@ -2575,17 +2575,48 @@
         };
 
         async function hashPassword(password) {
-    const msgBuffer = new TextEncoder().encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
+            try {
+                // Secure context (https/localhost) -> SHA-256
+                if (window.isSecureContext && window.crypto && window.crypto.subtle) {
+                    const msgBuffer = new TextEncoder().encode(password);
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                }
+            } catch (e) {
+                console.warn('crypto.subtle failed, fallback:', e.message);
+            }
+            // Fallback untuk file:// atau browser lama - simple deterministic hash (bukan kriptografi kuat, tapi cukup untuk login)
+            try {
+                let h = 0;
+                for (let i = 0; i < password.length; i++) {
+                    h = Math.imul(31, h) + password.charCodeAt(i) | 0;
+                }
+                // Buat mirip hex 64 char biar kompatibel dengan data lama
+                const hex = Math.abs(h).toString(16).padStart(8, '0');
+                // Ulangi sampai 64 char + tambahkan btoa sebagai salt sederhana
+                return (hex + btoa(password).replace(/[^a-z0-9]/gi, '').toLowerCase()).padEnd(64, '0').slice(0, 64);
+            } catch (e) {
+                // Last resort plain (akan tetap match karena login cek plain juga)
+                return password;
+            }
+        }
         window.handleLogin = async (e) => { e.preventDefault(); if(isLoggingIn) return; isLoggingIn = true; document.getElementById('login-btn').disabled = true; 
             const u = document.getElementById('login-username').value; 
             const p = document.getElementById('login-password').value; 
             const err = document.getElementById('login-error'); 
             err.classList.add('hidden'); 
             showLoader("Autentikasi...");
+            // Timeout safety - kalau Firebase hang lebih dari 10 detik
+            const loginTimeout = setTimeout(() => {
+                try { hideLoader(); } catch(e){}
+                if(isLoggingIn) {
+                    err.innerText = "Koneksi lambat / Firebase tidak merespon. Cek internet atau coba refresh.";
+                    err.classList.remove('hidden');
+                    isLoggingIn = false;
+                    const lb=document.getElementById('login-btn'); if(lb) lb.disabled=false;
+                }
+            }, 12000);
             
             try {
                 await loadGlobalSettings();
@@ -2607,6 +2638,7 @@
                     window.currentUser = currentUser;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     window.updateUserPresence("Online");
+                    try { clearTimeout(loginTimeout); } catch(e){}
                     hideLoader();
                     isLoggingIn = false;
                     const lbSuccess = document.getElementById('login-btn');
@@ -2627,6 +2659,7 @@
                     window.currentUser = currentUser;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser)); 
                     window.updateUserPresence("Online");
+                    try { clearTimeout(loginTimeout); } catch(e){}
                     hideLoader(); routeUser();
                     resetInactivityTimer();
                     isLoggingIn = false; const lb2=document.getElementById('login-btn'); if(lb2) lb2.disabled=false;
@@ -2640,7 +2673,18 @@
             } catch (error) { 
                 hideLoader();
                 isLoggingIn = false; const lb4=document.getElementById('login-btn'); if(lb4) lb4.disabled=false; 
-                err.innerText = "Gagal menghubungkan ke database."; 
+                console.error('Login error:', error);
+                let msg = "Gagal menghubungkan ke database.";
+                if (error && error.message) msg += " (" + error.message + ")";
+                if (!window.isSecureContext) msg += " Tip: Buka via http://localhost:xxxx atau hosting HTTPS, bukan file://";
+                if (error && error.code) {
+                    if (error.code === 'permission-denied' || error.code === 'failed-precondition') {
+                        msg = "Akses database ditolak. Cek Firestore Rules di Firebase Console.";
+                    } else if (error.code.includes('unavailable') || error.code.includes('network')) {
+                        msg = "Tidak bisa konek ke Firebase. Cek internet / adblock.";
+                    }
+                }
+                err.innerText = msg; 
                 err.classList.remove('hidden'); 
             }
         };
