@@ -290,7 +290,10 @@
             40%, 80% { transform: translateX(6px); }
         }
         .animate-shake { animation: shake 0.4s ease; }
-
+            
+                /* FIX LOGIN - HIDE NAVBAR DI LOGIN */
+        #login-screen:not(.hidden) ~ #app-layout #mobile-bottom-nav { display: none !important; }
+            
         /* FIX MOBILE QUIZ INTERFACE */
         body.quiz-focus #mobile-bottom-nav { display: none !important; }
         body.quiz-focus #app-sidebar { display: none !important; }
@@ -1805,7 +1808,7 @@
         </div>
 
         <!-- MOBILE BOTTOM NAVIGATION BAR -->
-        <div id="mobile-bottom-nav" class="md:hidden fixed bottom-0 inset-x-0 h-16 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex justify-around items-center px-2 shadow-lg">
+        <div id="mobile-bottom-nav" class="hidden md:hidden fixed bottom-0 inset-x-0 h-16 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex justify-around items-center px-2 shadow-lg">
             <button onclick="window.handleMobileNavClick('dashboard')" class="flex flex-col items-center justify-center flex-1 py-1 text-slate-500 hover:text-[#0F7A5A]">
                 <i class="fa-solid fa-house text-lg"></i>
                 <span class="text-[10px] font-bold mt-0.5">Home</span>
@@ -2451,7 +2454,7 @@
                 try { if(window.setupRealtimeLeaderboard) setTimeout(() => window.setupRealtimeLeaderboard(), 1500); } catch(e){}
                 const lbOnload = document.getElementById('login-btn');
                 if(lbOnload) lbOnload.disabled = false;
-            } else { document.getElementById('login-screen').classList.remove('hidden'); }
+            } else { document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('app-layout').classList.add('hidden'); }
         };
 
         async function hashPassword(password) {
@@ -2538,10 +2541,11 @@
             currentUser = null; 
             localStorage.removeItem('currentUser'); 
             document.body.classList.remove('is-supervisor');
-            document.getElementById('app-layout').classList.add('hidden'); 
             const overlay = document.getElementById('sidebar-overlay'); 
             if(overlay && !overlay.classList.contains('hidden')) window.toggleMobileSidebar(); 
             document.getElementById('login-screen').classList.remove('hidden'); 
+            document.getElementById('app-layout').classList.add('hidden');
+            document.getElementById('mobile-bottom-nav').classList.add('hidden');
             document.getElementById('login-form').reset();
             const loginBtn = document.getElementById('login-btn');
             if(loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Masuk ke Dashboard <i class="fa-solid fa-arrow-right ml-2"></i>'; }
@@ -2574,7 +2578,8 @@
 
         async function routeUser() {
             document.getElementById('login-screen').classList.add('hidden'); 
-            document.getElementById('app-layout').classList.remove('hidden'); 
+            document.getElementById('app-layout').classList.remove('hidden');
+            document.getElementById('mobile-bottom-nav').classList.remove('hidden');
             document.getElementById('nav-username-display').innerText = currentUser.fullName; 
             document.getElementById('sidebar-name-display').innerText = currentUser.fullName;
 
