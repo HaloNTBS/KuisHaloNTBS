@@ -1,3 +1,5 @@
+
+                    <div id="available-quizzes" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -290,10 +292,7 @@
             40%, 80% { transform: translateX(6px); }
         }
         .animate-shake { animation: shake 0.4s ease; }
-            
-                /* FIX LOGIN - HIDE NAVBAR DI LOGIN */
-        #login-screen:not(.hidden) ~ #app-layout #mobile-bottom-nav { display: none !important; }
-            
+
         /* FIX MOBILE QUIZ INTERFACE */
         body.quiz-focus #mobile-bottom-nav { display: none !important; }
         body.quiz-focus #app-sidebar { display: none !important; }
@@ -343,22 +342,14 @@
     
         /* No-Capek Comfortable Light Default + Soft Dark Optional */
         .no-capek-card { 
-            background: #FFFFFF;
-            border: 1.5px solid #E2E8F0;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            background: linear-gradient(135deg, #064E3B 0%, #0F7A5A 50%, #065F46 100%); 
+            box-shadow: 0 10px 30px rgba(6,78,59,0.35);
             position: relative;
         }
-        .no-capek-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #064E3B 0%, #0F7A5A 50%, #10B981 100%);
-        }
         .no-capek-card .humanize-avatar {
-            background: linear-gradient(135deg, #064E3B 0%, #0F7A5A 100%) !important;
-            color: white !important;
-            border: 2px solid #E2E8F0;
+            background: rgba(255,255,255,0.15) !important;
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(255,255,255,0.2);
         }
         .progress-ring { transform: rotate(-90deg); }
         .progress-ring-circle { transition: stroke-dashoffset 0.8s ease; }
@@ -512,6 +503,62 @@
 
         /* Improved glass for journey */
         .journey-card { background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.8); }
+
+        
+        
+
+        
+        /* === V22 NO-GLARE + DARK READABLE === */
+        :root {
+            --light-card: rgba(255,255,255,0.94);
+            --light-border: rgba(226,232,240,0.95);
+            --dark-bg: #0B1220;
+            --dark-card: rgba(17,24,39,0.84);
+            --dark-border: rgba(55,65,81,0.55);
+        }
+        .glass, .no-capek-card {
+            background: var(--light-card) !important;
+            backdrop-filter: blur(14px) saturate(1.1) !important;
+            -webkit-backdrop-filter: blur(14px) saturate(1.1) !important;
+            border: 1.5px solid var(--light-border) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05) !important;
+        }
+        .no-capek-card { background: rgba(255,255,255,0.98) !important; }
+        .no-capek-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #064E3B, #0F7A5A); opacity: 0.85; }
+        .no-capek-card .humanize-avatar { background: linear-gradient(135deg, #064E3B, #0F7A5A) !important; color: white !important; border: 2px solid white; }
+        /* Light readable */
+        .no-capek-card h2, .text-slate-900 { color: #0F172A !important; }
+        .text-slate-800 { color: #1E293B !important; }
+        .text-slate-600 { color: #475569 !important; }
+        .text-slate-500 { color: #64748B !important; }
+        #agent-greeting-name { color: #0F7A5A !important; }
+
+        /* TIME MALAM auto dark - no glare */
+        .time-malam body { background: #0B1220 !important; }
+        .time-malam .glass, .time-malam .no-capek-card { background: rgba(17,24,39,0.9) !important; border-color: rgba(55,65,81,0.5) !important; box-shadow: 0 8px 28px rgba(0,0,0,0.4) !important; }
+        .time-malam .no-capek-card h2, .time-malam .text-slate-900 { color: #F1F5F9 !important; }
+        .time-malam .text-slate-600 { color: #CBD5E1 !important; }
+        .time-malam .text-slate-500 { color: #94A3B8 !important; }
+        .time-malam #agent-greeting-name { color: #34D399 !important; }
+        .time-malam .bg-white { background: rgba(17,24,39,0.7) !important; }
+        .time-malam .border-slate-200 { border-color: rgba(55,65,81,0.4) !important; }
+
+        /* DARK MODE 100% readable */
+        .dark { color-scheme: dark; }
+        .dark body { background: var(--dark-bg) !important; color: #E2E8F0 !important; }
+        .dark .glass, .dark .no-capek-card { background: var(--dark-card) !important; border: 1px solid var(--dark-border) !important; box-shadow: 0 8px 28px rgba(0,0,0,0.45) !important; }
+        .dark .text-slate-900 { color: #F1F5F9 !important; }
+        .dark .text-slate-800 { color: #E2E8F0 !important; }
+        .dark .text-slate-600 { color: #CBD5E1 !important; }
+        .dark .text-slate-500 { color: #94A3B8 !important; }
+        .dark .text-slate-400 { color: #64748B !important; }
+        .dark #agent-greeting-name { color: #6EE7B7 !important; }
+        .dark .bg-white { background: rgba(17,24,39,0.68) !important; }
+        .dark .bg-slate-50 { background: rgba(17,24,39,0.55) !important; }
+        .dark .border-slate-200, .dark .border-slate-100 { border-color: rgba(55,65,81,0.45) !important; }
+        .dark .bg-sky-50, .dark .bg-blue-50 { background: rgba(16,185,129,0.1) !important; border-color: rgba(16,185,129,0.2) !important; }
+        .dark #weather-mini-card, .dark #weather-inline, .dark .mood-btn { background: rgba(30,41,59,0.75) !important; border-color: rgba(71,85,105,0.45) !important; color: #CBD5E1 !important; }
+        .dark .live-badge { background: rgba(16,185,129,0.15) !important; border-color: rgba(16,185,129,0.3) !important; color: #6EE7B7 !important; }
 
         </style>
 </head>
@@ -1412,10 +1459,10 @@
                                             <span id="greeting-time-icon">🌤️</span> <span id="greeting-time-text">Pagi</span> • <span id="current-date-text">Hari ini</span>
                                             <span class="opacity-60">•</span> <span id="live-clock" class="live-clock font-mono">00:00:00</span>
                                         </p>
-                                        <h2 class="text-xl sm:text-[22px] font-black leading-tight mt-2 text-slate-900 tracking-tight">Assalamualaikum, <span id="agent-greeting-name" class="text-[#0F7A5A]">Agen</span>! <span id="greeting-emoji">✨</span></h2>
-                                        <p class="text-[13px] font-semibold opacity-90 mt-1 flex items-center gap-2" id="motivational-text" class="flex flex-wrap items-center gap-2 text-slate-600">
+                                        <h2 class="text-xl sm:text-[22px] font-black leading-tight mt-2 text-slate-900 tracking-tight">Assalamualaikum, <span id="agent-greeting-name">Agen</span>! <span id="greeting-emoji">✨</span></h2>
+                                        <p class="text-[13px] font-semibold opacity-90 mt-1 flex items-center gap-2" id="motivational-text" class="flex flex-wrap items-center gap-2">
                                             <span id="motivational-main-text">Siap jadi yang terbaik hari ini? ✨</span>
-                                            <span id="weather-inline" class="bg-sky-50 border border-sky-200 text-sky-800 px-2.5 py-1 rounded-full text-[11px]">🌤️ 28°C Denpasar</span>
+                                            <span id="weather-inline" class="bg-white/20 px-2 py-0.5 rounded-full text-[11px]">🌤️ 28°C Denpasar</span>
                                         </p>
                                     </div>
                                 </div>
@@ -1432,7 +1479,7 @@
                                             <div class="live-dot"></div>
                                         </div>
                                     </div>
-                                   <div class="flex items-center gap-2 bg-[#F5E6C8]/30 backdrop-blur rounded-full px-3 py-2 border border-[#F5E6C8]/20">
+                                    <div class="flex items-center gap-2 bg-white/15 backdrop-blur rounded-full px-3 py-2 border border-white/20">
                                         <span class="text-[10px] font-bold uppercase tracking-wide opacity-80 mr-1">Mood:</span>
                                         <button class="mood-btn" data-mood="happy" onclick="window.setMood('happy')" title="Semangat">😊</button>
                                         <button class="mood-btn" data-mood="neutral" onclick="window.setMood('neutral')" title="Biasa">😐</button>
@@ -1442,11 +1489,11 @@
                             </div>
 
                             <!-- Bottom Row: Progress Ring + Journey Summary -->
-                            <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-slate-50 border border-slate-200 rounded-2xl sm:rounded-[1.5rem] p-4 sm:p-5">
+                            <div class="flex flex-col lg:flex-row items-center gap-5 sm:gap-6 bg-white/10 backdrop-blur rounded-[1.5rem] p-4 sm:p-5 border border-white/15">
                                 <div class="relative w-28 h-28 flex-shrink-0">
                                     <svg class="progress-ring w-28 h-28" id="progress-ring-svg">
                                         <circle cx="56" cy="56" r="46" stroke="rgba(255,255,255,0.2)" stroke-width="8" fill="none"/>
-                                        <circle id="agent-progress-ring" class="progress-ring-circle" cx="56" cy="56" r="46" stroke="green" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="72"/>
+                                        <circle id="agent-progress-ring" class="progress-ring-circle" cx="56" cy="56" r="46" stroke="white" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="72"/>
                                     </svg>
                                     <div class="absolute inset-0 flex flex-col items-center justify-center">
                                         <span id="agent-progress-pct" class="text-2xl font-black">75%</span>
@@ -1568,8 +1615,8 @@
                             </div>
                         </div>
 
-                        <!-- Tabel Kuis Sudah Diikuti - Hanya Dashboard -->
-                        <div id="dashboard-only-history" class="glass p-5 rounded-2xl shadow-sm">
+                        <!-- Tabel Kuis Sudah Diikuti -->
+                        <div class="glass p-5 rounded-2xl shadow-sm">
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 border-b border-slate-100 pb-3">
                                 <h3 class="text-[13px] font-black text-slate-800 uppercase tracking-wide"><i class="fa-solid fa-table-list text-[#0F7A5A] mr-2"></i>Kuis yang Sudah Diikuti & Nilai</h3>
                                 <span class="text-[11px] font-bold text-slate-500 bg-slate-50 border px-2.5 py-1 rounded-full" id="agent-dash-table-count">0 Kuis</span>
@@ -1597,7 +1644,7 @@
                             </div>
                         </div>
 
-                        <div id="dashboard-only-actions" class="flex gap-3">
+                        <div class="flex gap-3">
                             <button onclick="window.switchAgentTab('quizzes'); window.toggleSubmenu('sub-agent-assessment', 'chev-agent-assessment')" class="flex justify-center items-center py-3.5 px-6 rounded-xl text-sm font-black text-white bg-[#0F7A5A] hover:bg-[#065F46] shadow-[0_4px_14px_rgba(15,122,90,0.25)] transition">
                                 <i class="fa-solid fa-play mr-2"></i> Mulai Kuis Sekarang
                             </button>
@@ -1607,14 +1654,9 @@
                         </div>
                     </div>
 
-                    <div id="agent-tab-quizzes" class="agent-tab-content hidden space-y-6">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6 border-b border-slate-200 pb-4">
-                            <div><h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Kuis Tersedia</h2><p class="text-sm text-slate-500 mt-1 font-semibold">Pilih kuis aktif di bawah ini untuk memulai atau mencoba simulasi.</p></div>
-                            <button onclick="window.refreshAgentData()" class="flex justify-center items-center py-2.5 px-4 rounded-xl text-sm font-black text-indigo-700 bg-emerald-50 border border-emerald-200 hover:bg-indigo-100 transition-all shadow-sm">
-                                <i class="fa-solid fa-rotate-right mr-2"></i>Refresh
-                            </button>
-                        </div>
-                        <div id="available-quizzes" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                    
+                    <!-- KUIS YANG SUDAH DIIKUTI & NILAI - Hanya Dashboard -->
+                    
                     </div>
 
                     <div id="agent-tab-assessment-remedial" class="agent-tab-content hidden space-y-6">
@@ -1808,7 +1850,7 @@
         </div>
 
         <!-- MOBILE BOTTOM NAVIGATION BAR -->
-        <div id="mobile-bottom-nav" class="hidden md:hidden fixed bottom-0 inset-x-0 h-16 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex justify-around items-center px-2 shadow-lg">
+        <div id="mobile-bottom-nav" class="md:hidden fixed bottom-0 inset-x-0 h-16 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex justify-around items-center px-2 shadow-lg">
             <button onclick="window.handleMobileNavClick('dashboard')" class="flex flex-col items-center justify-center flex-1 py-1 text-slate-500 hover:text-[#0F7A5A]">
                 <i class="fa-solid fa-house text-lg"></i>
                 <span class="text-[10px] font-bold mt-0.5">Home</span>
@@ -1956,7 +1998,7 @@
     <!-- FIREBASE & APP LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyAixa2kFvfv8fkyDDj2LoRsNgO3bfZMNjk", 
@@ -2442,7 +2484,34 @@
             }
         };
 
+        
+        (function() {
+            try {
+                const saved = localStorage.getItem('darkMode');
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = saved === 'true' || (!saved && prefersDark);
+                if(isDark) document.documentElement.classList.add('dark');
+            } catch(e) {}
+        })();
+
+        
+        window.updateTimeBasedTheme = () => {
+            try {
+                const h = new Date().getHours();
+                const html = document.documentElement;
+                html.classList.remove('time-pagi','time-siang','time-sore','time-malam');
+                let cls = 'time-pagi';
+                if(h >= 5 && h < 11) cls = 'time-pagi';
+                else if(h >= 11 && h < 15) cls = 'time-siang';
+                else if(h >= 15 && h < 19) cls = 'time-sore';
+                else cls = 'time-malam';
+                html.classList.add(cls);
+            } catch(e) {}
+        };
+
         window.onload = async () => {
+            try { if(window.updateTimeBasedTheme) window.updateTimeBasedTheme(); } catch(e){}
+            setInterval(() => { try { if(window.updateTimeBasedTheme) window.updateTimeBasedTheme(); } catch(e){} }, 60000);
             const savedUser = localStorage.getItem('currentUser');
             if (savedUser) { 
                 showLoader("Mempersiapkan Lingkungan...");
@@ -2454,7 +2523,7 @@
                 try { if(window.setupRealtimeLeaderboard) setTimeout(() => window.setupRealtimeLeaderboard(), 1500); } catch(e){}
                 const lbOnload = document.getElementById('login-btn');
                 if(lbOnload) lbOnload.disabled = false;
-            } else { document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('app-layout').classList.add('hidden'); }
+            } else { document.getElementById('login-screen').classList.remove('hidden'); }
         };
 
         async function hashPassword(password) {
@@ -2541,11 +2610,10 @@
             currentUser = null; 
             localStorage.removeItem('currentUser'); 
             document.body.classList.remove('is-supervisor');
+            document.getElementById('app-layout').classList.add('hidden'); 
             const overlay = document.getElementById('sidebar-overlay'); 
             if(overlay && !overlay.classList.contains('hidden')) window.toggleMobileSidebar(); 
             document.getElementById('login-screen').classList.remove('hidden'); 
-            document.getElementById('app-layout').classList.add('hidden');
-            document.getElementById('mobile-bottom-nav').classList.add('hidden');
             document.getElementById('login-form').reset();
             const loginBtn = document.getElementById('login-btn');
             if(loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Masuk ke Dashboard <i class="fa-solid fa-arrow-right ml-2"></i>'; }
@@ -2567,7 +2635,7 @@
                     const activeAdmin = document.querySelector('#admin-tab-overview:not(.hidden)');
                     
                     if(activeAgentTab && window.loadAgentLeaderboard) window.loadAgentLeaderboard();
-                    if(activeDash && loadAgentHistoryAndTrend) loadAgentHistoryAndTrend();
+                    if(activeDash && window.loadAgentDashboard) window.loadAgentDashboard();
                     if(activeAdmin && window.loadAdminOverviewAndAnalytics) window.loadAdminOverviewAndAnalytics();
                 }, (err) => console.warn('Realtime error:', err));
                 console.log('Realtime leaderboard active');
@@ -2578,8 +2646,7 @@
 
         async function routeUser() {
             document.getElementById('login-screen').classList.add('hidden'); 
-            document.getElementById('app-layout').classList.remove('hidden');
-            document.getElementById('mobile-bottom-nav').classList.remove('hidden');
+            document.getElementById('app-layout').classList.remove('hidden'); 
             document.getElementById('nav-username-display').innerText = currentUser.fullName; 
             document.getElementById('sidebar-name-display').innerText = currentUser.fullName;
 
@@ -2730,17 +2797,12 @@
             } 
         };
 
-               window.switchAgentTab = (tabName) => { 
-    document.querySelectorAll('.agent-tab-content').forEach(el => el.classList.add('hidden')); 
-    const targetEl = document.getElementById(`agent-tab-${tabName}`); 
-    if(targetEl) targetEl.classList.remove('hidden');
-    // FIX: Tabel Kuis Sudah Diikuti cuma di dashboard
-    const onlyHistory = document.getElementById('dashboard-only-history');
-    const onlyActions = document.getElementById('dashboard-only-actions');
-    if (onlyHistory) onlyHistory.style.display = (tabName === 'dashboard') ? 'block' : 'none';
-    if (onlyActions) onlyActions.style.display = (tabName === 'dashboard') ? 'flex' : 'none';
-
-    document.querySelectorAll('[id^="tab-btn-agent-"]').forEach(btn => {  
+        window.switchAgentTab = (tabName) => { 
+            document.querySelectorAll('.agent-tab-content').forEach(el => el.classList.add('hidden')); 
+            const targetEl = document.getElementById(`agent-tab-${tabName}`); 
+            if(targetEl) targetEl.classList.remove('hidden'); 
+            
+            document.querySelectorAll('[id^="tab-btn-agent-"]').forEach(btn => { 
                 if(btn.parentElement.id === 'agent-menu') btn.className = "w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50 transition-colors mt-1"; 
                 else btn.className = "w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-[#0F7A5A] rounded-lg hover:bg-emerald-50 transition"; 
             }); 
@@ -5478,15 +5540,11 @@ timerInterval = setInterval(() => {
 
         window.toggleDarkMode = () => {
             const isDark = document.documentElement.classList.toggle('dark');
-            // Toggle juga dark-real untuk dark yang sebenarnya
-            if(isDark) {
-                document.documentElement.classList.add('dark-real');
-            } else {
-                document.documentElement.classList.remove('dark-real');
-            }
-            localStorage.setItem('noCapekDark', isDark ? '1' : '0');
+            localStorage.setItem('darkMode', isDark ? 'true' : 'false');
             const icon = document.querySelector('#dark-mode-toggle i');
-            if(icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-500 text-sm' : 'fa-solid fa-moon text-slate-600 text-sm';
+            if(icon) {
+                icon.className = isDark ? 'fa-solid fa-sun text-amber-400 text-sm' : 'fa-solid fa-moon text-slate-600 text-sm';
+            }
         };
         (() => {
             const saved = localStorage.getItem('noCapekDark');
@@ -5708,7 +5766,7 @@ timerInterval = setInterval(() => {
     <div id="toast-container" class="fixed bottom-4 right-4 z-[9999] space-y-2 pointer-events-none w-[320px]"></div>
 
     <!-- Custom Delete Confirmation Modal - UI Expert V10 -->
-    <div id="custom-delete-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[9999] flex items-center justify-center p-4">
+    <div><div id="custom-delete-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[9999] flex items-center justify-center p-4">
         <div class="bg-white rounded-[1.75rem] p-0 max-w-sm w-full shadow-2xl overflow-hidden border border-slate-200 transform transition-all">
             <div class="p-6 sm:p-7">
                 <div class="flex items-start gap-4">
@@ -5731,8 +5789,9 @@ timerInterval = setInterval(() => {
                 <p class="text-[10px] text-slate-400 text-center mt-4 font-medium">💡 Tip: Data yang dihapus tidak bisa dikembalikan. Pastikan sudah benar.</p>
             </div>
         </div>
-    </div>
+    
 
 
-    </body>
+    
+</body>
 </html>
