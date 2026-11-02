@@ -3485,38 +3485,18 @@
             } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); } 
         }
 
-        
         window.exportSoalCSV = (id) => { 
             const qz = allQuizzesMap[id]; if(!qz) return; 
-            const delimiter = ";";
-            const esc = (s) => {
-                const str = String(s ?? "");
-                if(str.includes('"') || str.includes(delimiter) || str.includes('\n') || str.includes('\r')) {
-                    return `"${str.replace(/"/g,'""')}"`;
-                }
-                return str;
-            };
-            let lines = [];
-            lines.push([`BANK SOAL - ${qz.title}`].join(delimiter));
-            lines.push([`Kategori: ${qz.category || '-'} | Durasi: ${qz.durationMins || qz.duration || '-'} menit | Total Soal: ${qz.questions.length} | Export: ${new Date().toLocaleString('id-ID')}`].join(delimiter));
-            lines.push([]);
-            const header = ["No","Pertanyaan","Opsi A","Opsi B","Opsi C","Opsi D","Kunci Jawaban","Teks Kunci Jawaban","Poin","Kategori Soal"];
-            lines.push(header.map(esc).join(delimiter));
+            let csv = "No,Pertanyaan,Opsi A,Opsi B,Opsi C,Opsi D,Kunci\n"; 
             qz.questions.forEach((q,i) => { 
-                const k = (q.correct||'').toUpperCase().trim();
-                const kt = q.options && q.options[k] ? q.options[k] : '';
-                const row = [i+1, q.text, q.options.A, q.options.B, q.options.C, q.options.D, k, kt, q.points || 10, q.category || qz.category || '-'];
-                lines.push(row.map(esc).join(delimiter));
-            });
-            const csv = "\uFEFF" + lines.join("\r\n");
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                csv += `${i+1},"${q.text.replace(/"/g,'""')}","${q.options.A.replace(/"/g,'""')}","${q.options.B.replace(/"/g,'""')}","${q.options.C.replace(/"/g,'""')}","${q.options.D.replace(/"/g,'""')}",${q.correct}\n`; 
+            }); 
+            
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement("a"); a.href = url; 
-            const safeName = (qz.title||'Soal').replace(/[^a-z0-9]/gi,'_').substring(0,50);
-            a.download = `BankSoal_${safeName}_${new Date().toISOString().slice(0,10)}.csv`; 
-            a.click(); URL.revokeObjectURL(url);
+            const l = document.createElement("a"); l.href = url; l.download = `Soal_${qz.title}.csv`; l.click(); 
+            URL.revokeObjectURL(url);
         };
-
         
         window.exportSoalPDF = (id) => { 
             const qz = allQuizzesMap[id]; if(!qz || !window.jspdf) return; 
@@ -3599,49 +3579,19 @@
             hideLoader(); 
         };
         
-        
         window.closeQuizReport = () => { document.getElementById('quiz-report-view').classList.add('hidden'); document.getElementById('quiz-list-view').classList.remove('hidden'); };
-};
-            let lines = [];
-            lines.push([`LAPORAN DETAIL KUIS - ${qz.title}`].map(esc).join(delimiter));
-            lines.push([`Kategori: ${qz.category||'-'} | Passing Grade: ${globalSettings.passingGrade}% | Total Soal: ${qz.questions.length} | Total Peserta: ${currentReportResults.length} | Tanggal Export: ${new Date().toLocaleString('id-ID')}`].map(esc).join(delimiter));
-            lines.push([]);
-            let header = ["No","Waktu Submit","Nama Agen","Email","Durasi Detik","Durasi Format","Skor (%)","Status"];
-            qz.questions.forEach((q,i)=>{ header.push(`Q${i+1} Jawaban Agen`); header.push(`Q${i+1} Kunci`); header.push(`Q${i+1} Hasil`); });
-            lines.push(header.map(esc).join(delimiter));
-            let kunciRow = ["","KUNCI JAWABAN SISTEM","","","","","",""];
-            qz.questions.forEach((q)=>{ const k = (q.correct||'').toUpperCase().trim(); const kt = q.options && q.options[k] ? q.options[k] : ''; kunciRow.push(`${k}: ${kt}`); kunciRow.push(k); kunciRow.push(""); });
-            lines.push(kunciRow.map(esc).join(delimiter));
-            currentReportResults.forEach((r, idx) => { 
-                const p = Math.round((r.score/r.totalPoints)*100); 
-                const status = p >= globalSettings.passingGrade ? "LULUS" : "REMEDIAL";
-                const durSec = r.durationSec || 0;
-                const durFmt = `${Math.floor(durSec/60)}m ${durSec%60}s`;
-                let row = [idx+1, new Date(r.createdAt).toLocaleString('id-ID'), r.agentFullName, r.agentEmail || '-', durSec, durFmt, p, status];
-                qz.questions.forEach((q,i) => { 
-                    const ansKey = (r.answers||[])[i] ? String((r.answers||[])[i]).toUpperCase().trim() : "-"; 
-                    const ansText = (ansKey !== "-" && q.options && q.options[ansKey]) ? q.options[ansKey] : "";
-                    const formattedAns = ansKey !== "-" ? `${ansKey}: ${ansText}` : "-";
-                    const kunci = (q.correct||'').toUpperCase().trim();
-                    const hasil = ansKey === kunci ? "BENAR" : (ansKey === "-" ? "KOSONG" : "SALAH");
-                    row.push(formattedAns); row.push(kunci); row.push(hasil);
-                });
-                lines.push(row.map(esc).join(delimiter));
-            });
-            lines.push([]);
-            const avg = currentReportResults.length ? Math.round(currentReportResults.reduce((a,b)=>a+Math.round(b.score/b.totalPoints*100),0)/currentReportResults.length) : 0;
-            lines.push([`Rata-rata Skor: ${avg}%`].map(esc).join(delimiter));
-            lines.push([`Total Lulus: ${currentReportResults.filter(r=>Math.round(r.score/r.totalPoints*100)>=globalSettings.passingGrade).length} dari ${currentReportResults.length}`].map(esc).join(delimiter));
-            const csv = "﻿" + lines.join("
-");
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        
+        window.exportReportCSV = () => { 
+            if(reportDataForExport.length <= 1) {
+                alert("Belum ada data pengerjaan kuis dari agen untuk di-export.");
+                return;
+            }
+            let csv = reportDataForExport.map(r => r.map(s=>`"${String(s).replace(/"/g,'""')}"`).join(",")).join("\n"); 
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement("a"); a.href = url; 
-            const safeName = (qz.title||'Laporan').replace(/[^a-z0-9]/gi,'_').substring(0,50);
-            a.download = `Laporan_${safeName}_${new Date().toISOString().slice(0,10)}.csv`; 
-            a.click(); URL.revokeObjectURL(url);
+            const l = document.createElement("a"); l.href = url; l.download = "Laporan.csv"; l.click(); 
+            URL.revokeObjectURL(url);
         };
-
         
         window.renderSideBySide = () => { 
             const i1 = document.getElementById('compare-agent-1').value; 
@@ -4094,40 +4044,14 @@
             );
         };
         
-        
         window.exportLeaderboardCSV = () => { 
             if(leaderboardDataForExport.length === 0) return alert("Belum ada data leaderboard untuk di-export.");
-            const delimiter = ";";
-            const esc = (s) => {
-                const str = String(s ?? "");
-                if(str.includes('"') || str.includes(delimiter) || str.includes('\n') || str.includes('\r')) {
-                    return `"${str.replace(/"/g,'""')}"`;
-                }
-                return str;
-            };
-            let lines = [];
-            lines.push([`LEADERBOARD UMUM - Export ${new Date().toLocaleString('id-ID')}`].map(esc).join(delimiter));
-            lines.push([]);
-            const header = ["Rank","Nama Lengkap","Judul Kuis","Tanggal Pengerjaan","Waktu Lengkap","Skor (%)","Status","Passing Grade"];
-            lines.push(header.map(esc).join(delimiter));
-            leaderboardDataForExport.forEach(r => {
-                const rank = r[0]; const nama = r[1]; const judul = r[2];
-                const tgl = r[3] ? new Date(r[3]).toLocaleDateString('id-ID') : '-';
-                const waktu = r[3] ? new Date(r[3]).toLocaleString('id-ID') : '-';
-                const skorStr = String(r[4]||'0%'); const skorNum = parseInt(skorStr) || 0;
-                const status = skorNum >= (globalSettings.passingGrade||70) ? "LULUS" : "REMEDIAL";
-                const row = [rank, nama, judul, tgl, waktu, skorStr, status, (globalSettings.passingGrade||70)+"%"];
-                lines.push(row.map(esc).join(delimiter));
-            });
-            const csv = "﻿" + lines.join("
-");
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            let csv = "Rank,Nama,Kuis,Waktu,Skor\n" + leaderboardDataForExport.map(r=>r.join(",")).join("\n"); 
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement("a"); a.href = url; 
-            a.download = `Leaderboard_${new Date().toISOString().slice(0,10)}.csv`; 
-            a.click(); URL.revokeObjectURL(url);
+            const l = document.createElement("a"); l.href = url; l.download = "Leaderboard.csv"; l.click(); 
+            URL.revokeObjectURL(url);
         };
-
         
         window.refreshAdminData = async () => { 
             showLoader(); 
