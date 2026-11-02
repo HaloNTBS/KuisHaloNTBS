@@ -1,5 +1,5 @@
 
-                    <div id="available-quizzes" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                    
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -1675,6 +1675,8 @@
                                 </table>
                             </div>
                         </div>
+
+
                     </div>
 
                     <div id="agent-tab-history" class="agent-tab-content hidden space-y-6">
@@ -1683,6 +1685,22 @@
                             <div class="lg:col-span-2 glass p-5 sm:p-8 rounded-[2rem] shadow-sm">
                                 <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-arrow-trend-up text-[#0F7A5A] mr-2"></i>Grafik Tren Nilai Kuis</h3>
                                 <div class="w-full h-56 relative"><canvas id="agentTrendChart"></canvas></div>
+
+<div id="agent-tab-quizzes" class="agent-tab-content hidden space-y-6">
+                    <div id="available-quizzes" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6 border-b border-slate-200 pb-4">
+                            <div><h2 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Kuis Tersedia</h2><p class="text-sm text-slate-500 mt-1 font-semibold">Pilih kuis aktif di bawah ini untuk memulai atau mencoba simulasi.</p></div>
+                            <button onclick="window.refreshAgentData()" class="flex justify-center items-center py-2.5 px-4 rounded-xl text-sm font-black text-indigo-700 bg-emerald-50 border border-emerald-200 hover:bg-indigo-100 transition-all shadow-sm">
+                                <i class="fa-solid fa-rotate-right mr-2"></i>Refresh
+                            </button>
+                        </div>
+                        
+                    </div>
+
+                    
+
+
                             </div>
                             <div class="lg:col-span-1 glass p-5 sm:p-8 rounded-[2rem] shadow-sm">
                                 <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-chart-radar text-emerald-500 mr-2"></i>Matriks Kompetensi</h3>
