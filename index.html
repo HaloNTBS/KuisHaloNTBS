@@ -2725,24 +2725,17 @@
             } 
         };
 
-                window.switchAgentTab = (tabName) => { 
-            document.querySelectorAll('.agent-tab-content').forEach(el => el.classList.add('hidden')); 
-            const targetEl = document.getElementById(`agent-tab-${tabName}`); 
-            if(targetEl) targetEl.classList.remove('hidden');
-            // FIX: Tabel Kuis Sudah Diikuti cuma di dashboard
-            const onlyHistory = document.getElementById('dashboard-only-history');
-            const onlyActions = document.getElementById('dashboard-only-actions');
-            if (onlyHistory) onlyHistory.style.display = (tabName === 'dashboard') ? 'block' : 'none';
-            if (onlyActions) onlyActions.style.display = (tabName === 'dashboard') ? 'flex' : 'none';
+               window.switchAgentTab = (tabName) => { 
+    document.querySelectorAll('.agent-tab-content').forEach(el => el.classList.add('hidden')); 
+    const targetEl = document.getElementById(`agent-tab-${tabName}`); 
+    if(targetEl) targetEl.classList.remove('hidden');
+    // FIX: Tabel Kuis Sudah Diikuti cuma di dashboard
+    const onlyHistory = document.getElementById('dashboard-only-history');
+    const onlyActions = document.getElementById('dashboard-only-actions');
+    if (onlyHistory) onlyHistory.style.display = (tabName === 'dashboard') ? 'block' : 'none';
+    if (onlyActions) onlyActions.style.display = (tabName === 'dashboard') ? 'flex' : 'none';
 
-            document.querySelectorAll('[id^="tab-btn-agent-"]').forEach(btn => {
-            // FIX: Tabel Kuis Sudah Diikuti cuma di dashboard
-const onlyHistory = document.getElementById('dashboard-only-history');
-const onlyActions = document.getElementById('dashboard-only-actions');
-if (onlyHistory) onlyHistory.style.display = (tabName === 'dashboard') ? 'block' : 'none';
-if (onlyActions) onlyActions.style.display = (tabName === 'dashboard') ? 'flex' : 'none';
-            
-            document.querySelectorAll('[id^="tab-btn-agent-"]').forEach(btn => { 
+    document.querySelectorAll('[id^="tab-btn-agent-"]').forEach(btn => {  
                 if(btn.parentElement.id === 'agent-menu') btn.className = "w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-left font-bold text-slate-600 hover:bg-slate-50 transition-colors mt-1"; 
                 else btn.className = "w-full text-left px-3 py-2 text-sm font-semibold text-slate-500 hover:text-[#0F7A5A] rounded-lg hover:bg-emerald-50 transition"; 
             }); 
