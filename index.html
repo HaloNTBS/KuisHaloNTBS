@@ -340,14 +340,22 @@
     
         /* No-Capek Comfortable Light Default + Soft Dark Optional */
         .no-capek-card { 
-            background: linear-gradient(135deg, #064E3B 0%, #0F7A5A 50%, #065F46 100%); 
-            box-shadow: 0 10px 30px rgba(6,78,59,0.35);
+            background: #FFFFFF;
+            border: 1.5px solid #E2E8F0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
             position: relative;
         }
+        .no-capek-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #064E3B 0%, #0F7A5A 50%, #10B981 100%);
+        }
         .no-capek-card .humanize-avatar {
-            background: rgba(255,255,255,0.15) !important;
-            backdrop-filter: blur(8px);
-            border: 2px solid rgba(255,255,255,0.2);
+            background: linear-gradient(135deg, #064E3B 0%, #0F7A5A 100%) !important;
+            color: white !important;
+            border: 2px solid #E2E8F0;
         }
         .progress-ring { transform: rotate(-90deg); }
         .progress-ring-circle { transition: stroke-dashoffset 0.8s ease; }
@@ -1387,24 +1395,24 @@
                     
                     <div id="agent-tab-dashboard" class="agent-tab-content space-y-8">
                     <!-- Humanized No-Capek Focus Card - UI Expert V9 -->
-                    <div class="no-capek-card rounded-[2.5rem] p-6 sm:p-8 text-white shadow-xl relative overflow-hidden mb-6 islamic-pattern">
-                        <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
-                        <div class="absolute bottom-0 left-0 w-64 h-64 bg-emerald-300/20 rounded-full blur-3xl -ml-20 -mb-20"></div>
+                    <div class="no-capek-card rounded-[1.75rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-sm border border-slate-200 bg-white mb-6 relative overflow-hidden">
+                        
+                        
                         <div class="relative">
                             <!-- Top Row: Avatar + Greeting + Live Clock + Weather V11 -->
                             <div class="flex flex-col lg:flex-row items-start justify-between gap-5 sm:gap-4 mb-6">
                                 <div class="flex items-center gap-4">
                                     <div class="humanize-avatar" id="agent-avatar">A</div>
                                     <div>
-                                        <p class="text-[11px] font-bold uppercase tracking-widest opacity-80 flex flex-wrap items-center gap-2">
+                                        <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500 flex flex-wrap items-center gap-2">
                                             <span class="live-badge"><span class="live-dot"></span>LIVE</span>
                                             <span id="greeting-time-icon">🌤️</span> <span id="greeting-time-text">Pagi</span> • <span id="current-date-text">Hari ini</span>
                                             <span class="opacity-60">•</span> <span id="live-clock" class="live-clock font-mono">00:00:00</span>
                                         </p>
-                                        <h2 class="text-xl sm:text-2xl font-black leading-tight mt-1">Assalamualaikum, <span id="agent-greeting-name">Agen</span>! <span id="greeting-emoji">✨</span></h2>
-                                        <p class="text-[13px] font-semibold opacity-90 mt-1 flex items-center gap-2" id="motivational-text" class="flex flex-wrap items-center gap-2">
+                                        <h2 class="text-xl sm:text-[22px] font-black leading-tight mt-2 text-slate-900 tracking-tight">Assalamualaikum, <span id="agent-greeting-name" class="text-[#0F7A5A]">Agen</span>! <span id="greeting-emoji">✨</span></h2>
+                                        <p class="text-[13px] font-semibold opacity-90 mt-1 flex items-center gap-2" id="motivational-text" class="flex flex-wrap items-center gap-2 text-slate-600">
                                             <span id="motivational-main-text">Siap jadi yang terbaik hari ini? ✨</span>
-                                            <span id="weather-inline" class="bg-white/20 px-2 py-0.5 rounded-full text-[11px]">🌤️ 28°C Denpasar</span>
+                                            <span id="weather-inline" class="bg-sky-50 border border-sky-200 text-sky-800 px-2.5 py-1 rounded-full text-[11px]">🌤️ 28°C Denpasar</span>
                                         </p>
                                     </div>
                                 </div>
@@ -1431,7 +1439,7 @@
                             </div>
 
                             <!-- Bottom Row: Progress Ring + Journey Summary -->
-                            <div class="flex flex-col lg:flex-row items-center gap-5 sm:gap-6 bg-white/10 backdrop-blur rounded-[1.5rem] p-4 sm:p-5 border border-white/15">
+                            <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-slate-50 border border-slate-200 rounded-2xl sm:rounded-[1.5rem] p-4 sm:p-5">
                                 <div class="relative w-28 h-28 flex-shrink-0">
                                     <svg class="progress-ring w-28 h-28" id="progress-ring-svg">
                                         <circle cx="56" cy="56" r="46" stroke="rgba(255,255,255,0.2)" stroke-width="8" fill="none"/>
