@@ -4,24 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Call Center NTBS - Enterprise Training & Assessment</title>
-    <meta name="description" content="Pustaka Halo - Sistem Assessment & Gamifikasi Agen NTB Syariah. Dashboard admin dan agen dengan leaderboard, badges, dan laporan performance.">
-    <meta name="theme-color" content="#0F7A5A">
-    <meta name="color-scheme" content="light">
-    <meta property="og:title" content="Pustaka Halo - NTB Syariah">
-    <meta property="og:description" content="Sistem Assessment & Gamifikasi Agen NTB Syariah">
-    <meta property="og:type" content="website">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    
     
     <!-- Font Plus Jakarta Sans untuk gaya modern ala Canva -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js" defer crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js" defer></script>
     <script>
 /* === UI EXPERT V9 FIXED - Humanize + Journey + Micro-interactions + Safe Scope === */
 (function(){
@@ -33,7 +23,7 @@
 
   window.setMood = (mood) => {
     try {
-      // console.log removed for production
+      console.log('Mood clicked:', mood);
       safeLSSet('agentMood', mood);
       document.querySelectorAll('.mood-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.mood === mood);
@@ -226,79 +216,7 @@
 
         </script>
     
-        <style>
-        /* === DESIGN TOKENS V10 - Production System === */
-        :root {
-            --ntbs-green: #0F7A5A;
-            --ntbs-green-dark: #065F46;
-            --ntbs-green-light: #ECFDF5;
-            --ntbs-gold: #D4A017;
-            --ntbs-gold-light: #FEF3C7;
-            --radius-card: 1.75rem;
-            --radius-btn: 0.75rem;
-            --radius-full: 9999px;
-            --shadow-card: 0 8px 32px rgba(15,122,90,0.06), 0 2px 8px rgba(0,0,0,0.04);
-            --shadow-card-hover: 0 4px 12px rgba(15,122,90,0.08), 0 2px 6px rgba(0,0,0,0.05);
-            --z-sidebar: 30;
-            --z-header: 40;
-            --z-modal: 100;
-            --z-toast: 200;
-            --z-confetti: 300;
-            --z-loader: 400;
-            --content-max: 1280px;
-        }
-        /* Focus visible for keyboard navigation */
-        :focus-visible {
-            outline: 2px solid var(--ntbs-green);
-            outline-offset: 2px;
-            border-radius: 4px;
-        }
-        /* Reduced motion support */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-            .float-anim { animation: none !important; }
-        }
-        /* Safe area for iPhone */
-        #mobile-bottom-nav {
-            padding-bottom: env(safe-area-inset-bottom);
-            height: calc(4rem + env(safe-area-inset-bottom));
-        }
-        body {
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        /* Skeleton loading */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: skeleton-loading 1.5s infinite;
-        }
-        @keyframes skeleton-loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        /* Skip link for accessibility */
-        .skip-link {
-            position: absolute;
-            top: -40px;
-            left: 0;
-            background: var(--ntbs-green);
-            color: white;
-            padding: 8px;
-            z-index: 1000;
-            border-radius: 0 0 8px 0;
-        }
-        .skip-link:focus { top: 0; }
-        /* Improved button states */
-        button:active { transform: scale(0.98); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.3); }
-        /* Custom scrollbar better */
-        * { scrollbar-width: thin; scrollbar-color: #A7F3D0 transparent; }
-        
-.glass { 
+        <style>.glass { 
             background: rgba(255, 255, 255, 0.85); 
             backdrop-filter: blur(16px); 
             -webkit-backdrop-filter: blur(16px); 
@@ -600,8 +518,6 @@
 <body class="text-slate-800 antialiased h-screen w-screen overflow-hidden flex flex-col">
     <canvas id="confetti-canvas" class="hidden fixed inset-0 pointer-events-none z-[9999]"></canvas>
     <canvas id="confetti-canvas-quiz" class="hidden fixed inset-0 pointer-events-none z-[9999]"></canvas>
-    <noscript><div style="position:fixed;inset:0;z-index:9999;background:#0F7A5A;color:white;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center"><div><h1 style="font-size:2rem;font-weight:900;margin-bottom:1rem">JavaScript Diperlukan</h1><p>Aktifkan JavaScript untuk menggunakan Pustaka Halo.</p></div></div></noscript>
-    <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
 
     <!-- Global Loader -->
     <div id="global-loader" class="hidden fixed inset-0 z-[999] bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity">
@@ -729,7 +645,8 @@
         <!-- Top Navbar -->
                 <header class="bg-white/90 backdrop-blur-xl border-b border-slate-200/80 p-3.5 flex justify-between items-center sticky top-0 z-20">
             <div class="flex items-center space-x-3">
-                <button type="button" onclick="window.toggleMobileSidebar()" class="md:hidden p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:bg-white" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i>
+                <button type="button" onclick="window.toggleMobileSidebar()" class="md:hidden p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:bg-white">
+                    <i class="fa-solid fa-bars"></i>
                 </button>
                 <div class="hidden md:flex items-center space-x-3">
                     <div class="w-8 h-8 bg-[#0F7A5A] rounded-lg flex items-center justify-center text-white shadow-sm">
@@ -787,7 +704,8 @@
             <aside id="app-sidebar" class="absolute md:static inset-y-0 left-0 w-64 h-full bg-white/95 backdrop-blur-md border-r border-slate-200 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col shadow-2xl md:shadow-none">
                 <div class="p-4 flex justify-between items-center md:hidden border-b border-slate-200">
                     <span class="font-bold text-slate-800">Menu Navigasi</span>
-                    <button type="button" onclick="window.toggleMobileSidebar()" class="text-slate-500 hover:text-rose-500 bg-slate-100 p-2 rounded-lg" aria-label="Toggle menu"><i class="fa-solid fa-times"></i>
+                    <button type="button" onclick="window.toggleMobileSidebar()" class="text-slate-500 hover:text-rose-500 bg-slate-100 p-2 rounded-lg">
+                        <i class="fa-solid fa-times"></i>
                     </button>
                 </div>
                 
@@ -2036,9 +1954,11 @@
         </div>
     </div>
 
-    <!-- FIREBASE & APP LOGIC - ROBUST OFFLINE SUPPORT V13 -->
+    <!-- FIREBASE & APP LOGIC -->
     <script type="module">
-        // Dynamic Firebase import with offline fallback
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
         const firebaseConfig = { 
             apiKey: "AIzaSyAixa2kFvfv8fkyDDj2LoRsNgO3bfZMNjk", 
             authDomain: "kuis-halo-ntbs.firebaseapp.com", 
@@ -2047,322 +1967,15 @@
             messagingSenderId: "298068879707", 
             appId: "1:298068879707:web:82315bdb7d4d695a24127e" 
         };
-
-        
-
-        // === CRITICAL OFFLINE-FIRST FUNCTIONS - MUST BE BEFORE FIREBASE AWAIT ===
-// Pure JS SHA256 - proven correct, works on file://, matches WebCrypto
-        function sha256_hex_js(s) {
-            var chrsz = 8;
-            function safe_add(x, y) {
-                var lsw = (x & 0xFFFF) + (y & 0xFFFF);
-                var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
-                return (msw << 16) | (lsw & 0xFFFF);
-            }
-            function S(X, n) { return (X >>> n) | (X << (32 - n)); }
-            function R(X, n) { return (X >>> n); }
-            function Ch(x, y, z) { return ((x & y) ^ ((~x) & z)); }
-            function Maj(x, y, z) { return ((x & y) ^ (x & z) ^ (y & z)); }
-            function Sigma0256(x) { return (S(x, 2) ^ S(x, 13) ^ S(x, 22)); }
-            function Sigma1256(x) { return (S(x, 6) ^ S(x, 11) ^ S(x, 25)); }
-            function Gamma0256(x) { return (S(x, 7) ^ S(x, 18) ^ R(x, 3)); }
-            function Gamma1256(x) { return (S(x, 17) ^ S(x, 19) ^ R(x, 10)); }
-            function core_sha256(m, l) {
-                var K = [0x428A2F98,0x71374491,0xB5C0FBCF,0xE9B5DBA5,0x3956C25B,0x59F111F1,0x923F82A4,0xAB1C5ED5,0xD807AA98,0x12835B01,0x243185BE,0x550C7DC3,0x72BE5D74,0x80DEB1FE,0x9BDC06A7,0xC19BF174,0xE49B69C1,0xEFBE4786,0x0FC19DC6,0x240CA1CC,0x2DE92C6F,0x4A7484AA,0x5CB0A9DC,0x76F988DA,0x983E5152,0xA831C66D,0xB00327C8,0xBF597FC7,0xC6E00BF3,0xD5A79147,0x06CA6351,0x14292967,0x27B70A85,0x2E1B2138,0x4D2C6DFC,0x53380D13,0x650A7354,0x766A0ABB,0x81C2C92E,0x92722C85,0xA2BFE8A1,0xA81A664B,0xC24B8B70,0xC76C51A3,0xD192E819,0xD6990624,0xF40E3585,0x106AA070,0x19A4C116,0x1E376C08,0x2748774C,0x34B0BCB5,0x391C0CB3,0x4ED8AA4A,0x5B9CCA4F,0x682E6FF3,0x748F82EE,0x78A5636F,0x84C87814,0x8CC70208,0x90BEFFFA,0xA4506CEB,0xBEF9A3F7,0xC67178F2];
-                var HASH = [0x6A09E667,0xBB67AE85,0x3C6EF372,0xA54FF53A,0x510E527F,0x9B05688C,0x1F83D9AB,0x5BE0CD19];
-                var W = new Array(64);
-                var a,b,c,d,e,f,g,h,i,j;
-                var T1,T2;
-                m[l>>5] |= 0x80 << (24 - l % 32);
-                m[((l + 64 >> 9) << 4) + 15] = l;
-                for (var i=0;i<m.length;i+=16) {
-                    a=HASH[0]; b=HASH[1]; c=HASH[2]; d=HASH[3]; e=HASH[4]; f=HASH[5]; g=HASH[6]; h=HASH[7];
-                    for (var j=0;j<64;j++) {
-                        if (j<16) W[j]=m[j+i];
-                        else W[j]=safe_add(safe_add(safe_add(Gamma1256(W[j-2]), W[j-7]), Gamma0256(W[j-15])), W[j-16]);
-                        T1=safe_add(safe_add(safe_add(safe_add(h, Sigma1256(e)), Ch(e,f,g)), K[j]), W[j]);
-                        T2=safe_add(Sigma0256(a), Maj(a,b,c));
-                        h=g; g=f; f=e; e=safe_add(d,T1); d=c; c=b; b=a; a=safe_add(T1,T2);
-                    }
-                    HASH[0]=safe_add(a,HASH[0]); HASH[1]=safe_add(b,HASH[1]); HASH[2]=safe_add(c,HASH[2]); HASH[3]=safe_add(d,HASH[3]);
-                    HASH[4]=safe_add(e,HASH[4]); HASH[5]=safe_add(f,HASH[5]); HASH[6]=safe_add(g,HASH[6]); HASH[7]=safe_add(h,HASH[7]);
-                }
-                return HASH;
-            }
-            function str2binb(str) {
-                var bin=[]; var mask=(1<<chrsz)-1;
-                for(var i=0;i<str.length*chrsz;i+=chrsz) bin[i>>5] |= (str.charCodeAt(i/chrsz) & mask) << (24 - i%32);
-                return bin;
-            }
-            function binb2hex(binarray) {
-                var hex_tab="0123456789abcdef"; var str="";
-                for(var i=0;i<binarray.length*4;i++) {
-                    str+=hex_tab.charAt((binarray[i>>2]>>((3-i%4)*8+4))&0xF)+hex_tab.charAt((binarray[i>>2]>>((3-i%4)*8))&0xF);
-                }
-                return str;
-            }
-            return binb2hex(core_sha256(str2binb(s), s.length*8));
-        }
-                
-async function hashPassword(password) {
-            if(!password) return '';
-            // Try Web Crypto first (needs HTTPS)
-            try {
-                if (window.isSecureContext && window.crypto && window.crypto.subtle && window.crypto.subtle.digest) {
-                    const msgBuffer = new TextEncoder().encode(password);
-                    const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgBuffer);
-                    const hashArray = Array.from(new Uint8Array(hashBuffer));
-                    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                }
-            } catch (e) {
-                console.warn('WebCrypto SHA256 failed, fallback to JS:', e.message);
-            }
-            // Fallback pure JS - produces SAME output as WebCrypto
-            try {
-                return sha256_hex_js(password);
-            } catch (e) {
-                console.warn('JS SHA256 failed:', e);
-                return password; // last resort
-            }
-        }
-
-
-function showLoader(msg = "Memuat Data...") { 
-            try {
-                const lt = document.getElementById('loader-text');
-                const gl = document.getElementById('global-loader');
-                if(lt) lt.innerText = msg;
-                if(gl) gl.classList.remove('hidden');
-            } catch(e){ console.warn('showLoader failed', e); }
-        }
-        function hideLoader() { 
-            try {
-                const gl = document.getElementById('global-loader');
-                if(gl) gl.classList.add('hidden');
-            } catch(e){ console.warn('hideLoader failed', e); }
-
-let isLoggingIn = false;
-
-
-// OFFLINE-FIRST LOGIN - defined BEFORE Firebase loads, so login works even on file:// or offline
-        window.handleLogin = async (e) => {
-            e.preventDefault();
-            if(typeof isLoggingIn !== 'undefined' && isLoggingIn) return;
-            if(typeof isLoggingIn !== 'undefined') isLoggingIn = true;
-            const loginBtn = document.getElementById('login-btn');
-            const err = document.getElementById('login-error');
-            const uInput = document.getElementById('login-username');
-            const pInput = document.getElementById('login-password');
-            if(loginBtn) loginBtn.disabled = true;
-            if(err) { err.classList.add('hidden'); err.innerText = ''; }
-            const u = (uInput ? uInput.value : '').trim();
-            const p = (pInput ? pInput.value : '').trim();
-            if(!u || !p) {
-                if(err) { err.innerText = "Username dan password wajib diisi."; err.classList.remove('hidden'); }
-                if(typeof isLoggingIn !== 'undefined') isLoggingIn = false;
-                if(loginBtn) loginBtn.disabled = false;
-                return;
-            }
-            if(typeof showLoader === 'function') showLoader("Autentikasi...");
-            let loginTimeout = null;
-            try {
-                loginTimeout = setTimeout(() => {
-                    try { if(typeof hideLoader === 'function') hideLoader(); } catch(e){}
-                    if(typeof isLoggingIn !== 'undefined' && isLoggingIn) {
-                        if(err) { err.innerText = "Koneksi lambat / Firebase tidak merespon. Cek internet."; err.classList.remove('hidden'); }
-                        if(typeof isLoggingIn !== 'undefined') isLoggingIn = false;
-                        if(loginBtn) loginBtn.disabled = false;
-                    }
-                }, 15000);
-
-                // OFFLINE ADMIN - works even without Firebase
-                if (u === 'admin' && p === 'admin123') {
-                    try {
-                        let adminId = 'offline-admin';
-                        let hashed = '';
-                        try { hashed = await hashPassword('admin123'); } catch(e){ hashed = 'offline-hash'; }
-                        // Try Firestore if available, but don't block
-                        if (typeof db !== 'undefined' && db && typeof firebaseReady !== 'undefined' && firebaseReady) {
-                            try {
-                                const adminQ = query(collection(db, "users"), where("username", "==", "admin"));
-                                const adminSnap = await getDocs(adminQ);
-                                if(adminSnap.empty) {
-                                    const newDoc = await addDoc(collection(db, "users"), { 
-                                        fullName: 'System Administrator', 
-                                        username: 'admin', 
-                                        password: hashed, 
-                                        role: 'admin', 
-                                        phone: '', 
-                                        email: 'admin@bankntbsyariah.co.id',
-                                        createdAt: new Date().toISOString()
-                                    });
-                                    adminId = newDoc.id;
-                                } else {
-                                    adminId = adminSnap.docs[0].id;
-                                }
-                            } catch (fsErr) {
-                                console.warn('Firestore admin check failed, using offline:', fsErr.message);
-                                adminId = 'offline-admin';
-                            }
-                        }
-                        currentUser = { id: adminId, username: 'admin', fullName: 'System Administrator', password: hashed, role: 'admin', phone: '', email: 'admin@bankntbsyariah.co.id' };
-                        window.currentUser = currentUser;
-                        try { localStorage.setItem('currentUser', JSON.stringify(currentUser)); } catch(e){ try{ safeLSSet('currentUser', JSON.stringify(currentUser)); }catch(_){} }
-                        try { clearTimeout(loginTimeout); } catch(e){}
-                        if(typeof hideLoader === 'function') hideLoader();
-                        if(typeof isLoggingIn !== 'undefined') isLoggingIn = false;
-                        if(loginBtn) loginBtn.disabled = false;
-                        if(typeof routeUser === 'function') routeUser();
-                        if(typeof resetInactivityTimer === 'function') resetInactivityTimer();
-                        if(typeof window.showToast === 'function') window.showToast('Login admin berhasil!', 'success');
-                        return;
-                    } catch (adminErr) {
-                        console.error('Admin login error:', adminErr);
-                    }
-                }
-
-                // For non-admin, need Firebase
-                if (typeof db === 'undefined' || !db || typeof firebaseReady === 'undefined' || !firebaseReady) {
-                    try { clearTimeout(loginTimeout); } catch(e){}
-                    if(typeof hideLoader === 'function') hideLoader();
-                    if(err) { err.innerText = "Firebase belum siap / offline. Untuk test pakai admin / admin123."; err.classList.remove('hidden'); }
-                    if(typeof isLoggingIn !== 'undefined') isLoggingIn = false;
-                    if(loginBtn) loginBtn.disabled = false;
-                    return;
-                }
-
-                try { if(typeof loadGlobalSettings === 'function') await loadGlobalSettings(); } catch(sErr){ console.warn('loadGlobalSettings failed, continue:', sErr.message); }
-
-                const hashedPassword = await hashPassword(p);
-                let authenticatedDoc = null;
-
-                try {
-                    const q = query(collection(db, "users"), where("username", "==", u));
-                    const snap = await getDocs(q);
-                    for (const userDoc of snap.docs) {
-                        const storedPassword = String(userDoc.data().password || '');
-                        if (storedPassword === hashedPassword || storedPassword === p || storedPassword.length < 20) {
-                            if (storedPassword === p && storedPassword !== hashedPassword) {
-                                try { await updateDoc(doc(db, "users", userDoc.id), { password: hashedPassword }); } catch(e){ console.warn('upgrade pwd failed', e); }
-                            }
-                            authenticatedDoc = userDoc;
-                            break;
-                        }
-                    }
-                } catch (qErr) {
-                    throw qErr;
-                }
-
-                if (authenticatedDoc) {
-                    const ud = authenticatedDoc.data();
-                    currentUser = { id: authenticatedDoc.id, ...ud, password: hashedPassword };
-                    window.currentUser = currentUser;
-                    try { localStorage.setItem('currentUser', JSON.stringify(currentUser)); } catch(e){ try{ safeLSSet('currentUser', JSON.stringify(currentUser)); }catch(_){} }
-                    try { clearTimeout(loginTimeout); } catch(e){}
-                    if(typeof hideLoader === 'function') hideLoader();
-                    if(typeof isLoggingIn !== 'undefined') isLoggingIn = false;
-                    if(loginBtn) loginBtn.disabled = false;
-                    if(typeof routeUser === 'function') routeUser();
-                    if(typeof resetInactivityTimer === 'function') resetInactivityTimer();
-                } else {
-                    try { clearTimeout(loginTimeout); } catch(e){}
-                    if(typeof hideLoader === 'function') hideLoader();
-                    if(err) { err.innerText = "Username atau Password salah."; err.classList.remove('hidden'); }
-                    if(typeof isLoggingIn !== 'undefined') isLoggingIn = false;
-                    if(loginBtn) loginBtn.disabled = false;
-                }
-            } catch (error) {
-                try { clearTimeout(loginTimeout); } catch(e){}
-                if(typeof hideLoader === 'function') hideLoader();
-                if(typeof isLoggingIn !== 'undefined') isLoggingIn = false;
-                if(loginBtn) loginBtn.disabled = false;
-                console.error('Login error:', error);
-                let msg = "Gagal menghubungkan ke database.";
-                if (error && error.message) msg += " (" + error.message + ")";
-                if (!window.isSecureContext) msg += " Tip: Buka via http://localhost:8000, bukan file://. Atau pakai admin/admin123 untuk offline test.";
-                if (error && error.code) {
-                    if (error.code === 'permission-denied' || (error.code && error.code.includes('permission'))) {
-                        msg = "Akses database ditolak (Firestore Rules). Set Rules ke allow read, write: if true; untuk testing, atau login admin/admin123.";
-                    } else if (error.code && (error.code.includes('unavailable') || error.code.includes('network') || error.code.includes('failed-precondition'))) {
-                        msg = "Tidak bisa konek ke Firebase. Cek internet / VPN / Adblock. Coba admin/admin123 untuk offline mode.";
-                    }
-                }
-                if(err) { err.innerText = msg; err.classList.remove('hidden'); }
-            }
-        };
-
-
-        // === FIREBASE DYNAMIC IMPORT (NON-BLOCKING FOR LOGIN) ===
-let app = null;
-        let db = null;
-        let collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, getDoc, setDoc, onSnapshot;
-        let firebaseReady = false;
-
-        try {
-            const appMod = await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js");
-            const fsMod = await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
-            app = appMod.initializeApp(firebaseConfig);
-            db = fsMod.getFirestore(app);
-            collection = fsMod.collection;
-            addDoc = fsMod.addDoc;
-            getDocs = fsMod.getDocs;
-            query = fsMod.query;
-            where = fsMod.where;
-            orderBy = fsMod.orderBy;
-            deleteDoc = fsMod.deleteDoc;
-            doc = fsMod.doc;
-            updateDoc = fsMod.updateDoc;
-            getDoc = fsMod.getDoc;
-            setDoc = fsMod.setDoc;
-            onSnapshot = fsMod.onSnapshot;
-            firebaseReady = true;
-            console.log("Firebase ready");
-        } catch (e) {
-            console.warn("Firebase failed to load (offline or blocked), offline mode active:", e.message);
-            db = null;
-            firebaseReady = false;
-            // Dummy functions to prevent ReferenceError
-            const dummy = () => { throw new Error("Firebase offline"); };
-            collection = dummy; addDoc = dummy; getDocs = dummy; query = dummy; where = dummy; orderBy = dummy;
-            deleteDoc = dummy; doc = dummy; updateDoc = dummy; getDoc = dummy; setDoc = dummy; onSnapshot = dummy;
-        }
-
+        const app = initializeApp(firebaseConfig); 
+        const db = getFirestore(app);
 
         let currentUser = null;
-
         window.currentUser = null;
         // Safe LS helpers
         function safeLSGet(k,d=null){ try{ return localStorage.getItem(k) ?? d; }catch(e){ return d; } }
         function safeLSSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
         function safeLSRemove(k){ try{ localStorage.removeItem(k); }catch(e){} }
-        /* 
-         * SECURITY NOTE V10 - WAJIB SET DI FIREBASE CONSOLE:
-         * rules_version = '2';
-         * service cloud.firestore {
-         *   match /databases/{database}/documents {
-         *     match /users/{userId} { allow read, write: if request.auth != null && (request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'); }
-         *     match /quizzes/{quizId} { allow read: if request.auth != null; allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'; }
-         *     match /results/{resultId} { allow read: if request.auth != null; allow create: if request.auth != null; }
-         *     match /questionBank/{docId} { allow read, write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'; }
-         *   }
-         * }
-         * + Validasi totalPoints 100 via Cloud Functions
-         */
-
-        // Global error boundary V10
-        window.addEventListener('error', (e) => {
-            console.warn('Global error caught:', e.message);
-            try {
-                if(typeof window.showToast === 'function') {
-                    window.showToast('Terjadi kesalahan, coba refresh halaman', 'error');
-                }
-            } catch(_) {}
-        });
-        window.addEventListener('unhandledrejection', (e) => {
-            console.warn('Unhandled promise:', e.reason);
-            e.preventDefault();
-        });
-
         let globalSettings = { passingGrade: 70, maxRemedial: 2, randomQuestions: false };
         
         let adminChartInstance = null; let adminComparisonChartInstance = null; 
@@ -2385,8 +1998,8 @@ let app = null;
 
         let isSavingQuiz = false;
         let isSubmittingQuiz = false;
-        
-        // duplicate removed for V14
+        let isLoggingIn = false;
+
         function debounce(fn, delay){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); }; }
         function safeGet(id) { 
             const el = document.getElementById(id); 
@@ -2492,9 +2105,11 @@ let app = null;
             window.addEventListener(evt, resetInactivityTimer, { passive: true });
         });
 
-        
-        // duplicate removed for V14
+        function showLoader(msg = "Memuat Data...") { 
+            document.getElementById('loader-text').innerText = msg; 
+            document.getElementById('global-loader').classList.remove('hidden'); 
         }
+        function hideLoader() { document.getElementById('global-loader').classList.add('hidden'); }
         
         window.toggleMobileSidebar = () => { 
             const sidebar = document.getElementById('app-sidebar'); 
@@ -2795,9 +2410,7 @@ let app = null;
             }
         };
 
-        
         async function loadGlobalSettings() {
-            if(!db || !firebaseReady) { console.warn('loadGlobalSettings skipped - Firebase offline'); return; }
             try {
                 const docSnap = await getDoc(doc(db, "settings", "global"));
                 if (docSnap.exists()) {
@@ -2805,8 +2418,6 @@ let app = null;
                 } else {
                     await setDoc(doc(db, "settings", "global"), globalSettings);
                 }
-            } catch(e) { console.warn("Error loading settings (non-critical):", e.message); }
-        }
             } catch(e) { console.error("Error loading settings:", e); }
         }
 
@@ -2853,56 +2464,77 @@ let app = null;
             } else { document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('app-layout').classList.add('hidden'); }
         };
 
-        
-        // Pure JS SHA256 - works on file:// and matches crypto.subtle output
-        
-        // Pure JS SHA256 - proven correct, works on file://, matches WebCrypto
-        
-        // duplicate removed for V14
-let a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
-                for (let j=0;j<64;j++) {
-                    const S1 = rightRotate(e,6) ^ rightRotate(e,11) ^ rightRotate(e,25);
-                    const ch = (e & f) ^ (~e & g);
-                    const temp1 = (h + S1 + ch + K[j] + W[j]) | 0;
-                    const S0 = rightRotate(a,2) ^ rightRotate(a,13) ^ rightRotate(a,22);
-                    const maj = (a & b) ^ (a & c) ^ (b & c);
-                    const temp2 = (S0 + maj) | 0;
-                    h=g; g=f; f=e; e=(d+temp1)|0; d=c; c=b; b=a; a=(temp1+temp2)|0;
-                }
-                H[0]=(H[0]+a)|0; H[1]=(H[1]+b)|0; H[2]=(H[2]+c)|0; H[3]=(H[3]+d)|0;
-                H[4]=(H[4]+e)|0; H[5]=(H[5]+f)|0; H[6]=(H[6]+g)|0; H[7]=(H[7]+h)|0;
-            }
-            let hex='';
-            for (let i=0;i<H.length;i++) { hex+=('00000000'+(H[i]>>>0).toString(16)).slice(-8); }
-            return hex;
-        }
-
-        
-        // duplicate removed for V14
-        // OFFLINE-FIRST LOGIN - defined BEFORE Firebase loads, so login works even on file:// or offline
-        
-        // duplicate handleLogin removed
-} catch (e) {
-                console.warn('crypto.subtle failed, fallback:', e.message);
-            }
-            // Fallback untuk file:// atau browser lama - simple deterministic hash (bukan kriptografi kuat, tapi cukup untuk login)
+        async function hashPassword(password) {
+    const msgBuffer = new TextEncoder().encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+        window.handleLogin = async (e) => { e.preventDefault(); if(isLoggingIn) return; isLoggingIn = true; document.getElementById('login-btn').disabled = true; 
+            const u = document.getElementById('login-username').value; 
+            const p = document.getElementById('login-password').value; 
+            const err = document.getElementById('login-error'); 
+            err.classList.add('hidden'); 
+            showLoader("Autentikasi...");
+            
             try {
-                let h = 0;
-                for (let i = 0; i < password.length; i++) {
-                    h = Math.imul(31, h) + password.charCodeAt(i) | 0;
+                await loadGlobalSettings();
+                const hashedPassword = await hashPassword(p);
+                const q = query(collection(db, "users"), where("username", "==", u));
+                const snap = await getDocs(q);
+                let authenticatedDoc = null;
+                for (const userDoc of snap.docs) {
+                    const storedPassword = String(userDoc.data().password || '');
+                    if (storedPassword === hashedPassword || storedPassword === p) {
+                        authenticatedDoc = userDoc;
+                        if (storedPassword === p) await updateDoc(doc(db, "users", userDoc.id), { password: hashedPassword });
+                        break;
+                    }
                 }
-                // Buat mirip hex 64 char biar kompatibel dengan data lama
-                const hex = Math.abs(h).toString(16).padStart(8, '0');
-                // Ulangi sampai 64 char + tambahkan btoa sebagai salt sederhana
-                return (hex + btoa(password).replace(/[^a-z0-9]/gi, '').toLowerCase()).padEnd(64, '0').slice(0, 64);
-            } catch (e) {
-                // Last resort plain (akan tetap match karena login cek plain juga)
-                return password;
+                if (authenticatedDoc) {
+                    const ud = { ...authenticatedDoc.data(), password: hashedPassword };
+                    currentUser = { id: authenticatedDoc.id, ...ud };
+                    window.currentUser = currentUser;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    window.updateUserPresence("Online");
+                    hideLoader();
+                    isLoggingIn = false;
+                    const lbSuccess = document.getElementById('login-btn');
+                    if(lbSuccess) lbSuccess.disabled = false;
+                    routeUser();
+                    resetInactivityTimer();
+                }
+                else if (u === 'admin' && p === 'admin123') {
+                    const adminQ = query(collection(db, "users"), where("username", "==", "admin")); 
+                    const adminSnap = await getDocs(adminQ); let adminId = '';
+                    if(adminSnap.empty) { 
+                        const newDoc = await addDoc(collection(db, "users"), { fullName: 'System Administrator', username: 'admin', password: await hashPassword('admin123'), role: 'admin', phone: '', email: 'admin@bankntbsyariah.co.id' }); 
+                        adminId = newDoc.id; 
+                    } else { 
+                        adminId = adminSnap.docs[0].id; 
+                    }
+                    currentUser = { id: adminId, username: 'admin', fullName: 'System Administrator', password: await hashPassword('admin123'), role: 'admin', phone: '', email: 'admin@bankntbsyariah.co.id' }; 
+                    window.currentUser = currentUser;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser)); 
+                    window.updateUserPresence("Online");
+                    hideLoader(); routeUser();
+                    resetInactivityTimer();
+                    isLoggingIn = false; const lb2=document.getElementById('login-btn'); if(lb2) lb2.disabled=false;
+                } else { 
+                    hideLoader(); 
+                    err.classList.add('hidden'); 
+                    err.innerText = "Username atau Password salah.";
+                    err.classList.remove('hidden'); 
+                    isLoggingIn = false; const lb3=document.getElementById('login-btn'); if(lb3) lb3.disabled=false;
+                }
+            } catch (error) { 
+                hideLoader();
+                isLoggingIn = false; const lb4=document.getElementById('login-btn'); if(lb4) lb4.disabled=false; 
+                err.innerText = "Gagal menghubungkan ke database."; 
+                err.classList.remove('hidden'); 
             }
-        }
-        
-        
-        // handleLogin moved earlier for offline support - see above
+        };
+
         window.logout = () => { 
             try { if(_leaderboardUnsub) { _leaderboardUnsub(); _leaderboardUnsub=null; } } catch(e){}
             if(timerInterval) clearInterval(timerInterval); 
@@ -2952,70 +2584,81 @@ let a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
                     if(activeDash && loadAgentHistoryAndTrend) loadAgentHistoryAndTrend();
                     if(activeAdmin && window.loadAdminOverviewAndAnalytics) window.loadAdminOverviewAndAnalytics();
                 }, (err) => console.warn('Realtime error:', err));
-                // console.log removed for production
+                console.log('Realtime leaderboard active');
             } catch(e) { console.warn('Realtime setup failed', e); }
         };
         // === END REALTIME ===
 
 
-        async 
-        function routeUser() {
-            try {
-                const ls = document.getElementById('login-screen');
-                const al = document.getElementById('app-layout');
-                const mb = document.getElementById('mobile-bottom-nav');
-                const nud = document.getElementById('nav-username-display');
-                const snd = document.getElementById('sidebar-name-display');
-                if(ls) ls.classList.add('hidden');
-                if(al) al.classList.remove('hidden');
-                if(mb) mb.classList.remove('hidden');
-                if(nud && currentUser) nud.innerText = currentUser.fullName || currentUser.username || 'User';
-                if(snd && currentUser) snd.innerText = currentUser.fullName || currentUser.username || 'User';
+        async function routeUser() {
+            document.getElementById('login-screen').classList.add('hidden'); 
+            document.getElementById('app-layout').classList.remove('hidden');
+            document.getElementById('mobile-bottom-nav').classList.remove('hidden');
+            document.getElementById('nav-username-display').innerText = currentUser.fullName; 
+            document.getElementById('sidebar-name-display').innerText = currentUser.fullName;
 
-                if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'supervisor')) {
-                    const isSv = currentUser.role === 'supervisor';
-                    document.body.classList.toggle('is-supervisor', isSv);
-                    const st = document.getElementById('sidebar-title');
-                    const am = document.getElementById('agent-menu');
-                    const av = document.getElementById('agent-views');
-                    const adm = document.getElementById('admin-menu');
-                    const adv = document.getElementById('admin-views');
-                    if(st) st.innerText = isSv ? "Supervisor Panel" : "Admin Panel";
-                    if(am) am.classList.add('hidden');
-                    if(av) av.classList.add('hidden');
-                    if(adm) adm.classList.remove('hidden');
-                    if(adv) adv.classList.remove('hidden');
-                    
-                    const pf = document.getElementById('profile-fullname');
-                    const pp = document.getElementById('profile-phone');
-                    const pe = document.getElementById('profile-email');
-                    if(pf) pf.value = currentUser.fullName || '';
-                    if(pp) pp.value = currentUser.phone || '';
-                    if(pe) pe.value = currentUser.email || '';
-                    
-                    const spg = document.getElementById('setting-passing-grade');
-                    const smr = document.getElementById('setting-max-remedial');
-                    const srq = document.getElementById('setting-random-question');
-                    if(spg && typeof globalSettings !== 'undefined') spg.value = globalSettings.passingGrade || 70;
-                    if(smr && typeof globalSettings !== 'undefined') smr.value = globalSettings.maxRemedial || 2;
-                    if(srq && typeof globalSettings !== 'undefined') srq.checked = globalSettings.randomQuestions || false;
-                } else if (currentUser) {
-                    const am = document.getElementById('agent-menu');
-                    const av = document.getElementById('agent-views');
-                    const adm = document.getElementById('admin-menu');
-                    const adv = document.getElementById('admin-views');
-                    if(am) am.classList.remove('hidden');
-                    if(av) av.classList.remove('hidden');
-                    if(adm) adm.classList.add('hidden');
-                    if(adv) adv.classList.add('hidden');
+            if (currentUser.role === 'admin' || currentUser.role === 'supervisor') {
+                const isSv = currentUser.role === 'supervisor';
+                document.body.classList.toggle('is-supervisor', isSv);
+                
+                document.getElementById('sidebar-title').innerText = isSv ? "Supervisor Panel" : "Admin Panel"; 
+                document.getElementById('agent-menu').classList.add('hidden'); 
+                document.getElementById('agent-views').classList.add('hidden'); 
+                document.getElementById('admin-menu').classList.remove('hidden'); 
+                document.getElementById('admin-views').classList.remove('hidden');
+                
+                document.getElementById('profile-fullname').value = currentUser.fullName; 
+                document.getElementById('profile-phone').value = currentUser.phone || ''; 
+                document.getElementById('profile-email').value = currentUser.email || '';
+                
+                document.getElementById('setting-passing-grade').disabled = isSv;
+                document.getElementById('setting-max-remedial').disabled = isSv;
+                document.getElementById('setting-random-question').disabled = isSv;
+                
+                if (isSv) {
+                    document.getElementById('user-table-panel').classList.replace('xl:col-span-2', 'xl:col-span-3');
+                    document.getElementById('tab-btn-admin-import-quiz').style.display = 'none';
+                } else {
+                    document.getElementById('user-table-panel').classList.replace('xl:col-span-3', 'xl:col-span-2');
+                    document.getElementById('tab-btn-admin-import-quiz').style.display = 'flex';
                 }
-                // Trigger data loads
-                try { if(currentUser && (currentUser.role === 'admin' || currentUser.role === 'supervisor')) { window.refreshAdminData && window.refreshAdminData(); } else { window.refreshAgentData && window.refreshAgentData(); } } catch(e){ console.warn('refresh failed', e); }
-            } catch (e) {
-                console.error('routeUser failed:', e);
-                try { window.showToast && window.showToast('Gagal memuat dashboard: ' + e.message, 'error'); } catch(_){}
+                
+                document.getElementById('setting-passing-grade').value = globalSettings.passingGrade;
+                document.getElementById('setting-max-remedial').value = globalSettings.maxRemedial;
+                document.getElementById('setting-random-question').checked = globalSettings.randomQuestions;
+                const rLabel = document.getElementById('label-admin-remedial'); 
+                if(rLabel) rLabel.innerText = "Batas Lulus: " + globalSettings.passingGrade + "%";
+
+                showLoader("Menyiapkan Dasbor..."); 
+                try { 
+                    await Promise.all([ loadAdminOverviewAndAnalytics(), loadAdminUsers(), loadAdminQuizzes(), loadQuestionBank() ]); 
+                } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); } 
+                hideLoader(); 
+                window.switchAdminTab('overview');
+                loadNotifications();
+            } else {
+                document.body.classList.remove('is-supervisor');
+                document.getElementById('sidebar-title').innerText = "Ruang Agen"; 
+                document.getElementById('admin-menu').classList.add('hidden'); 
+                document.getElementById('admin-views').classList.add('hidden'); 
+                document.getElementById('agent-menu').classList.remove('hidden'); 
+                document.getElementById('agent-views').classList.remove('hidden');
+                
+                document.getElementById('agent-profile-fullname').value = currentUser.fullName; 
+                document.getElementById('agent-profile-phone').value = currentUser.phone || ''; 
+                document.getElementById('agent-profile-email').value = currentUser.email || '';
+
+                showLoader("Menyiapkan Ruang Agen..."); 
+                try { 
+                    await Promise.all([ loadQuizzesForAgent(), loadAgentHistoryAndTrend(), loadAgentLeaderboard() ]); 
+                } catch (e) {     console.error("Gagal memuat data:", e);     if (typeof hideLoader === "function") hideLoader();     alert("Terjadi kendala saat menghubungi pangkalan data. Periksa koneksi jaringan Anda."); } 
+                hideLoader(); 
+                try { if(window.loadAgentLeaderboard) window.loadAgentLeaderboard(); } catch(e){}
+                window.switchAgentTab('dashboard');
+                loadNotifications();
             }
         }
+
         window.updateProfile = async (e) => { 
             e.preventDefault(); 
             const isStaff = currentUser.role === 'admin' || currentUser.role === 'supervisor'; 
@@ -4423,9 +4066,9 @@ let a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
 
         async function loadAgentHistoryAndTrend() {
             try {
-                // console.log removed for production
+                console.log("[Dashboard] Fetching Firebase results for", currentUser.username);
                 const snap = await getDocs(query(collection(db, "results"), where("agentUsername", "==", currentUser.username))); 
-                // console.log removed for production"); 
+                console.log("[Dashboard] Found " + snap.size + " results from Firebase (termasuk 2 kuis lama)"); 
                 let h = []; snap.forEach(d => h.push({id: d.id, ...d.data()})); h.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 const tbody = document.getElementById('agent-history-body');
@@ -5306,7 +4949,7 @@ let a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
                         dashBadgeEl.innerText = totalBadges > 0 ? totalBadges : earned.length;
                     }
                 }
-                // console.log removed for production
+                console.log('[Badges] Retroactive sync done for', currentUser.username, totalBadges, 'badges', syncRes, 'earned local', earned.length);
                 return syncRes;
             } catch(e){ 
                 console.warn('Retroactive badge sync failed', e);
@@ -6033,7 +5676,7 @@ timerInterval = setInterval(() => {
                         const data = await res.json();
                         if(data.current_weather) realTemp = Math.round(data.current_weather.temperature) + '°C';
                     }
-                } catch(e) { // console.log removed for production }
+                } catch(e) { console.log('Weather fetch failed', e); }
 
                 const miniCard = document.getElementById('weather-mini-card');
                 const iconEl = document.getElementById('weather-icon');
@@ -6082,7 +5725,7 @@ timerInterval = setInterval(() => {
         }, 800);
 
         </script>
-    <div id="toast-container" role="status" aria-live="polite" aria-atomic="true" class="fixed bottom-4 right-4 z-[9999] space-y-2 pointer-events-none w-[320px]"></div>
+    <div id="toast-container" class="fixed bottom-4 right-4 z-[9999] space-y-2 pointer-events-none w-[320px]"></div>
 
     <!-- Custom Delete Confirmation Modal - UI Expert V10 -->
     <div id="custom-delete-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[9999] flex items-center justify-center p-4">
