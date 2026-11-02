@@ -23,6 +23,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             colors: {
@@ -304,6 +305,11 @@
             --radius-pill: 9999px;
             --shadow-soft: 0 8px 32px rgba(15,122,90,0.06);
         }
+        /* Dark mode transition */
+        body, .glass, .glass-header, .bg-white, header, #app-sidebar, #mobile-bottom-nav {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -556,15 +562,54 @@
         .rounded-\[2\.5rem\] { border-radius: var(--radius-xl); }
 
         /* Dark mode placeholder - keeps light */
-        .dark { color-scheme: light; }
+        .dark { color-scheme: dark; }
+        /* === DARK MODE REAL IMPLEMENTATION === */
+        .dark body { 
+            background-color: #0F172A !important; 
+            background-image: none !important;
+            color: #E2E8F0 !important; 
+        }
+        .dark .glass { 
+            background: rgba(30,41,59,0.92) !important; 
+            border-color: rgba(255,255,255,0.1) !important;
+            backdrop-filter: blur(8px) !important;
+        }
+        .dark .glass-header {
+            background: rgba(15,23,42,0.9) !important;
+            border-color: rgba(255,255,255,0.08) !important;
+        }
+        .dark .bg-white { background-color: #1E293B !important; }
+        .dark .bg-slate-50 { background-color: #334155 !important; }
+        .dark .bg-slate-100 { background-color: #334155 !important; }
+        .dark .bg-white\/95 { background: rgba(30,41,59,0.95) !important; }
+        .dark .text-slate-800 { color: #F1F5F9 !important; }
+        .dark .text-slate-700 { color: #E2E8F0 !important; }
+        .dark .text-slate-600 { color: #CBD5E1 !important; }
+        .dark .text-slate-500 { color: #94A3B8 !important; }
+        .dark .text-slate-400 { color: #64748B !important; }
+        .dark .border-slate-200 { border-color: #334155 !important; }
+        .dark .border-slate-100 { border-color: #334155 !important; }
+        .dark header.bg-white\/90 { background: rgba(15,23,42,0.9) !important; border-color: #334155 !important; }
+        .dark #app-sidebar { background: rgba(15,23,42,0.97) !important; border-color: #334155 !important; }
+        .dark #mobile-bottom-nav { background: rgba(15,23,42,0.95) !important; border-color: #334155 !important; }
+        .dark .premium-card { background: #1E293B !important; border-color: #334155 !important; }
+        .dark input, .dark textarea, .dark select { 
+            background-color: #0F172A !important; 
+            border-color: #334155 !important; 
+            color: #F1F5F9 !important; 
+        }
+        .dark input::placeholder, .dark textarea::placeholder { color: #64748B !important; }
+        .dark .shadow-sm, .dark .shadow-md, .dark .shadow-lg, .dark .shadow-xl, .dark .shadow-2xl {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+        }
 </style>
 </head>
 <body class="text-slate-800 antialiased min-h-screen h-[100dvh] w-screen overflow-hidden flex flex-col font-jakarta">
-    <canvas id="confetti-canvas" class="hidden fixed inset-0 pointer-events-none z-[9999]"></canvas>
-    <canvas id="confetti-canvas-quiz" class="hidden fixed inset-0 pointer-events-none z-[9999]"></canvas>
+    <canvas id="confetti-canvas" class="hidden fixed inset-0 pointer-events-none z-[70]"></canvas>
+    <canvas id="confetti-canvas-quiz" class="hidden fixed inset-0 pointer-events-none z-[70]"></canvas>
 
     <!-- Global Loader -->
-    <div id="global-loader" class="hidden fixed inset-0 z-[999] bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity">
+    <div id="global-loader" class="hidden fixed inset-0 z-[60] bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity">
         <i class="fa-solid fa-circle-notch fa-spin text-5xl text-emerald-700 mb-4"></i>
         <p id="loader-text" class="text-emerald-800 font-bold animate-pulse">Memuat Data...</p>
     </div>
@@ -1874,7 +1919,7 @@
     </div>
 
     <!-- RESULTS MODAL -->
-    <div id="results-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-lg z-[999] flex items-center justify-center p-4">
+    <div id="results-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-lg z-[60] flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-8 sm:p-10 max-w-sm w-full text-center shadow-2xl relative overflow-hidden border-4 border-white">
             <div class="absolute top-0 left-0 w-full h-3 bg-emerald-500"></div>
             <div class="w-28 h-28 bg-emerald-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 border-4 border-emerald-100 shadow-inner">
@@ -1915,7 +1960,7 @@
     </div>
 
     <!-- MODAL BANK SOAL -->
-    <div id="qb-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
+    <div id="qb-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-xl w-full shadow-2xl relative">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
                 <h3 class="text-xl font-black text-slate-800" id="qb-modal-title">Tambah Soal ke Bank</h3>
@@ -1941,7 +1986,7 @@
     </div>
 
     <!-- MODAL PEMILIH BANK SOAL UNTUK KUIS -->
-    <div id="qb-picker-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
+    <div id="qb-picker-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative max-h-[80vh] flex flex-col">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
                 <h3 class="text-xl font-black text-slate-800">Pilih Soal dari Bank Soal</h3>
@@ -1967,7 +2012,7 @@
     </div>
     
     <!-- MODAL PREVIEW IMPORT BANK SOAL -->
-    <div id="qb-preview-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
+    <div id="qb-preview-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-4xl w-full shadow-2xl relative max-h-[90vh] flex flex-col">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b pb-4 gap-4">
                 <div>
@@ -5541,21 +5586,24 @@ timerInterval = setInterval(() => {
 
 
         window.toggleDarkMode = () => {
-            const isDark = document.documentElement.classList.toggle('dark');
-            // Toggle juga dark-real untuk dark yang sebenarnya
+            const html = document.documentElement;
+            const isDark = html.classList.toggle('dark');
             if(isDark) {
-                document.documentElement.classList.add('dark-real');
+                html.classList.add('dark-real');
             } else {
-                document.documentElement.classList.remove('dark-real');
+                html.classList.remove('dark-real');
             }
             localStorage.setItem('noCapekDark', isDark ? '1' : '0');
             const icon = document.querySelector('#dark-mode-toggle i');
-            if(icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-500 text-sm' : 'fa-solid fa-moon text-slate-600 text-sm';
+            if(icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-400 text-sm' : 'fa-solid fa-moon text-slate-600 text-sm';
+            document.body.style.transition = 'background-color 0.3s, color 0.3s';
+            setTimeout(()=>{ document.body.style.transition = ''; }, 300);
         };
         (() => {
             const saved = localStorage.getItem('noCapekDark');
             if(saved === '1') {
                 document.documentElement.classList.add('dark');
+                document.documentElement.classList.add('dark-real');
                 setTimeout(()=>{ const icon=document.querySelector('#dark-mode-toggle i'); if(icon) icon.className='fa-solid fa-sun text-amber-500 text-sm'; },100);
             }
         })();
@@ -5769,10 +5817,10 @@ timerInterval = setInterval(() => {
         }, 800);
 
         </script>
-    <div id="toast-container" class="fixed bottom-4 right-4 z-[9999] space-y-2 pointer-events-none w-[320px]"></div>
+    <div id="toast-container" class="fixed bottom-4 right-4 z-[110] space-y-2 pointer-events-none w-[320px]"></div>
 
     <!-- Custom Delete Confirmation Modal - UI Expert V10 -->
-    <div id="custom-delete-modal" class="hidden fixed inset-0 bg-slate-900/60" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title" backdrop-blur-md z-[9999] flex items-center justify-center p-4">
+    <div id="custom-delete-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
         <div class="bg-white rounded-[1.5rem] p-0 max-w-sm w-full shadow-2xl overflow-hidden border border-slate-200 transform transition-all">
             <div class="p-6 sm:p-7">
                 <div class="flex items-start gap-4">
