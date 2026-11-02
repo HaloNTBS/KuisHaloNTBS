@@ -2599,7 +2599,7 @@
         // We'll call setupRealtime in routeUser
         // === END REALTIME ===
 
-        function routeUser() {
+        async function routeUser() {
             document.getElementById('login-screen').classList.add('hidden'); 
             document.getElementById('app-layout').classList.remove('hidden'); 
             document.getElementById('nav-username-display').innerText = currentUser.fullName; 
