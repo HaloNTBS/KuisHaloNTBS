@@ -5847,6 +5847,7 @@ timerInterval = setInterval(() => {
 
 <script>
   const weatherLocationEl = document.getElementById('weather-location');
+  const weatherTempEl = document.getElementById('weather-temp'); // Menangkap elemen suhu
   const apiKey = '3568fa41c1703a0baa0a0fe131aaae53';
 
   function getWeatherData(lat, lon) {
@@ -5859,30 +5860,39 @@ timerInterval = setInterval(() => {
           })
           .then(data => {
               const cityName = data.name;
+              // Mengambil data suhu dan membulatkannya (misal 28.6 menjadi 29)
+              const currentTemp = Math.round(data.main.temp); 
+
+              // Update teks lokasi
               if (weatherLocationEl) {
                   weatherLocationEl.innerText = cityName;
+              }
+              // Update teks suhu
+              if (weatherTempEl) {
+                  weatherTempEl.innerText = `${currentTemp}°C`; 
               }
           })
           .catch(error => {
               console.error("Error:", error);
               if (weatherLocationEl) weatherLocationEl.innerText = "Lokasi tidak ditemukan";
+              if (weatherTempEl) weatherTempEl.innerText = "--°C";
           });
   }
 
   function initGeolocation() {
       if (navigator.geolocation) {
-          if (weatherLocationEl) weatherLocationEl.innerText = "Mendeteksi lokasi...";
+          if (weatherLocationEl) weatherLocationEl.innerText = "Mendeteksi...";
           navigator.geolocation.getCurrentPosition(
               (position) => {
                   getWeatherData(position.coords.latitude, position.coords.longitude);
               },
               (error) => {
                   console.error("Akses lokasi ditolak:", error);
-                  if (weatherLocationEl) weatherLocationEl.innerText = "Akses lokasi ditolak";
+                  if (weatherLocationEl) weatherLocationEl.innerText = "Akses ditolak";
               }
           );
       } else {
-          if (weatherLocationEl) weatherLocationEl.innerText = "Geolokasi tidak didukung";
+          if (weatherLocationEl) weatherLocationEl.innerText = "Tidak didukung";
       }
   }
 
