@@ -929,7 +929,7 @@
                             </h2>
                             <p class="text-sm font-semibold text-slate-500 mt-1 flex items-center gap-2">
                                 Ringkasan performa tim, tren, dan agen yang butuh perhatian.
-                                <span id="admin-weather-inline" class="bg-white border border-slate-200 px-2.5 py-1 rounded-full text-[11px] font-bold">🌤️ 28°C Denpasar • Pagi Cerah</span>
+                                <span id="admin-weather-inline" class="bg-white border border-slate-200 px-2.5 py-1 rounded-full text-[11px] font-bold">🌤️ 28°C  • Pagi Cerah</span>
                             </p>
                         </div>
                         <div class="flex items-center gap-3">
@@ -1504,7 +1504,7 @@
                                         <h2 class="text-xl sm:text-[22px] font-black leading-tight mt-2 text-slate-900 tracking-tight">Assalamualaikum, <span id="agent-greeting-name" class="text-[var(--ntbs-green)]">Agen</span>! <span id="greeting-emoji">✨</span></h2>
                                         <p class="text-[13px] font-semibold opacity-90 mt-1 flex items-center gap-2" id="motivational-text" class="flex flex-wrap items-center gap-2 text-slate-600">
                                             <span id="motivational-main-text">Siap jadi yang terbaik hari ini? ✨</span>
-                                            <span id="weather-inline" class="bg-sky-50 border border-sky-200 text-sky-800 px-2.5 py-1 rounded-full text-[11px]">🌤️ 28°C Denpasar</span>
+                                            <span id="weather-inline" class="bg-sky-50 border border-sky-200 text-sky-800 px-2.5 py-1 rounded-full text-[11px]">🌤️ 28°C </span>
                                         </p>
                                     </div>
                                 </div>
@@ -1515,7 +1515,7 @@
                                         <div>
                                             <p class="text-[10px] font-bold uppercase tracking-wide opacity-90" id="weather-condition">Cerah Pagi</p>
                                             <p class="text-lg font-black leading-none" id="weather-temp">28°C</p>
-                                            <p class="text-[10px] font-medium opacity-80" id="weather-location">Denpasar, Bali</p>
+                                            <p class="text-[10px] font-medium opacity-80" id="weather-location">Mataram, Lombok</p>
                                         </div>
                                         <div class="ml-auto">
                                             <div class="live-dot"></div>
@@ -5791,8 +5791,8 @@ timerInterval = setInterval(() => {
                 if(adminCond) adminCond.innerText = weather.condition;
                 if(tempEl) tempEl.innerText = realTemp || weather.temp.split('-')[0];
                 if(adminTemp) adminTemp.innerText = realTemp || weather.temp.split('-')[0];
-                if(inlineEl) inlineEl.innerText = `${weather.icon} ${realTemp || weather.temp.split('-')[0]} Denpasar`;
-                if(adminInline) adminInline.innerText = `${weather.icon} ${realTemp || weather.temp.split('-')[0]} Denpasar • ${weather.condition}`;
+                if(inlineEl) inlineEl.innerText = `${weather.icon} ${realTemp || weather.temp.split('-')[0]} Mataram`;
+                if(adminInline) adminInline.innerText = `${weather.icon} ${realTemp || weather.temp.split('-')[0]} Mataram • ${weather.condition}`;
                 if(greetingIcon) greetingIcon.innerText = weather.icon;
                 if(greetingText) greetingText.innerText = period.charAt(0).toUpperCase() + period.slice(1);
 
